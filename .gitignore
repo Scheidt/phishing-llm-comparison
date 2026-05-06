@@ -1,1 +1,6 @@
 .env
+results/logs/
+results/reports/
+.vscode/
+*.csv
+__pycache__/

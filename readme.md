@@ -1,0 +1,1 @@
+Retorno das IA's deve seguir o modelo "{"classificacao": "PHISHING" | "LEGÍTIMO", "confianca": 0.0, "motivo": "breve justificativa"}"
