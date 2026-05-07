@@ -17,9 +17,8 @@ DMR_TIMEOUT  = 120  # segundos
 
 # Mapeamento: nome amigável → tag do modelo no DMR
 LOCAL_MODELS = {
-    "gemma3_4b_qat": "ai/gemma3-qat",
-    "qwen3_4b":      "ai/qwen3:4B-Q4_K_M",
-    "phi4_mini":     "hf.co/bartowski/Phi-4-mini-instruct-GGUF:Q4_K_M",
+    "gemma3_4b_qat": "ai/gemma3-qat:4B-Q4_K_M",
+    "qwen3_4b":      "ai/qwen3:4B-UD-Q8_K_XL",
 }
 
 # ── Dataset ────────────────────────────────────────────────────────────

@@ -11,8 +11,8 @@ import sys
 from dataset import load_dataset
 from test_runner import run_model_tests
 from metrics import compute_metrics, save_comparison_report
-from clients.claude_client import ClaudeClient
-from clients.dmr_client import DmrClient
+from models.claude_client import ClaudeClient
+from models.dmr_client import DmrClient
 from config import LOCAL_MODELS, CLAUDE_MODEL
 
 

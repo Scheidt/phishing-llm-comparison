@@ -2,12 +2,21 @@
 from dataset import load_dataset
 from test_runner import run_model_tests
 from metrics import compute_metrics
-from models.drm_client import DmrClient
+from models.dmr_client import DmrClient
+from models.claude_client import ClaudeClient
+from config import LOCAL_MODELS
 
 dataset = load_dataset().head(10)  # apenas 10 amostras
 
-client = DmrClient(model_tag="ai/gemma3-qat")
+client = DmrClient(model_tag=LOCAL_MODELS["qwen3_4b"])
 client.warm_up()
 
-results = run_model_tests("gemma3_4b_qat", client, dataset)
-compute_metrics("gemma3_4b_qat", results)
+results = run_model_tests("qwen3_4b", client, dataset)
+compute_metrics("qwen3_4b", results)
+
+
+"""
+client = ClaudeClient()
+results = run_model_tests("claude_haiku", client, dataset)
+compute_metrics("claude_haiku", results)
+"""
