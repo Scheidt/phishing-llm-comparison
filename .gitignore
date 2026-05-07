@@ -1,6 +1,8 @@
 .env
-results/logs/
-results/reports/
+results/logs/*
+results/reports/*
 .vscode/
-*.csv
+dataset/legitimo/*
+dataset/phishing/*
 __pycache__/
+*.pyc
