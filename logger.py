@@ -6,22 +6,24 @@ Gera um CSV por modelo com todos os detalhes de cada predição.
 import os
 import csv
 from datetime import datetime
-from config import LLM_LOGS_DIR
+from config import LLM_LOGS_DIR, ENABLE_LLM_LOGGING
 
 
 class BenchmarkLogger:
     def __init__(self, model_name: str):
         self.model_name = model_name
-        os.makedirs(LLM_LOGS_DIR, exist_ok=True)
+        self.csv_path = None
 
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.csv_path = f"{LLM_LOGS_DIR}/{model_name}_{timestamp}.csv"
+        if ENABLE_LLM_LOGGING:
+            os.makedirs(LLM_LOGS_DIR, exist_ok=True)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            self.csv_path = f"{LLM_LOGS_DIR}/{model_name}_{timestamp}.csv"
 
-        with open(self.csv_path, "w", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=self._csv_fields())
-            writer.writeheader()
+            with open(self.csv_path, "w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=self._csv_fields())
+                writer.writeheader()
 
-        print(f"  CSV:  {self.csv_path}")
+            print(f"  CSV:  {self.csv_path}")
 
     @staticmethod
     def _csv_fields() -> list[str]:
@@ -73,8 +75,9 @@ class BenchmarkLogger:
             "error_message":        error or "",
         }
 
-        with open(self.csv_path, "a", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=self._csv_fields())
-            writer.writerow(record)
+        if self.csv_path is not None:
+            with open(self.csv_path, "a", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=self._csv_fields())
+                writer.writerow(record)
 
         return record

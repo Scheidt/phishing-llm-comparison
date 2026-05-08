@@ -6,7 +6,7 @@ load_dotenv()
 # ── Anthropic ──────────────────────────────────────────────────────────
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 CLAUDE_MODEL      = "claude-haiku-4-5-20251001"
-RUN_CLAUDE        = False
+RUN_CLAUDE        = True
 
 # ── Docker Model Runner ────────────────────────────────────────────────
 DMR_BASE_URL = "http://localhost:12434/engines/llama.cpp/v1"
@@ -15,8 +15,8 @@ DMR_TIMEOUT  = 120  # segundos
 # Mapeamento: nome amigável → tag do modelo no DMR
 LOCAL_MODELS = {
     "gemma3_4b_qat": "ai/gemma3-qat:4B-Q4_K_M",
-    #"qwen3_4b":      "ai/qwen3:4B-UD-Q8_K_XL",
-    #"granite4_tiny": "ai/granite-4.0-h-tiny:7B-Q4_K_M",
+    "qwen3_4b":      "ai/qwen3:4B-UD-Q8_K_XL",
+    "granite4_tiny": "ai/granite-4.0-h-tiny:7B-Q4_K_M",
 }
 
 # ── Dataset ────────────────────────────────────────────────────────────
@@ -27,6 +27,9 @@ RESULTS_DIR   = "results"
 REPORTS_DIR   = f"{RESULTS_DIR}/reports"
 LLM_LOGS_DIR = f"{RESULTS_DIR}/llm_logs"
 COMPARATIVE_REPORT_FILENAME = f"{REPORTS_DIR}/comparison_report.csv"
+
+# ── Logging ────────────────────────────────────────────────────────────
+ENABLE_LLM_LOGGING = True  # Se False, não gera CSVs em llm_logs
 
 # ── Parâmetros de geração ──────────────────────────────────────────────
 MAX_TOKENS   = 10    # A classificação é apenas uma palavra ("phishing" ou "legítimo")
