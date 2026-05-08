@@ -64,7 +64,7 @@ class BenchmarkLogger:
             "model":                self.model_name,
             "true_label":           true_label,
             "true_label_text":      true_text,
-            "raw_response":         raw_response,
+            "raw_response":         raw_response.replace("\n", " ").replace("\r", ""),
             "predicted_label":      pred_label,
             "predicted_label_text": pred_text,
             "is_correct":           is_correct,
