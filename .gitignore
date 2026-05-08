@@ -1,5 +1,5 @@
 .env
-results/logs/*
+results/llm_logs/*
 results/reports/*
 .vscode/
 dataset/legitimo/*

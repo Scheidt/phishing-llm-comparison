@@ -1,32 +1,26 @@
 """
 Sistema de logging estruturado.
 
-Gera dois tipos de arquivo por modelo:
-  1. JSONL  — um JSON por linha, com todos os detalhes de cada predição
-  2. CSV    — formato tabular para análise posterior
+Gera um CSV por modelo com todos os detalhes de cada predição.
 """
 import os
-import json
 import csv
 from datetime import datetime
-from config import LOGS_DIR, REPORTS_DIR
+from config import LLM_LOGS_DIR
 
 
 class BenchmarkLogger:
     def __init__(self, model_name: str):
         self.model_name = model_name
-        os.makedirs(LOGS_DIR, exist_ok=True)
-        os.makedirs(REPORTS_DIR, exist_ok=True)
+        os.makedirs(LLM_LOGS_DIR, exist_ok=True)
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.jsonl_path = f"{LOGS_DIR}/{model_name}_{timestamp}.jsonl"
-        self.csv_path   = f"{REPORTS_DIR}/{model_name}_{timestamp}.csv"
+        self.csv_path = f"{LLM_LOGS_DIR}/{model_name}_{timestamp}.csv"
 
         with open(self.csv_path, "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=self._csv_fields())
             writer.writeheader()
 
-        print(f"  Logs: {self.jsonl_path}")
         print(f"  CSV:  {self.csv_path}")
 
     @staticmethod
@@ -78,9 +72,6 @@ class BenchmarkLogger:
             "output_tokens":        output_tokens,
             "error_message":        error or "",
         }
-
-        with open(self.jsonl_path, "a", encoding="utf-8") as f:
-            f.write(json.dumps(record, ensure_ascii=False) + "\n")
 
         with open(self.csv_path, "a", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=self._csv_fields())

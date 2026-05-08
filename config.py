@@ -6,7 +6,7 @@ load_dotenv()
 # ── Anthropic ──────────────────────────────────────────────────────────
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 CLAUDE_MODEL      = "claude-haiku-4-5-20251001"
-RUN_CLAUDE       = True  # Defina como False para pular testes com Claude e focar apenas nos modelos locais
+RUN_CLAUDE        = False
 
 # ── Docker Model Runner ────────────────────────────────────────────────
 DMR_BASE_URL = "http://localhost:12434/engines/llama.cpp/v1"
@@ -23,9 +23,9 @@ LOCAL_MODELS = {
 DATASET_PATH = "dataset/emails_dataset.example.csv" # TODO: atualizar para o caminho real do dataset
 
 # ── Saídas ─────────────────────────────────────────────────────────────
-RESULTS_DIR  = "results"
-LOGS_DIR     = f"{RESULTS_DIR}/logs"
-REPORTS_DIR  = f"{RESULTS_DIR}/reports"
+RESULTS_DIR   = "results"
+REPORTS_DIR   = f"{RESULTS_DIR}/reports"
+LLM_LOGS_DIR = f"{RESULTS_DIR}/llm_logs"
 COMPARATIVE_REPORT_FILENAME = f"{REPORTS_DIR}/comparison_report.csv"
 
 # ── Parâmetros de geração ──────────────────────────────────────────────
