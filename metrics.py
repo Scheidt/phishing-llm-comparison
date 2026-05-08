@@ -16,13 +16,20 @@ from sklearn.metrics import (
     accuracy_score, precision_score, recall_score,
     f1_score, confusion_matrix,
 )
-from config import REPORTS_DIR
+from config import REPORTS_DIR, COMPARATIVE_REPORT_FILENAME
 
 
 def compute_metrics(model_name: str, results: list[dict]) -> dict:
     """
     Recebe a lista de resultados do test_runner e retorna um dicionário
     com todas as métricas calculadas.
+    Args:
+        model_name: Nome do modelo
+        results: Lista de dicionários com os resultados de cada predição
+    Returns:
+        Dicionário com métricas: accuracy, precision, recall, f1_score,
+        avg_time_sec, error_rate, true_negatives, false_positives,
+        false_negatives, true_positives
     """
     total  = len(results)
     errors = [r for r in results if r["is_error"]]
@@ -106,18 +113,21 @@ def _save_metrics(m: dict):
 def save_comparison_report(all_metrics: list[dict]) -> pd.DataFrame:
     """
     Gera um CSV comparativo com todos os modelos lado a lado.
-    Ideal para incluir diretamente no TCC.
+    Args:
+        all_metrics: Lista de dicionários com as métricas de cada modelo
+    Returns:
+        DataFrame ordenado por F1-Score
     """
     df = pd.DataFrame(all_metrics)
     df = df.sort_values("f1_score", ascending=False).reset_index(drop=True)
     df.index += 1  # ranking começa em 1
 
-    path = f"{REPORTS_DIR}/comparison_report.csv"
+    path = f"{COMPARATIVE_REPORT_FILENAME}"
     df.to_csv(path, index_label="ranking")
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=-'*30 + '='}")
     print("RELATÓRIO COMPARATIVO FINAL")
-    print(f"{'='*60}")
+    print(f"\n{'=-'*30 + '='}")
     cols = ["model", "accuracy", "precision", "recall", "f1_score",
             "avg_time_sec", "error_rate"]
     print(df[cols].to_string())

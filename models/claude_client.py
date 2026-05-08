@@ -16,10 +16,13 @@ class ClaudeClient:
 
     def classify(self, system_prompt: str, user_prompt: str) -> dict:
         """
-        Envia o prompt para o Claude e retorna resultado com métricas de tempo.
-
-        Retorna dict com:
-          raw_response, elapsed_seconds, input_tokens, output_tokens, error
+        Envia prompts para o Claude e retorna resultado com métricas de tempo.
+        Args:
+            system_prompt: Instruções para o modelo
+            user_prompt: O conteúdo do email a ser classificado.
+        Returns:
+            Retorna dict com:
+            raw_response, elapsed_seconds, input_tokens, output_tokens, error
         """
         for attempt in range(1, MAX_RETRIES + 1):
             try:

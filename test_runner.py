@@ -10,17 +10,25 @@ from logger import BenchmarkLogger
 
 def run_model_tests(
     model_name: str,
-    client,                # ClaudeClient ou DmrClient
+    client, # ClaudeClient ou DmrClient
     dataset: pd.DataFrame,
 ) -> list[dict]:
     """
     Executa o benchmark completo para um modelo.
     Retorna lista de dicionários com os resultados de cada predição.
+    Args:
+        model_name: Nome do modelo (ex: "claude_haiku", "qwen3_4b")
+        client: Instância do cliente (ClaudeClient ou DmrClient)
+        dataset: DataFrame com colunas id, subject, body, label
+    Returns:
+        Lista de dicionários para cada email com:
+        email_id, true_label, raw_response, predicted, elapsed,
+        input_tokens, output_tokens, is_correct, is_error, error
     """
-    print(f"\n{'='*60}")
+    print(f"\n{'=-'*30 + '='}")
     print(f"Iniciando testes: {model_name.upper()}")
     print(f"Total de amostras: {len(dataset)}")
-    print(f"{'='*60}")
+    print(f"\n{'=-'*30 + '='}")
 
     logger  = BenchmarkLogger(model_name)
     results = []

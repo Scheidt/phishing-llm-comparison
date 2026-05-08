@@ -9,6 +9,12 @@ def load_dataset(path: str = DATASET_PATH) -> pd.DataFrame:
     """
     Carrega o dataset CSV e valida as colunas obrigatórias.
     Retorna um DataFrame com colunas: id, subject, body, label
+    Args:
+        path: Caminho para o arquivo CSV do dataset.
+    Raises:
+        ValueError: Se colunas obrigatórias estiverem faltando ou se houver labels inválidos.
+    returns:
+        DataFrame com o dataset carregado e validado.
     """
     df = pd.read_csv(path)
 

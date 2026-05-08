@@ -1,5 +1,5 @@
 # run_single.py — valide antes de rodar o benchmark completo
-from dataset import load_dataset
+from dataset.dataset import load_dataset
 from test_runner import run_model_tests
 from metrics import compute_metrics
 from models.dmr_client import DmrClient

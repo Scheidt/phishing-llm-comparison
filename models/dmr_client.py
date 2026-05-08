@@ -12,22 +12,21 @@ Gerenciamento de memória:
 """
 import time
 from openai import OpenAI, APIConnectionError, APITimeoutError
-from config import (DMR_BASE_URL, DMR_API_KEY, DMR_TIMEOUT,
-                    MAX_TOKENS, TEMPERATURE, MAX_RETRIES, RETRY_DELAY)
+from config import (DMR_BASE_URL, DMR_TIMEOUT, MAX_TOKENS, 
+                    TEMPERATURE, MAX_RETRIES, RETRY_DELAY)
 
 
 class DmrClient:
     def __init__(self, model_tag: str):
         """
-        model_tag: tag do modelo no DMR
-                   Exemplos: 'ai/gemma3-qat'
-                             'ai/qwen3:4B-Q4_K_M'
-                             'hf.co/bartowski/Phi-4-mini-instruct-GGUF:Q4_K_M'
+            Inicializa o cliente do DMR para um modelo específico.
+        Args:
+            model_tag: tag do modelo no DMR. Verificar modelos existentes em config.py → LOCAL_MODELS.
         """
         self.model_tag = model_tag
         self.client = OpenAI(
             base_url=DMR_BASE_URL,
-            api_key=DMR_API_KEY,
+            api_key="youtube.com/watch?v=nVLZIgcLmsc&pp=ygUdbW9tIGdpdmUgbWUgc29tZSBtb25leSBwbGVhc2U%3D", # DRM não precisa de chave, mas a lib OpenAI exige uma string.
             timeout=DMR_TIMEOUT,
         )
 
@@ -53,9 +52,12 @@ class DmrClient:
     def classify(self, system_prompt: str, user_prompt: str) -> dict:
         """
         Envia o prompt para o DMR e retorna resultado com métricas.
-
-        Retorna dict com:
-          raw_response, elapsed_seconds, input_tokens, output_tokens, error
+        Args:
+            system_prompt: Instruções para o modelo
+            user_prompt: O conteúdo do email a ser classificado.
+        Returns:
+            Retorna dict com:
+            raw_response, elapsed_seconds, input_tokens, output_tokens, error
         """
         for attempt in range(1, MAX_RETRIES + 1):
             try:

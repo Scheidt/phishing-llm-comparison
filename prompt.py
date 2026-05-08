@@ -23,7 +23,14 @@ Classificação:"""
 
 
 def build_prompt(subject: str, body: str) -> tuple[str, str]:
-    """Retorna (system_prompt, user_prompt) para o e-mail fornecido."""
+    """Retorna (system_prompt, user_prompt) para o e-mail fornecido.
+    Trunca o corpo do e-mail para 2000 caracteres se for muito longo, para evitar exceder limites de token.
+    Args:
+        subject: Assunto do e-mail
+        body: Corpo do e-mail
+    Returns:
+        Tuple com system_prompt e user_prompt formatados
+    """
     body_truncated = body[:2000] if len(body) > 2000 else body
     user_prompt = USER_PROMPT_TEMPLATE.format(
         subject=subject,
@@ -44,5 +51,5 @@ def parse_response(raw_response: str) -> str | None:
     if any(tok in cleaned for tok in ["LEGÍTIMO", "LEGITIMO", "LEGITIMATE", "LEGIT"]):
         return "LEGÍTIMO"
     
-    print (f"Resposta não reconhecida: '{raw_response}' → '{cleaned}'")
+    print (f"WARNING! Resposta não reconhecida: '{raw_response}' → '{cleaned}'")
     return None
