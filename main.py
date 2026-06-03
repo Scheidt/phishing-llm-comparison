@@ -12,7 +12,7 @@ from test_runner import run_model_tests
 from metrics import compute_metrics, save_comparison_report
 from models.claude_client import ClaudeClient
 from models.dmr_client import DmrClient
-from config import LOCAL_MODELS, CLAUDE_MODEL, RUN_CLAUDE
+from config import LOCAL_MODELS, RUN_CLAUDE, CLAUDE_MODEL
 
 
 def main():
@@ -28,12 +28,12 @@ def main():
         try:
             claude_client = ClaudeClient()
             results_claude = run_model_tests(
-                model_name=f"claude_{CLAUDE_MODEL}",
+                model_name=CLAUDE_MODEL,
                 client=claude_client,
                 dataset=dataset,
             )
             metrics_claude = compute_metrics(
-                model_name=f"claude_{CLAUDE_MODEL}",
+                model_name=CLAUDE_MODEL,
                 results=results_claude,
             )
             all_metrics.append(metrics_claude)
