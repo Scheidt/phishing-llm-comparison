@@ -49,16 +49,21 @@ class DmrClient:
         except Exception as e:
             print(f"  Aviso: falha no warm-up ({e}). Continuando...")
 
-    def classify(self, system_prompt: str, user_prompt: str) -> dict:
+    def classify(self, system_prompt: str, user_prompt: str,
+                 max_tokens: int | None = None) -> dict:
         """
         Envia o prompt para o DMR e retorna resultado com métricas.
         Args:
             system_prompt: Instruções para o modelo
             user_prompt: O conteúdo do email a ser classificado.
+            max_tokens: Limite de tokens da resposta. Se None, usa MAX_TOKENS do config.
+                        (Útil para testes que exigem respostas maiores, ex: JSON.)
         Returns:
             Retorna dict com:
             raw_response, elapsed_seconds, input_tokens, output_tokens, error
         """
+        token_limit = MAX_TOKENS if max_tokens is None else max_tokens
+
         for attempt in range(1, MAX_RETRIES + 1):
             try:
                 start = time.perf_counter()
@@ -69,7 +74,7 @@ class DmrClient:
                         {"role": "system", "content": system_prompt},
                         {"role": "user",   "content": user_prompt},
                     ],
-                    max_tokens=MAX_TOKENS,
+                    max_tokens=token_limit,
                     temperature=TEMPERATURE,
                 )
 

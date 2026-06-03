@@ -1,0 +1,289 @@
+"""
+Teste de CONSISTÊNCIA DE FORMATO de um único modelo.
+
+Objetivo
+--------
+Modelos menores podem falhar em retornar a resposta no formato esperado
+quando o prompt fica grande (e-mail longo + instruções). Este teste roda
+o MESMO prompt, no MESMO modelo, várias vezes (REPETITIONS), e verifica
+se o modelo consegue retornar de forma CONSISTENTE um JSON válido no
+formato esperado.
+
+Formato JSON esperado
+---------------------
+    {
+      "classification": "phishing" | "legitimate",
+      "phishing_likelihood": <inteiro de 0 a 100>,
+      "reasons": ["<motivo curto>", "<motivo curto>", ...]
+    }
+
+O e-mail (prompt grande) é lido de um arquivo de texto externo
+(EMAIL_FILE), sem truncamento, justamente para estressar o cenário de
+prompt grande.
+
+Os resultados são gravados em llm_logs/ com "output_testing" no nome do
+arquivo, uma linha por repetição.
+
+Uso
+---
+    python test_output.py
+
+Ajuste os parâmetros no bloco "CONFIGURAÇÃO DO TESTE" abaixo.
+"""
+import os
+import re
+import csv
+import json
+from datetime import datetime
+
+from config import LOCAL_MODELS, LLM_LOGS_DIR
+from models.dmr_client import DmrClient
+
+# ─────────────────────────────────────────────────────────────────────────
+# CONFIGURAÇÃO DO TESTE  (edite à vontade)
+# ─────────────────────────────────────────────────────────────────────────
+MODEL_KEY       = "gemma3_4b_qat"   # chave em config.LOCAL_MODELS
+REPETITIONS     = 20                # quantas vezes rodar o mesmo prompt
+EMAIL_FILE      = "test_email.txt"  # arquivo com o e-mail grande
+TEST_MAX_TOKENS = 512               # tokens suficientes para o JSON completo
+
+# ─────────────────────────────────────────────────────────────────────────
+# PROMPT (dividido entre system e user)
+#
+# SYSTEM_PROMPT carrega as instruções e o formato de saída; o e-mail entra no
+# USER_PROMPT_TEMPLATE via {email}. (Sem .format() no SYSTEM_PROMPT, então as
+# chaves do exemplo de JSON ficam literais.)
+# ─────────────────────────────────────────────────────────────────────────
+SYSTEM_PROMPT = """You are given the full content of an email. Your task is to decide whether the
+email is a phishing attempt or a legitimate message.
+
+Analyze the email for common phishing indicators, such as:
+- Sender information that is unusual or inconsistent with the organization it
+  claims to come from (for example, a display name or address that does not
+  match the expected domain);
+- Suspicious links or attachments, such as shortened URLs, links whose visible
+  text does not match their real destination, or unexpected attachments;
+- Urgent, threatening, or pressuring language meant to force a hasty action;
+- Requests for sensitive information, such as passwords, financial data, or
+  personal identification.
+
+Then make a decision, estimate how likely the email is to be a phishing attempt
+on a scale from 0 to 100, and give a brief justification.
+
+Respond ONLY with a single JSON object, with no extra text, in exactly this
+format:
+{
+  "classification": "phishing" or "legitimate",
+  "phishing_likelihood": <integer from 0 to 100>,
+  "reasons": ["<short reason>", "<short reason>", ...]
+}"""
+
+USER_PROMPT_TEMPLATE = """Subject: {subject}
+
+Body:
+{body}"""
+
+VALID_CLASSIFICATIONS = {"phishing", "legitimate"}
+
+
+FENCE_RE = re.compile(r"^\s*```(?:json)?\s*\n?(.*?)\n?\s*```\s*$", re.DOTALL | re.IGNORECASE)
+
+
+def strip_code_fence(text: str) -> tuple[str, bool]:
+    """
+    Remove cercas de código markdown (``` ou ```json) ao redor do conteúdo.
+    Retorna (texto_sem_cerca, tinha_cerca).
+    """
+    m = FENCE_RE.match(text.strip())
+    if m:
+        return m.group(1).strip(), True
+    return text.strip(), False
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# VALIDAÇÃO DO FORMATO
+# ─────────────────────────────────────────────────────────────────────────
+def validate_format(raw_response: str) -> dict:
+    """
+    Verifica se 'raw_response' é um JSON válido no formato esperado.
+
+    Retorna um dict com flags booleanas por checagem e um 'format_ok' geral.
+    Cercas de código markdown (``` / ```json) são toleradas: são removidas
+    antes do parse e apenas anotadas em 'validation_note'. Texto extra fora
+    do JSON, JSON malformado ou campos ausentes/com tipo errado fazem a
+    checagem falhar — que é o que queremos detectar.
+    """
+    result = {
+        "is_valid_json":     False,
+        "has_classification": False,
+        "has_likelihood":     False,
+        "has_reasons":        False,
+        "format_ok":          False,
+        "validation_note":    "",
+    }
+
+    text, had_fence = strip_code_fence(raw_response)
+    fence_note = "envolto em cerca de código; " if had_fence else ""
+
+    try:
+        data = json.loads(text)
+    except (json.JSONDecodeError, TypeError) as e:
+        result["validation_note"] = f"{fence_note}JSON inválido: {e}"
+        return result
+
+    result["is_valid_json"] = True
+
+    if not isinstance(data, dict):
+        result["validation_note"] = f"{fence_note}JSON não é um objeto"
+        return result
+
+    # classification
+    classification = data.get("classification")
+    if isinstance(classification, str) and classification.lower() in VALID_CLASSIFICATIONS:
+        result["has_classification"] = True
+
+    # phishing_likelihood: inteiro 0..100 (bool é subclasse de int → rejeitado)
+    likelihood = data.get("phishing_likelihood")
+    if isinstance(likelihood, int) and not isinstance(likelihood, bool) and 0 <= likelihood <= 100:
+        result["has_likelihood"] = True
+
+    # reasons: lista não-vazia de strings
+    reasons = data.get("reasons")
+    if (isinstance(reasons, list) and len(reasons) > 0
+            and all(isinstance(r, str) for r in reasons)):
+        result["has_reasons"] = True
+
+    result["format_ok"] = (
+        result["has_classification"]
+        and result["has_likelihood"]
+        and result["has_reasons"]
+    )
+
+    if not result["format_ok"]:
+        faltando = [
+            nome for nome, ok in [
+                ("classification", result["has_classification"]),
+                ("phishing_likelihood", result["has_likelihood"]),
+                ("reasons", result["has_reasons"]),
+            ] if not ok
+        ]
+        result["validation_note"] = f"{fence_note}Campos inválidos/ausentes: {', '.join(faltando)}"
+    else:
+        result["validation_note"] = fence_note.strip("; ").strip()
+
+    return result
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# CSV
+# ─────────────────────────────────────────────────────────────────────────
+CSV_FIELDS = [
+    "iteration", "model", "format_ok",
+    "is_valid_json", "has_classification", "has_likelihood", "has_reasons",
+    "validation_note", "elapsed_seconds", "input_tokens", "output_tokens",
+    "raw_response", "error_message",
+]
+
+
+def _open_csv(model_name: str):
+    os.makedirs(LLM_LOGS_DIR, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    path = f"{LLM_LOGS_DIR}/output_testing_{model_name}_{timestamp}.csv"
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        csv.DictWriter(f, fieldnames=CSV_FIELDS).writeheader()
+    return path
+
+
+def _append_row(path: str, row: dict):
+    with open(path, "a", newline="", encoding="utf-8") as f:
+        csv.DictWriter(f, fieldnames=CSV_FIELDS).writerow(row)
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# EXECUÇÃO
+# ─────────────────────────────────────────────────────────────────────────
+def main():
+    if MODEL_KEY not in LOCAL_MODELS:
+        raise SystemExit(
+            f"Modelo '{MODEL_KEY}' não encontrado em config.LOCAL_MODELS. "
+            f"Disponíveis: {', '.join(LOCAL_MODELS)}"
+        )
+
+    if not os.path.exists(EMAIL_FILE):
+        raise SystemExit(
+            f"Arquivo de e-mail '{EMAIL_FILE}' não encontrado. "
+            "Crie o arquivo com o e-mail a ser testado."
+        )
+
+    with open(EMAIL_FILE, "r", encoding="utf-8") as f:
+        email_text = f.read()
+
+    # Primeira linha = assunto; o restante = corpo (espelha os campos
+    # 'subject' e 'body' do dataset).
+    lines   = email_text.splitlines()
+    subject = lines[0].strip() if lines else ""
+    body    = "\n".join(lines[1:]).strip()
+
+    model_tag   = LOCAL_MODELS[MODEL_KEY]
+    user_prompt = USER_PROMPT_TEMPLATE.format(subject=subject, body=body)
+
+    print(f"\n{'=-'*30 + '='}")
+    print(f"Teste de consistência de formato (JSON)")
+    print(f"Modelo:      {MODEL_KEY} ({model_tag})")
+    print(f"E-mail:      {EMAIL_FILE} (assunto: {len(subject)} chars, corpo: {len(body)} chars)")
+    print(f"Repetições:  {REPETITIONS}")
+    print(f"Max tokens:  {TEST_MAX_TOKENS}")
+    print(f"{'=-'*30 + '='}\n")
+
+    csv_path = _open_csv(MODEL_KEY)
+    print(f"  CSV: {csv_path}\n")
+
+    client = DmrClient(model_tag=model_tag)
+    client.warm_up()
+
+    ok_count = 0
+
+    for i in range(1, REPETITIONS + 1):
+        response = client.classify(SYSTEM_PROMPT, user_prompt,
+                                    max_tokens=TEST_MAX_TOKENS)
+
+        if response["error"]:
+            v = {k: False for k in
+                 ("is_valid_json", "has_classification", "has_likelihood",
+                  "has_reasons", "format_ok")}
+            v["validation_note"] = "Requisição falhou (ver error_message)"
+        else:
+            v = validate_format(response["raw_response"])
+
+        if v["format_ok"]:
+            ok_count += 1
+
+        status = "OK " if v["format_ok"] else "FALHA"
+        print(f"  [{i:>3}/{REPETITIONS}] {status}  "
+              f"({response['elapsed_seconds']}s)  {v['validation_note']}")
+
+        _append_row(csv_path, {
+            "iteration":          i,
+            "model":              MODEL_KEY,
+            "format_ok":          v["format_ok"],
+            "is_valid_json":      v["is_valid_json"],
+            "has_classification": v["has_classification"],
+            "has_likelihood":     v["has_likelihood"],
+            "has_reasons":        v["has_reasons"],
+            "validation_note":    v["validation_note"],
+            "elapsed_seconds":    response["elapsed_seconds"],
+            "input_tokens":       response["input_tokens"],
+            "output_tokens":      response["output_tokens"],
+            "raw_response":       response["raw_response"].replace("\n", " ").replace("\r", ""),
+            "error_message":      response["error"] or "",
+        })
+
+    rate = (ok_count / REPETITIONS * 100) if REPETITIONS else 0
+    print(f"\n{'=-'*30 + '='}")
+    print(f"Resultado: {ok_count}/{REPETITIONS} no formato correto ({rate:.1f}%)")
+    print(f"CSV salvo em: {csv_path}")
+    print(f"{'=-'*30 + '='}\n")
+
+
+if __name__ == "__main__":
+    main()

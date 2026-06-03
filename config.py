@@ -32,7 +32,7 @@ COMPARATIVE_REPORT_FILENAME = f"{REPORTS_DIR}/comparison_report.csv"
 ENABLE_LLM_LOGGING = True  # Se False, não gera CSVs em llm_logs
 
 # ── Parâmetros de geração ──────────────────────────────────────────────
-MAX_TOKENS   = 10    # A classificação é apenas uma palavra ("phishing" ou "legítimo")
+MAX_TOKENS   = 512   
 TEMPERATURE  = 0.0   # Alterar conforme necessário para testar criatividade vs. precisão
 
 # ── Controle de erros ──────────────────────────────────────────────────

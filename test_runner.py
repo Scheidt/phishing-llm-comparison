@@ -41,20 +41,25 @@ def run_model_tests(
 
         response = client.classify(system_prompt, user_prompt)
 
-        predicted = (
+        parsed = (
             parse_response(response["raw_response"])
-            if not response["error"] else None
+            if not response["error"]
+            else {"predicted": None, "phishing_likelihood": None,
+                  "reasons": [], "parse_note": ""}
         )
 
         record = logger.log(
-            email_id      = int(row["id"]),
-            true_label    = int(row["label"]),
-            raw_response  = response["raw_response"],
-            predicted     = predicted,
-            elapsed       = response["elapsed_seconds"],
-            input_tokens  = response["input_tokens"],
-            output_tokens = response["output_tokens"],
-            error         = response["error"],
+            email_id            = int(row["id"]),
+            true_label          = int(row["label"]),
+            raw_response        = response["raw_response"],
+            predicted           = parsed["predicted"],
+            phishing_likelihood = parsed["phishing_likelihood"],
+            reasons             = parsed["reasons"],
+            parse_note          = parsed["parse_note"],
+            elapsed             = response["elapsed_seconds"],
+            input_tokens        = response["input_tokens"],
+            output_tokens       = response["output_tokens"],
+            error               = response["error"],
         )
         results.append(record)
 

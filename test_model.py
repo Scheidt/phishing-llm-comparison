@@ -8,15 +8,15 @@ from config import LOCAL_MODELS
 
 dataset = load_dataset().head(10)  # apenas 10 amostras
 
-client = DmrClient(model_tag=LOCAL_MODELS["qwen3_4b"])
+"""
+client = DmrClient(model_tag=LOCAL_MODELS["granite4_tiny"])
 client.warm_up()
 
-results = run_model_tests("qwen3_4b", client, dataset)
-compute_metrics("qwen3_4b", results)
-
-
+results = run_model_tests("granite4_tiny", client, dataset)
+compute_metrics("granite4_tiny", results)
 """
+
+
 client = ClaudeClient()
 results = run_model_tests("claude_haiku", client, dataset)
 compute_metrics("claude_haiku", results)
-"""

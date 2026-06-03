@@ -1,0 +1,40 @@
+[URGENT ACTION REQUIRED] Your corporate Microsoft 365 account will be suspended within 24 hours
+From: Microsoft 365 Security Team <security-noreply@ms365-account-review.com>
+To: you@yourcompany.com
+
+Dear Valued Employee,
+
+This is an automated notification sent by your organization's Information Security Department in coordination with the Microsoft 365 Administration team. We have detected unusual activity associated with your corporate account over the past 72 hours, including multiple sign-in attempts from unrecognized geographic locations (Lagos, Nigeria; Kyiv, Ukraine; and Hanoi, Vietnam) and from devices that are not registered in our corporate Azure Active Directory directory.
+
+In accordance with our updated security policies (Internal Policy ISP-2026-114, aligned with ISO/IEC 27001 and applicable data protection regulations), all accounts that exhibit anomalous behavior must complete a mandatory identity revalidation process. If the revalidation is NOT completed within 24 (twenty-four) hours from the moment you receive this email, your account will be automatically SUSPENDED, and all of your data, emails, OneDrive files, and access to internal systems will be temporarily blocked until you open an in-person ticket with the IT department.
+
+To avoid suspension and keep uninterrupted access to your services, please follow the instructions below carefully:
+
+1. Click the secure verification button: https://microsoft-365-secure-verification.account-review-portal.com/auth/validate?ref=corp
+2. Sign in using your full corporate email address and your current password.
+3. Confirm the six-digit authentication code that will appear on the screen.
+4. Update your recovery information (phone number and alternate email).
+5. Wait for the confirmation message "Account successfully revalidated".
+
+IMPORTANT: For security reasons, this link automatically expires in 24 hours and can only be used once. Do not share this email with third parties. The IT team will never ask for your password by phone, only through this official and secure revalidation portal.
+
+If you do not recognize the activity mentioned above, it is even more critical that you complete the verification immediately, as this indicates that malicious third parties may have already obtained partial access to your credentials. Failure to verify will result in the employee being held responsible for any data breach incidents, as stated in the IT resource usage agreement signed at the time of your hiring.
+
+ADDITIONAL CONTEXT ON THIS SECURITY EVENT: Our Security Operations Center (SOC) flagged your account under incident reference INC-2026-0061142 after our automated threat-intelligence systems correlated the sign-in anomalies with a known credential-stuffing campaign currently targeting organizations in your industry sector. The attackers appear to be using a rotating pool of residential proxy IP addresses to bypass our geofencing rules, which is why standard location-based blocking has not been sufficient to protect your account on its own. For this reason, a full credential reset and re-enrollment of your multi-factor authentication device is mandatory rather than optional.
+
+WHAT HAPPENS IF YOU DO NOTHING: After the 24-hour grace period elapses, the system will move your mailbox into a quarantined state. While quarantined, inbound messages addressed to you will be held at the gateway for up to 7 days and then bounced back to senders with a delivery failure notice, which may cause you to miss time-sensitive business communications from clients, partners, and colleagues. Calendar invitations, shared document permissions, and Teams channel memberships associated with your identity will also be temporarily revoked until an administrator manually restores them, a process that can take three to five business days given the current support backlog.
+
+FREQUENTLY ASKED QUESTIONS: (1) "Is this email legitimate?" Yes, this notification originates from the official Microsoft 365 Admin Center on behalf of your organization's IT department. (2) "Why am I being asked to confirm my password?" The revalidation portal needs to confirm that the person completing the process is the legitimate account owner. (3) "What if I already changed my password recently?" You must still complete the revalidation, because the anomalous sessions may have been established before your last password change and could still hold valid refresh tokens. (4) "Can I do this later from my personal device?" Yes, the secure portal is fully responsive and works from any browser, including mobile devices, so there is no reason to delay.
+
+Please treat this matter with the highest priority. Cyber threats evolve rapidly, and the window of opportunity for an attacker is measured in hours, not days. By acting now you protect not only your own account but also the broader corporate network, since a single compromised mailbox is frequently used as a launching point for internal phishing and business email compromise (BEC) attacks against your coworkers and executives.
+
+A NOTE ON COMPLIANCE AND AUDITING: This revalidation campaign is part of a scheduled quarterly security audit mandated by our cyber-insurance provider and our external compliance auditors. Every account that receives this notice is tracked in a centralized dashboard, and accounts that remain unverified past the deadline are automatically escalated to line managers and to the Chief Information Security Officer for follow-up. To avoid an unnecessary escalation that reflects poorly on your team's security posture scorecard, we strongly encourage you to complete the five-step verification described above as soon as you finish reading this message. The entire process typically takes less than three minutes from start to finish, and you will receive a digitally signed confirmation receipt by email once your account has been successfully revalidated and removed from the at-risk list.
+
+We appreciate your cooperation and understanding. The security of our organization's data depends on the prompt and responsible action of each of our employees.
+
+Sincerely,
+Information Security Team | Microsoft 365 Admin Center
+Information Technology Department
+Support Hotline: +1 (000) 000-0000
+This is an automated email. Please do not reply directly to this message.
+© 2026 Microsoft Corporation. All rights reserved. Microsoft, Office 365, and OneDrive are registered trademarks of Microsoft Corporation in the United States and/or other countries.

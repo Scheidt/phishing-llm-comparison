@@ -30,6 +30,7 @@ class BenchmarkLogger:
         return [
             "email_id", "model", "true_label", "true_label_text",
             "raw_response", "predicted_label", "predicted_label_text",
+            "phishing_likelihood", "reasons", "parse_note",
             "is_correct", "is_error",
             "elapsed_seconds", "input_tokens", "output_tokens", "error_message",
         ]
@@ -40,6 +41,9 @@ class BenchmarkLogger:
         true_label: int,
         raw_response: str,
         predicted: str | None,
+        phishing_likelihood: int | None,
+        reasons: list[str],
+        parse_note: str,
         elapsed: float,
         input_tokens: int,
         output_tokens: int,
@@ -67,6 +71,9 @@ class BenchmarkLogger:
             "raw_response":         raw_response.replace("\n", " ").replace("\r", ""),
             "predicted_label":      pred_label,
             "predicted_label_text": pred_text,
+            "phishing_likelihood":  phishing_likelihood if phishing_likelihood is not None else "",
+            "reasons":              " | ".join(reasons),
+            "parse_note":           parse_note,
             "is_correct":           is_correct,
             "is_error":             is_error,
             "elapsed_seconds":      elapsed,
