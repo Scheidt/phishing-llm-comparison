@@ -1,12 +1,12 @@
 """
-Teste de CONSISTÊNCIA DE FORMATO de um único modelo.
+TEstar consistência de formato de saída (JSON).
 
 Objetivo
 --------
 Modelos menores podem falhar em retornar a resposta no formato esperado
-quando o prompt fica grande (e-mail longo + instruções). Este teste roda
-o MESMO prompt, no MESMO modelo, várias vezes (REPETITIONS), e verifica
-se o modelo consegue retornar de forma CONSISTENTE um JSON válido no
+quando o prompt é grande (e-mail longo + instruções). Este teste roda
+o mesmo prompt e modelo várias vezes (definido em REPETITIONS), e verifica
+se o modelo consegue retornar de forma consistente um JSON válido no
 formato esperado.
 
 Formato JSON esperado
@@ -26,15 +26,20 @@ arquivo, uma linha por repetição.
 
 Uso
 ---
-    python test_output.py
+    python tests/test_output.py
 
 Ajuste os parâmetros no bloco "CONFIGURAÇÃO DO TESTE" abaixo.
 """
 import os
 import re
+import sys
 import csv
 import json
 from datetime import datetime
+
+# adiciona a raiz do projeto ao sys.path para encontrar os módulos.
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, PROJECT_ROOT)
 
 from config import LOCAL_MODELS, LLM_LOGS_DIR
 from models.dmr_client import DmrClient
@@ -44,7 +49,7 @@ from models.dmr_client import DmrClient
 # ─────────────────────────────────────────────────────────────────────────
 MODEL_KEY       = "gemma3_4b_qat"   # chave em config.LOCAL_MODELS
 REPETITIONS     = 20                # quantas vezes rodar o mesmo prompt
-EMAIL_FILE      = "test_email.txt"  # arquivo com o e-mail grande
+EMAIL_FILE      = os.path.join(os.path.dirname(__file__), "long_email.txt")
 TEST_MAX_TOKENS = 512               # tokens suficientes para o JSON completo
 
 # ─────────────────────────────────────────────────────────────────────────
