@@ -9,6 +9,7 @@ Métricas calculadas:
   - Tempo médio de resposta (segundos)
   - Taxa de erro (% de respostas inválidas ou com falha)
 """
+import glob
 import json
 import os
 import pandas as pd
@@ -134,3 +135,86 @@ def save_comparison_report(all_metrics: list[dict]) -> pd.DataFrame:
     print(f"\nRelatório salvo em: {path}")
 
     return df
+
+
+def _to_bool(v) -> bool:
+    """Converte valores de CSV ('True'/'False', 1/0, etc.) para bool de verdade."""
+    if isinstance(v, str):
+        return v.strip().lower() in ("true", "1")
+    return bool(v)
+
+
+def metrics_from_csv(csv_path: str, model_name: str | None = None) -> dict:
+    """
+    Recalcula as métricas a partir de um CSV salvo em results/llm_logs/.
+
+    Útil para reprocessar uma rodada anterior ou um CSV parcial (ex.: quando
+    o processo caiu no meio de um modelo) sem precisar rodar o modelo de novo.
+
+    Args:
+        csv_path: caminho do CSV gerado pelo BenchmarkLogger.
+        model_name: nome do modelo. Se None, usa a coluna 'model' do CSV.
+    Returns:
+        Dicionário de métricas (também impresso e salvo em reports/).
+    """
+    df = pd.read_csv(csv_path)
+
+    if model_name is None:
+        model_name = str(df["model"].iloc[0]) if len(df) else "desconhecido"
+
+    results = [
+        {
+            "true_label":      int(row["true_label"]),
+            "predicted_label": int(row["predicted_label"]),
+            "is_error":        _to_bool(row["is_error"]),
+            "is_correct":      _to_bool(row["is_correct"]),
+            "elapsed_seconds": float(row["elapsed_seconds"]),
+        }
+        for _, row in df.iterrows()
+    ]
+
+    print(f"Recalculando métricas de '{model_name}' a partir de {csv_path} "
+          f"({len(results)} registros)")
+    return compute_metrics(model_name, results)
+
+
+def rebuild_comparison() -> pd.DataFrame:
+    """
+    Reconstrói o relatório comparativo a partir de todos os metrics_*.json
+    salvos em reports/.
+
+    Permite rodar o benchmark em partes (rodadas separadas) e montar o
+    comparativo final juntando os JSONs já existentes — sem manter tudo
+    em memória numa única execução.
+    Returns:
+        DataFrame comparativo (vazio se não houver nenhum JSON).
+    """
+    files = sorted(glob.glob(os.path.join(REPORTS_DIR, "metrics_*.json")))
+    if not files:
+        print(f"Nenhum metrics_*.json encontrado em {REPORTS_DIR}.")
+        return pd.DataFrame()
+
+    all_metrics = []
+    for path in files:
+        with open(path, encoding="utf-8") as f:
+            all_metrics.append(json.load(f))
+
+    print(f"Encontrados {len(all_metrics)} relatório(s) de modelo em {REPORTS_DIR}.")
+    return save_comparison_report(all_metrics)
+
+
+if __name__ == "__main__":
+    # Uso por linha de comando:
+    #   python metrics.py <caminho_csv> [nome_modelo]   → recalcula de um CSV
+    #   python metrics.py --rebuild                      → remonta o comparativo
+    import sys
+
+    if len(sys.argv) >= 2 and sys.argv[1] == "--rebuild":
+        rebuild_comparison()
+    elif len(sys.argv) >= 2:
+        name = sys.argv[2] if len(sys.argv) >= 3 else None
+        metrics_from_csv(sys.argv[1], name)
+    else:
+        print("Uso:\n"
+              "  python metrics.py <caminho_csv> [nome_modelo]   # recalcula de um CSV\n"
+              "  python metrics.py --rebuild                      # remonta o comparativo")

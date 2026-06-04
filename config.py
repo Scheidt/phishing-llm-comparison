@@ -31,6 +31,11 @@ COMPARATIVE_REPORT_FILENAME = f"{REPORTS_DIR}/comparison_report.csv"
 # ── Logging ────────────────────────────────────────────────────────────
 ENABLE_LLM_LOGGING = True  # Se False, não gera CSVs em llm_logs
 
+# ── Retomada (resume) ──────────────────────────────────────────────────
+# Se True, pula modelos que já possuem metrics_<modelo>.json em reports/.
+# Serve para se o teste for interrompido, permitindo retomar o teste de onde deu erro.
+SKIP_COMPLETED_MODELS = False
+
 # ── Parâmetros de geração ──────────────────────────────────────────────
 MAX_TOKENS   = 512   
 TEMPERATURE  = 0.0   # Alterar conforme necessário para testar criatividade vs. precisão
