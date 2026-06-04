@@ -6,3 +6,5 @@ dataset/legitimo/*
 dataset/phishing/*
 __pycache__/
 *.pyc
+dataset/CEAS_08.csv
+dataset/emails_dataset.csv

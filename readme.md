@@ -83,6 +83,43 @@ O CSV precisa ter as colunas obrigatórias:
 | `body` | Corpo do e-mail. |
 | `label` | `0` = legítimo, `1` = phishing. |
 
+#### Reconstrução do dataset CEAS_08
+
+O dataset usado no benchmark é uma amostra balanceada 50/50 (phishing/legítimo)
+extraída do dataset **CEAS_08**. O CSV selecionado é grande e **não é versionado** —
+o repositório guarda apenas a "receita" para reconstruí-lo de forma determinística:
+
+| Arquivo | Versionado? | Papel |
+| --- | --- | --- |
+| `dataset/CEAS_08.csv` | Não (baixar) | CSV bruto de origem. |
+| `dataset/ceas08_sample_ids.csv` | Sim | Ids das amostras sorteadas. |
+| `dataset/ceas08_sample_ids.meta.json` | Sim | Hash SHA-256 do source, semente e nº de amostras. |
+| `dataset/emails_dataset.csv` | Não (derivado) | Dataset final, gerado pelos passos abaixo. |
+
+Passos:
+
+1. Baixe o CSV bruto do CEAS_08 em [[LINK](https://www.kaggle.com/datasets/naserabdullahalam/phishing-email-dataset/data)] e salve em `dataset/CEAS_08.csv`.
+
+2. **Reconstrua** o dataset a partir dos ids salvos (caminho recomendado — reproduz
+   exatamente a amostra original):
+
+   ```bash
+   python dataset/prepare_ceas08.py --rebuild
+   ```
+
+   O script valida o hash SHA-256 do `CEAS_08.csv` contra o registrado em
+   `ceas08_sample_ids.meta.json` e **aborta** se o source for diferente do usado na
+   amostragem, garantindo reprodutibilidade.
+
+3. Aponte `DATASET_PATH` em [config.py](config.py) para `dataset/emails_dataset.csv`.
+
+Para gerar uma **nova** amostra (ex.: outro tamanho ou semente) em vez de reconstruir
+a existente — isso sobrescreve os ids e metadados salvos:
+
+```bash
+python dataset/prepare_ceas08.py --samples 2000 --seed 42
+```
+
 ## Uso
 
 Benchmark completo (Claude + todos os modelos de `LOCAL_MODELS`):

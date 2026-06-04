@@ -20,7 +20,7 @@ LOCAL_MODELS = {
 }
 
 # =-=-= Dataset =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-==-=-=-=
-DATASET_PATH = "dataset/emails_dataset.example.csv" # TODO: atualizar para o caminho real do dataset
+DATASET_PATH = "dataset/emails_dataset.csv"
 
 # =-=-= Saídas =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-==-=-=-==
 RESULTS_DIR   = "results"
