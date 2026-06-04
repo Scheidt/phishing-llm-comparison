@@ -7,7 +7,7 @@ modelos simultaneamente.
 """
 import sys
 from dataset.dataset import load_dataset
-from test_runner import run_model_tests
+from model_runner import run_model_tests
 from metrics import compute_metrics, save_comparison_report, load_existing_metrics
 from models.claude_client import ClaudeClient
 from models.dmr_client import DmrClient

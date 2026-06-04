@@ -1,7 +1,7 @@
 # phishing-llm-comparison
 
 Benchmark que compara LLMs na tarefa de classificação de e-mails de phishing.
-Compara o Claude (API da Anthropic) contra modelos locais rodando
+Compara o Claude contra modelos locais rodando
 no Docker Model Runner, usando exatamente o mesmo prompt para todos os
 modelos, e gera um relatório comparativo de métricas (acurácia, precisão, recall,
 F1, tempo médio de resposta e taxa de erro).
@@ -26,7 +26,7 @@ markdown e texto ao redor) e mapeia `classification` para o rótulo interno:
 
 ## Pré-requisitos
 
-- **Python 3.10+** (o código usa anotações de tipo modernas, ex. `dict | None`).
+- **Python 3.10+**.
 - **Chave da API da Anthropic** para rodar o Claude.
 - **Docker Model Runner** ativo em `http://localhost:12434` para rodar os modelos
   locais. O DMR mantém um modelo por vez em memória e faz o swap automático ao
@@ -91,29 +91,52 @@ Benchmark completo (Claude + todos os modelos de `LOCAL_MODELS`):
 python main.py
 ```
 
-Smoke test rápido (10 amostras — valide antes do run completo):
+## Para adicionar novos modelos
 
-```bash
-python test_model.py
-```
+1. Baixe o modelo no Docker Model Runner (ele precisa estar disponível no DMR).
+2. Registre-o em `LOCAL_MODELS` no [config.py](config.py), mapeando um *nome
+   amigável* para a *tag do modelo no DMR*:
 
-Teste de consistência de formato JSON de um modelo local (roda o mesmo prompt N
-vezes; útil para testar modelos pequenos que quebram o formato em prompts grandes; lê o
-e-mail de `test_email.txt`):
+   ```python
+   LOCAL_MODELS = {
+       "gemma3_4b_qat": "ai/gemma3-qat:4B-Q4_K_M",
+       "meu_modelo":    "ai/novo-modelo:tag",   # novo modelo
+   }
+   ```
 
-```bash
-python test_output.py
-```
+   O *nome amigável* é usado nos arquivos de saída (`metrics_<nome>.json`, logs).
 
-Remontar o relatório comparativo juntando os `metrics_*.json` já existentes (sem
-re-executar os modelos):
+Com isso, `python main.py` já inclui o novo modelo no benchmark. Antes de um benchmark
+completo recomenda-se realizar os passos a seguir:
+
+### Passos opcionais (recomendados antes de um benchmark completo)
+
+- **Smoke test** — confirma que o modelo responde e o formato é válido.
+  Vá em [test_model.py](tests/test_model.py), ajuste a constante para o nome do
+  seu modelo (definido no passo 2) e rode:
+
+  ```bash
+  python tests/test_model.py
+  ```
+
+- **Consistência de formato JSON** — útil para modelos pequenos, que tendem a
+  quebrar o formato em prompts grandes. Roda o mesmo prompt N vezes (lê o e-mail
+  de `tests/long_email.txt`):
+
+  ```bash
+  python tests/test_output.py
+  ```
+
+Para remontar o relatório comparativo juntando os `metrics_*.json` já existentes
+(sem executar nenhum modelo):
 
 ```bash
 python metrics.py --rebuild
 ```
 
-> Os arquivos `test_*.py` são **scripts executáveis standalone**, não testes
-> pytest. Não há framework de testes nem linter configurados.
+> Os scripts em `tests/` (`test_model.py`, `test_output.py`) são **scripts
+> executáveis standalone**, não testes pytest, rode-os a partir da raiz do
+> projeto. Não há framework de testes nem linter configurados.
 
 ## Saídas
 
@@ -138,7 +161,7 @@ Tudo é gravado em `results/` (gitignored):
 | [output_parser.py](output_parser.py) | `parse_response()` extrai o JSON e mapeia para o rótulo interno. |
 | [models/claude_client.py](models/claude_client.py) | `ClaudeClient` — cliente da API Claude. |
 | [models/dmr_client.py](models/dmr_client.py) | `DmrClient` — usa a lib `openai` apontada para o endpoint local do DMR; tem `warm_up()`. |
-| [test_runner.py](test_runner.py) | `run_model_tests()` itera o dataset e coleta predições. |
+| [model_runner.py](model_runner.py) | `run_model_tests()` itera o dataset e coleta predições. |
 | [logger.py](logger.py) | `BenchmarkLogger` grava um CSV por modelo. |
 | [metrics.py](metrics.py) | Calcula métricas (sklearn) e gera o relatório comparativo. |
 
@@ -156,4 +179,3 @@ Os dois clientes são intercambiáveis: ambos expõem
 
 ---
 
-`legacy/` contém scripts antigos (JS/Python) fora do pipeline atual.

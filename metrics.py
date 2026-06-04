@@ -22,7 +22,7 @@ from config import REPORTS_DIR, COMPARATIVE_REPORT_FILENAME
 
 def compute_metrics(model_name: str, results: list[dict]) -> dict:
     """
-    Recebe a lista de resultados do test_runner e retorna um dicionário
+    Recebe a lista de resultados do model_runner e retorna um dicionário
     com todas as métricas calculadas.
     Args:
         model_name: Nome do modelo
@@ -155,7 +155,7 @@ def rebuild_comparison() -> pd.DataFrame:
     salvos em reports/.
 
     Permite rodar o benchmark em partes (rodadas separadas) e montar o
-    comparativo final juntando os JSONs já existentes — sem manter tudo
+    comparativo final juntando os JSONs já existentes, sem manter tudo
     em memória numa única execução.
     Returns:
         DataFrame comparativo (vazio se não houver nenhum JSON).
