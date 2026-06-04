@@ -4,7 +4,8 @@ Executor de testes: itera sobre o dataset e coleta predições de um modelo.
 from tqdm import tqdm
 import pandas as pd
 
-from prompt import build_prompt, parse_response
+from prompt import build_prompt
+from output_parser import parse_response
 from logger import BenchmarkLogger
 
 

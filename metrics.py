@@ -103,6 +103,18 @@ def _print_metrics(m: dict):
     print(f"{'─'*50}")
 
 
+def load_existing_metrics(model_name: str) -> dict | None:
+    """
+    Retorna as métricas já salvas de um modelo (reports/metrics_<modelo>.json),
+    ou None se ainda não existirem. Usado para retomar benchmarks interrompidos.
+    """
+    path = os.path.join(REPORTS_DIR, f"metrics_{model_name}.json")
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    return None
+
+
 def _save_metrics(m: dict):
     os.makedirs(REPORTS_DIR, exist_ok=True)
     path = f"{REPORTS_DIR}/metrics_{m['model']}.json"
@@ -137,47 +149,6 @@ def save_comparison_report(all_metrics: list[dict]) -> pd.DataFrame:
     return df
 
 
-def _to_bool(v) -> bool:
-    """Converte valores de CSV ('True'/'False', 1/0, etc.) para bool de verdade."""
-    if isinstance(v, str):
-        return v.strip().lower() in ("true", "1")
-    return bool(v)
-
-
-def metrics_from_csv(csv_path: str, model_name: str | None = None) -> dict:
-    """
-    Recalcula as métricas a partir de um CSV salvo em results/llm_logs/.
-
-    Útil para reprocessar uma rodada anterior ou um CSV parcial (ex.: quando
-    o processo caiu no meio de um modelo) sem precisar rodar o modelo de novo.
-
-    Args:
-        csv_path: caminho do CSV gerado pelo BenchmarkLogger.
-        model_name: nome do modelo. Se None, usa a coluna 'model' do CSV.
-    Returns:
-        Dicionário de métricas (também impresso e salvo em reports/).
-    """
-    df = pd.read_csv(csv_path)
-
-    if model_name is None:
-        model_name = str(df["model"].iloc[0]) if len(df) else "desconhecido"
-
-    results = [
-        {
-            "true_label":      int(row["true_label"]),
-            "predicted_label": int(row["predicted_label"]),
-            "is_error":        _to_bool(row["is_error"]),
-            "is_correct":      _to_bool(row["is_correct"]),
-            "elapsed_seconds": float(row["elapsed_seconds"]),
-        }
-        for _, row in df.iterrows()
-    ]
-
-    print(f"Recalculando métricas de '{model_name}' a partir de {csv_path} "
-          f"({len(results)} registros)")
-    return compute_metrics(model_name, results)
-
-
 def rebuild_comparison() -> pd.DataFrame:
     """
     Reconstrói o relatório comparativo a partir de todos os metrics_*.json
@@ -204,17 +175,11 @@ def rebuild_comparison() -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    # Uso por linha de comando:
-    #   python metrics.py <caminho_csv> [nome_modelo]   → recalcula de um CSV
-    #   python metrics.py --rebuild                      → remonta o comparativo
+    # Re-monta o comparativo a partir dos JSONs já existentes dos resultados individuais de cada modelo (reports/metrics_<modelo>.json).
     import sys
 
     if len(sys.argv) >= 2 and sys.argv[1] == "--rebuild":
         rebuild_comparison()
-    elif len(sys.argv) >= 2:
-        name = sys.argv[2] if len(sys.argv) >= 3 else None
-        metrics_from_csv(sys.argv[1], name)
     else:
         print("Uso:\n"
-              "  python metrics.py <caminho_csv> [nome_modelo]   # recalcula de um CSV\n"
-              "  python metrics.py --rebuild                      # remonta o comparativo")
+              "  python metrics.py --rebuild   # remonta o comparativo")

@@ -1,7 +1,7 @@
 """
-Sistema de logging estruturado.
+Sistema de logging.
 
-Gera um CSV por modelo com todos os detalhes de cada predição.
+Gera um log dos resultados das predições e salva no local especificado.
 """
 import os
 import csv
