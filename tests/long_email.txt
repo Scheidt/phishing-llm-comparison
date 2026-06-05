@@ -1,40 +1,2409 @@
-[URGENT ACTION REQUIRED] Your corporate Microsoft 365 account will be suspended within 24 hours
-From: Microsoft 365 Security Team <security-noreply@ms365-account-review.com>
-To: you@yourcompany.com
+ClamAV database updated (11 Feb 2008 14-30 +0000): daily.cvd
+Version: 5774
 
-Dear Valued Employee,
+Submission-ID: 2408354
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Downloader-23111
+Added: No
+Virus name alias: Trojan.PWS.Lmir.AII (Bitdefender)
 
-This is an automated notification sent by your organization's Information Security Department in coordination with the Microsoft 365 Administration team. We have detected unusual activity associated with your corporate account over the past 72 hours, including multiple sign-in attempts from unrecognized geographic locations (Lagos, Nigeria; Kyiv, Ukraine; and Hanoi, Vietnam) and from devices that are not registered in our corporate Azure Active Directory directory.
+Submission-ID: 2408359
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
 
-In accordance with our updated security policies (Internal Policy ISP-2026-114, aligned with ISO/IEC 27001 and applicable data protection regulations), all accounts that exhibit anomalous behavior must complete a mandatory identity revalidation process. If the revalidation is NOT completed within 24 (twenty-four) hours from the moment you receive this email, your account will be automatically SUSPENDED, and all of your data, emails, OneDrive files, and access to internal systems will be temporarily blocked until you open an in-person ticket with the IT department.
+Submission-ID: 2408362
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2468747
+Added: No
 
-To avoid suspension and keep uninterrupted access to your services, please follow the instructions below carefully:
+Submission-ID: 2408363
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Downloader-22591
+Added: No
+Virus name alias: Trojan.Dldr.Adload.NED (Bitdefender)
 
-1. Click the secure verification button: https://microsoft-365-secure-verification.account-review-portal.com/auth/validate?ref=corp
-2. Sign in using your full corporate email address and your current password.
-3. Confirm the six-digit authentication code that will appear on the screen.
-4. Update your recovery information (phone number and alternate email).
-5. Wait for the confirmation message "Account successfully revalidated".
+Submission-ID: 2408393
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
 
-IMPORTANT: For security reasons, this link automatically expires in 24 hours and can only be used once. Do not share this email with third parties. The IT team will never ask for your password by phone, only through this official and secure revalidation portal.
+Submission-ID: 2408400
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
 
-If you do not recognize the activity mentioned above, it is even more critical that you complete the verification immediately, as this indicates that malicious third parties may have already obtained partial access to your credentials. Failure to verify will result in the employee being held responsible for any data breach incidents, as stated in the IT resource usage agreement signed at the time of your hiring.
+Submission-ID: 2408401
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
 
-ADDITIONAL CONTEXT ON THIS SECURITY EVENT: Our Security Operations Center (SOC) flagged your account under incident reference INC-2026-0061142 after our automated threat-intelligence systems correlated the sign-in anomalies with a known credential-stuffing campaign currently targeting organizations in your industry sector. The attackers appear to be using a rotating pool of residential proxy IP addresses to bypass our geofencing rules, which is why standard location-based blocking has not been sufficient to protect your account on its own. For this reason, a full credential reset and re-enrollment of your multi-factor authentication device is mandatory rather than optional.
+Submission-ID: 2408412
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
 
-WHAT HAPPENS IF YOU DO NOTHING: After the 24-hour grace period elapses, the system will move your mailbox into a quarantined state. While quarantined, inbound messages addressed to you will be held at the gateway for up to 7 days and then bounced back to senders with a delivery failure notice, which may cause you to miss time-sensitive business communications from clients, partners, and colleagues. Calendar invitations, shared document permissions, and Teams channel memberships associated with your identity will also be temporarily revoked until an administrator manually restores them, a process that can take three to five business days given the current support backlog.
+Submission-ID: 2408416
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
 
-FREQUENTLY ASKED QUESTIONS: (1) "Is this email legitimate?" Yes, this notification originates from the official Microsoft 365 Admin Center on behalf of your organization's IT department. (2) "Why am I being asked to confirm my password?" The revalidation portal needs to confirm that the person completing the process is the legitimate account owner. (3) "What if I already changed my password recently?" You must still complete the revalidation, because the anomalous sessions may have been established before your last password change and could still hold valid refresh tokens. (4) "Can I do this later from my personal device?" Yes, the secure portal is fully responsive and works from any browser, including mobile devices, so there is no reason to delay.
+Submission-ID: 2408417
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23529
+Added: No
+Virus name alias: Dropped:Generic.Malware.SBdld.4CA30D62 (Bitdefender)
 
-Please treat this matter with the highest priority. Cyber threats evolve rapidly, and the window of opportunity for an attacker is measured in hours, not days. By acting now you protect not only your own account but also the broader corporate network, since a single compromised mailbox is frequently used as a launching point for internal phishing and business email compromise (BEC) attacks against your coworkers and executives.
+Submission-ID: 2408420
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
 
-A NOTE ON COMPLIANCE AND AUDITING: This revalidation campaign is part of a scheduled quarterly security audit mandated by our cyber-insurance provider and our external compliance auditors. Every account that receives this notice is tracked in a centralized dashboard, and accounts that remain unverified past the deadline are automatically escalated to line managers and to the Chief Information Security Officer for follow-up. To avoid an unnecessary escalation that reflects poorly on your team's security posture scorecard, we strongly encourage you to complete the five-step verification described above as soon as you finish reading this message. The entire process typically takes less than three minutes from start to finish, and you will receive a digitally signed confirmation receipt by email once your account has been successfully revalidated and removed from the at-risk list.
+Submission-ID: 2408421
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2462348
+Added: No
 
-We appreciate your cooperation and understanding. The security of our organization's data depends on the prompt and responsible action of each of our employees.
+Submission-ID: 2408422
+Sender: Virus Total
+Submission notes: Already detected as Trojan.DNSChanger-2538
+Added: No
+Virus name alias: Trojan.DNSChanger.BX (Bitdefender)
 
-Sincerely,
-Information Security Team | Microsoft 365 Admin Center
-Information Technology Department
-Support Hotline: +1 (000) 000-0000
-This is an automated email. Please do not reply directly to this message.
-© 2026 Microsoft Corporation. All rights reserved. Microsoft, Office 365, and OneDrive are registered trademarks of Microsoft Corporation in the United States and/or other countries.
+Submission-ID: 2408424
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2364558
+Added: No
+
+Submission-ID: 2408433
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2408439
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2408446
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2408450
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23819
+Added: No
+Virus name alias: DeepScan:Generic.LdPinch1.A033A75D (Bitdefender)
+
+Submission-ID: 2408463
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2410556
+Added: No
+
+Submission-ID: 2408466
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2408467
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Dropper-4409
+Added: No
+Virus name alias: Backdoor.Bifrose.ZUD (Bitdefender)
+
+Submission-ID: 2408479
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2408480
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23823
+Added: No
+Virus name alias: DeepScan:Generic.LdPinch1.24F1C8C2 (Bitdefender)
+
+Submission-ID: 2408481
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2408484
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2389478
+Added: No
+
+Submission-ID: 2408488
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2408489
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2408495
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2408500
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Dropper-4634
+Added: No
+Virus name alias: GenPack:Trojan.Pck.Pepatch.DD (Bitdefender)
+
+Submission-ID: 2408504
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2408505
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2408507
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2408538
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2408541
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2403649
+Added: No
+
+Submission-ID: 2408543
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2408547
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Magania-341
+Added: No
+Virus name alias: Packer.Malware.NSAnti.K (Bitdefender)
+
+Submission-ID: 2408552
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2408554
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2408557
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2408564
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Downloader-22838
+Added: No
+
+Submission-ID: 2408567
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Downloader-22197
+Added: No
+Virus name alias: Trojan.Downloader.JIZS (Bitdefender)
+
+Submission-ID: 2408573
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2398951
+Added: No
+
+Submission-ID: 2408574
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2408575
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Iespy-14
+Added: No
+Virus name alias: Trojan.Pws.Onlinegames.SL (Bitdefender)
+
+Submission-ID: 2408577
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2408582
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2408587
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516329
+Added: No
+
+Submission-ID: 2408589
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2408595
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2408596
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2408600
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2408606
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2441036
+Added: No
+
+Submission-ID: 2408607
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23570
+Added: No
+Virus name alias: Trojan.PWS.OnLineGames.NSR (Bitdefender)
+
+Submission-ID: 2408611
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2408613
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2408614
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Agent-12621
+Added: No
+Virus name alias: Trojan.PWS.Lmir.AII (Bitdefender)
+
+Submission-ID: 2408620
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2408625
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2408643
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2408645
+Sender: Virus Total
+Submission notes: Already detected as Dialer-2119
+Added: No
+Virus name alias: Trojan.Pandex.AA (Bitdefender)
+
+Submission-ID: 2408650
+Sender: Virus Total
+Submission notes: Already detected as Trojan.QQPass-622
+Added: No
+Virus name alias: Trojan.Agent.52144.A (Bitdefender)
+
+Submission-ID: 2408652
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Hupigon-7674
+Added: No
+Virus name alias: MemScan:Backdoor.Hupigon.1100 (Bitdefender)
+
+Submission-ID: 2408869
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2418110
+Added: No
+
+Submission-ID: 2408919
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2482996
+Added: No
+
+Submission-ID: 2408937
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2419207
+Added: No
+
+Submission-ID: 2409057
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2379975
+Added: No
+
+Submission-ID: 2409182
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2411415
+Added: No
+
+Submission-ID: 2409207
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2418243
+Added: No
+
+Submission-ID: 2409239
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2494806
+Added: No
+
+Submission-ID: 2409268
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2283473
+Added: No
+
+Submission-ID: 2409281
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2494806
+Added: No
+
+Submission-ID: 2409293
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2379975
+Added: No
+
+Submission-ID: 2409380
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2418295
+Added: No
+
+Submission-ID: 2409393
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2418231
+Added: No
+
+Submission-ID: 2409395
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2401613
+Added: No
+
+Submission-ID: 2409477
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2418414
+Added: No
+
+Submission-ID: 2409532
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2374377
+Added: No
+
+Submission-ID: 2409538
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2428703
+Added: No
+
+Submission-ID: 2409552
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23669
+Added: No
+Virus name alias: Trojan.PWS.OnLineGames.NSR (Bitdefender)
+
+Submission-ID: 2409554
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23051
+Added: No
+Virus name alias: Trojan.PWS.OnLineGames.NSR (Bitdefender)
+
+Submission-ID: 2409557
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516329
+Added: No
+
+Submission-ID: 2409561
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2409568
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Ardamax-58
+Added: No
+Virus name alias: Trojan.Ardamax.O (Bitdefender)
+
+Submission-ID: 2409572
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23741
+Added: No
+Virus name alias: DeepScan:Generic.LdPinch1.2A5CC7CB (Bitdefender)
+
+Submission-ID: 2409578
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2413948
+Added: No
+
+Submission-ID: 2409580
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2409600
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2407689
+Added: No
+
+Submission-ID: 2409608
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Dropper-4416
+Added: No
+
+Submission-ID: 2409609
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2462348
+Added: No
+
+Submission-ID: 2409615
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Agent-12895
+Added: No
+
+Submission-ID: 2409620
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2409621
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2409623
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Magania-332
+Added: No
+Virus name alias: Packer.Malware.NSAnti.K (Bitdefender)
+
+Submission-ID: 2409624
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409634
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409636
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409637
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415604
+Added: No
+
+Submission-ID: 2409639
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409642
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415604
+Added: No
+
+Submission-ID: 2409650
+Sender: Virus Total
+Submission notes: Already detected as Trojan.LdPinch-1463
+Added: No
+Virus name alias: Packer.Malware.FriCryptor.B (Bitdefender)
+
+Submission-ID: 2409654
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2409675
+Added: No
+
+Submission-ID: 2409655
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409657
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415604
+Added: No
+
+Submission-ID: 2409658
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409660
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2409661
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415604
+Added: No
+
+Submission-ID: 2409662
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415604
+Added: No
+
+Submission-ID: 2409668
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516329
+Added: No
+
+Submission-ID: 2409675
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Downloader-22606
+Added: No
+Virus name alias: GenPack:Trojan.Downloader.Agent.LP (Bitdefender)
+
+Submission-ID: 2409676
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415604
+Added: No
+
+Submission-ID: 2409677
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415604
+Added: No
+
+Submission-ID: 2409678
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409694
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2409696
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23100
+Added: No
+Virus name alias: Packer.Malware.NSAnti.K (Bitdefender)
+
+Submission-ID: 2409716
+Sender: Virus Total
+Submission notes: Already detected as Trojan.LdPinch-1447
+Added: No
+Virus name alias: Packer.Malware.FriCryptor.B (Bitdefender)
+
+Submission-ID: 2409725
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2409751
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415604
+Added: No
+
+Submission-ID: 2409753
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2409766
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415604
+Added: No
+
+Submission-ID: 2409768
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409770
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2409771
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2409776
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2409903
+Added: No
+
+Submission-ID: 2409790
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2409792
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2408114
+Added: No
+
+Submission-ID: 2409793
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-22895
+Added: No
+Virus name alias: BehavesLike:Trojan.ShellHook (Bitdefender)
+
+Submission-ID: 2409825
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Agent-12596
+Added: No
+Virus name alias: MemScan:Backdoor.Bifrose.NQ (Bitdefender)
+
+Submission-ID: 2409841
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409844
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409845
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409848
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Zlob-1322
+Added: No
+Virus name alias: Trojan.Zlob.CDG (Bitdefender)
+
+Submission-ID: 2409860
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2413229
+Added: No
+
+Submission-ID: 2409864
+Sender: VirScan.org
+Submission notes: Already detected as Trojan.Hupigon-7526
+Added: No
+Virus name alias: Packer.PrivateExeProtector.A (Bitdefender)
+
+Submission-ID: 2409867
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409868
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409876
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23171
+Added: No
+Virus name alias: Packer.Malware.NSAnti.K (Bitdefender)
+
+Submission-ID: 2409896
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2312919
+Added: No
+
+Submission-ID: 2409901
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Downloader-22678
+Added: No
+Virus name alias: Backdoor.Agent.YTP (Bitdefender)
+
+Submission-ID: 2409903
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Agent-12922
+Added: No
+
+Submission-ID: 2409904
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2409905
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Agent-12478
+Added: No
+Virus name alias: Backdoor.Agent.JS (Bitdefender)
+
+Submission-ID: 2409915
+Sender: VirScan.org
+Submission notes: Already detected as Trojan.Dropper-4628
+Added: No
+
+Submission-ID: 2409938
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2409943
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409952
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409953
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2413008
+Added: No
+
+Submission-ID: 2409955
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23348
+Added: No
+Virus name alias: Trojan.PWS.Onlinegames.NYS (Bitdefender)
+
+Submission-ID: 2409956
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409959
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2409964
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409971
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2409981
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409985
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409986
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409988
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409989
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2409991
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2410007
+Added: No
+
+Submission-ID: 2410007
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Agent-12782
+Added: No
+Virus name alias: BehavesLike:Win32.ProcessHijack (Bitdefender)
+
+Submission-ID: 2410008
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410011
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410014
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2410007
+Added: No
+
+Submission-ID: 2410020
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Downloader-22839
+Added: No
+Virus name alias: Backdoor.Sdbot.DFEO (Bitdefender)
+
+Submission-ID: 2410023
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410025
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410033
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410037
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410043
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410044
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410051
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410065
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2397124
+Added: No
+
+Submission-ID: 2410066
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410070
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415539
+Added: No
+
+Submission-ID: 2410076
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23093
+Added: No
+Virus name alias: Dropped:Trojan.PWS.OnLineGames.NQQ (Bitdefender)
+
+Submission-ID: 2410094
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410119
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410136
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516329
+Added: No
+
+Submission-ID: 2410159
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410166
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410169
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410179
+Sender: VirScan.org
+Submission notes: Already detected as Trojan.Delf-3010
+Added: No
+Virus name alias: GenPack:Generic.Graybird.5611CF26 (Bitdefender)
+
+Submission-ID: 2410182
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516329
+Added: No
+
+Submission-ID: 2410197
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2407689
+Added: No
+
+Submission-ID: 2410201
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516329
+Added: No
+
+Submission-ID: 2410203
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415604
+Added: No
+
+Submission-ID: 2410206
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410211
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410213
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410231
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410239
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410242
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2411494
+Added: No
+
+Submission-ID: 2410308
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410309
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410310
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410311
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410316
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410319
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410321
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410327
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2483923
+Added: No
+
+Submission-ID: 2410337
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410348
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Downloader-22356
+Added: No
+Virus name alias: Dropped:Trojan.PWS.OnlineGames.NYC (Bitdefender)
+
+Submission-ID: 2410354
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410374
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2420083
+Added: No
+
+Submission-ID: 2410380
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410381
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410383
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410387
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410414
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410422
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516329
+Added: No
+
+Submission-ID: 2410433
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2388470
+Added: No
+
+Submission-ID: 2410448
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410469
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410486
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2410556
+Added: No
+
+Submission-ID: 2410491
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410494
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2402996
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2428703
+Added: No
+
+Submission-ID: 2410498
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410505
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2409848
+Added: No
+
+Submission-ID: 2410522
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410529
+Sender: Jotti
+Submission notes: Same as in Submission-ID 2409848
+Added: No
+
+Submission-ID: 2410556
+Sender: VirScan.org
+Submission notes: Already detected as Trojan.Agent-12587
+Added: No
+
+Submission-ID: 2410567
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410581
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410590
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415604
+Added: No
+
+Submission-ID: 2410605
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410612
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410622
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2410556
+Added: No
+
+Submission-ID: 2410644
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410654
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410672
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410673
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2060646
+Added: No
+
+Submission-ID: 2410724
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410727
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410733
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410736
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410770
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410809
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410811
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2424230
+Added: No
+
+Submission-ID: 2410833
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410843
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Zlob-1317
+Added: No
+Virus name alias: Trojan.Downloader.Zlob.ABJK (Bitdefender)
+
+Submission-ID: 2410845
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410880
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410921
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2408316
+Added: No
+
+Submission-ID: 2410929
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2410930
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23533
+Added: No
+Virus name alias: Dropped:Generic.Malware.SBdld.1BF056AB (Bitdefender)
+
+Submission-ID: 2410945
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410960
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2410962
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415604
+Added: No
+
+Submission-ID: 2410971
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2509580
+Added: No
+
+Submission-ID: 2411011
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2411023
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2411043
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2411106
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2408846
+Sender: Gian Carlo
+Submission notes: Already detected as Trojan.Clicker-547
+Added: No
+Virus name alias: Trojan-Clicker.Win32.Agent.qc (Kaspersky AVP), Dialer.Frind (Drweb), Generic.Malware.Yd!sp.591C71E8 (Bitdefender)
+
+Submission-ID: 2411110
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411120
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2549971
+Added: No
+
+Submission-ID: 2411124
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Small-4915
+Added: No
+Virus name alias: DeepScan:Generic.Zlob.F78EC30E (Bitdefender)
+
+Submission-ID: 2411157
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23312
+Added: No
+Virus name alias: Trojan.PWS.Onlinegames.NYS (Bitdefender)
+
+Submission-ID: 2411159
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2394072
+Added: No
+
+Submission-ID: 2411162
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2500362
+Added: No
+
+Submission-ID: 2411170
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2400283
+Added: No
+
+Submission-ID: 2411179
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516329
+Added: No
+
+Submission-ID: 2411201
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23308
+Added: No
+Virus name alias: Trojan.PWS.OnlineGames.NZG (Bitdefender)
+
+Submission-ID: 2411203
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2389585
+Added: No
+
+Submission-ID: 2411215
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2411259
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2400283
+Added: No
+
+Submission-ID: 2411261
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2414115
+Added: No
+
+Submission-ID: 2411270
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2473312
+Added: No
+
+Submission-ID: 2411286
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2444068
+Added: No
+
+Submission-ID: 2411288
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2411300
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411302
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411336
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2312080
+Added: No
+
+Submission-ID: 2411358
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2409903
+Added: No
+
+Submission-ID: 2411391
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2411393
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2510070
+Added: No
+
+Submission-ID: 2411399
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411415
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Zlob-1334
+Added: No
+Virus name alias: Trojan.Zlob.CDG (Bitdefender)
+
+Submission-ID: 2411433
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411449
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411452
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2418470
+Added: No
+
+Submission-ID: 2411461
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411469
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-22971
+Added: No
+Virus name alias: Trojan.PWS.OnLineGames.NSR (Bitdefender)
+
+Submission-ID: 2411494
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23178
+Added: No
+Virus name alias: Trojan.PWS.OnLineGames.NSR (Bitdefender)
+
+Submission-ID: 2411506
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2387781
+Added: No
+
+Submission-ID: 2411557
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2441036
+Added: No
+
+Submission-ID: 2411578
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2312919
+Added: No
+
+Submission-ID: 2411580
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23126
+Added: No
+Virus name alias: Trojan.PWS.OnLineGames.NSR (Bitdefender)
+
+Submission-ID: 2411582
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2420557
+Added: No
+
+Submission-ID: 2411592
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2312919
+Added: No
+
+Submission-ID: 2411594
+Sender: Virus Total
+Submission notes: Already detected as Trojan.VB-1636
+Added: No
+Virus name alias: Trojan.Crypt.Cfi.VX (Bitdefender)
+
+Submission-ID: 2411606
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411607
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2411612
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2411625
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Zbot-248
+Added: No
+Virus name alias: Trojan.Spy.Notos.L (Bitdefender)
+
+Submission-ID: 2411628
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411630
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411640
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411646
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2411652
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2408114
+Added: No
+
+Submission-ID: 2411662
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411682
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411690
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2411733
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2420557
+Added: No
+
+Submission-ID: 2411740
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2411747
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2411753
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2500362
+Added: No
+
+Submission-ID: 2411762
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2411766
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2411768
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2411774
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2516329
+Added: No
+
+Submission-ID: 2411790
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411794
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411802
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411812
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411815
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411822
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2411828
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2411831
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411855
+Sender: Jotti
+Submission notes: Same as in Submission-ID 2516329
+Added: No
+
+Submission-ID: 2411866
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411868
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411877
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2411889
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2445114
+Added: No
+
+Submission-ID: 2411892
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2414618
+Added: No
+
+Submission-ID: 2411893
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415091
+Added: No
+
+Submission-ID: 2411917
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2411930
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2090284
+Added: No
+
+Submission-ID: 2411939
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2410556
+Added: No
+
+Submission-ID: 2411947
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2462348
+Added: No
+
+Submission-ID: 2411956
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2410556
+Added: No
+
+Submission-ID: 2411957
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2420557
+Added: No
+
+Submission-ID: 2411962
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2404542
+Added: No
+
+Submission-ID: 2411965
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516329
+Added: No
+
+Submission-ID: 2411982
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516329
+Added: No
+
+Submission-ID: 2411999
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2388470
+Added: No
+
+Submission-ID: 2412011
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2364572
+Added: No
+
+Submission-ID: 2412040
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415573
+Added: No
+
+Submission-ID: 2412058
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23288
+Added: No
+Virus name alias: Trojan.PWS.OnlineGames.NZG (Bitdefender)
+
+Submission-ID: 2412060
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412063
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2366113
+Added: No
+
+Submission-ID: 2412066
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412067
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412070
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412071
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412072
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412079
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412080
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412085
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415091
+Added: No
+
+Submission-ID: 2412086
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412087
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412089
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2473312
+Added: No
+
+Submission-ID: 2412092
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2412094
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2412096
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412127
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2404779
+Added: No
+
+Submission-ID: 2412130
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412134
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2309148
+Added: No
+
+Submission-ID: 2412136
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412138
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412145
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412189
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412192
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412201
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2409848
+Added: No
+
+Submission-ID: 2412207
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23303
+Added: No
+Virus name alias: Trojan.PWS.OnlineGames.NZG (Bitdefender)
+
+Submission-ID: 2412235
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2404755
+Added: No
+
+Submission-ID: 2412259
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412266
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2397531
+Added: No
+
+Submission-ID: 2412288
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2411157
+Added: No
+
+Submission-ID: 2412294
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2404779
+Added: No
+
+Submission-ID: 2412295
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412301
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516329
+Added: No
+
+Submission-ID: 2412302
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412306
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23280
+Added: No
+Virus name alias: Trojan.PWS.Onlinegames.NYS (Bitdefender)
+
+Submission-ID: 2412309
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412311
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412313
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412318
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412319
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412320
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412321
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412327
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412342
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412353
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412365
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412369
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2401442
+Added: No
+
+Submission-ID: 2412372
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412374
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412382
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412391
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2408114
+Added: No
+
+Submission-ID: 2412399
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412400
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2402269
+Added: No
+
+Submission-ID: 2412403
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412409
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2412419
+Added: No
+
+Submission-ID: 2412411
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412416
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412417
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412419
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23417
+Added: No
+
+Submission-ID: 2412429
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412430
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412434
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412439
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2420083
+Added: No
+
+Submission-ID: 2412442
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2404542
+Added: No
+
+Submission-ID: 2412448
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2412449
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415539
+Added: No
+
+Submission-ID: 2412462
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2373337
+Added: No
+
+Submission-ID: 2412493
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412513
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415604
+Added: No
+
+Submission-ID: 2412519
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412521
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2412527
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2402269
+Added: No
+
+Submission-ID: 2412548
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2330461
+Sender: Hendrik Thole
+Submission notes: Same as in Submission-ID 2136999
+Added: No
+
+Submission-ID: 2412576
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412594
+Sender: Jotti
+Submission notes: Same as in Submission-ID 2516329
+Added: No
+
+Submission-ID: 2412595
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412597
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2412604
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412606
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412610
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412618
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2483923
+Added: No
+
+Submission-ID: 2412647
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412654
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412662
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2358782
+Added: No
+
+Submission-ID: 2412665
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412682
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412686
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516329
+Added: No
+
+Submission-ID: 2412687
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412695
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412704
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412710
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516329
+Added: No
+
+Submission-ID: 2412723
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2415670
+Added: No
+
+Submission-ID: 2412734
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412738
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412739
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2512668
+Added: No
+
+Submission-ID: 2412765
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412775
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412777
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412790
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412831
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2410020
+Added: No
+
+Submission-ID: 2412861
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2522262
+Added: No
+
+Submission-ID: 2412869
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2411157
+Added: No
+
+Submission-ID: 2412872
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2522262
+Added: No
+
+Submission-ID: 2412877
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2522262
+Added: No
+
+Submission-ID: 2412900
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2412909
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516329
+Added: No
+
+Submission-ID: 2412953
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2414115
+Added: No
+
+Submission-ID: 2412988
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2473312
+Added: No
+
+Submission-ID: 2412992
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2413008
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23304
+Added: No
+Virus name alias: Trojan.PWS.OnlineGames.NZG (Bitdefender)
+
+Submission-ID: 2413022
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2413064
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-23334
+Added: No
+Virus name alias: Dropped:Trojan.PWS.OnLineGames.OOD (Bitdefender)
+
+Submission-ID: 2413080
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516329
+Added: No
+
+Submission-ID: 2413111
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2375907
+Added: No
+
+Submission-ID: 2413113
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2413114
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2413125
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2413127
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2413131
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2413137
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2413141
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2413142
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2404779
+Added: No
+
+Submission-ID: 2413144
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2413150
+Sender: Virus Total
+Submission notes: Same as in Submission-ID 2516195
+Added: No
+
+Submission-ID: 2413155
+Sender: VirScan.org
+Submission notes: Same as in Submission-ID 2520262
+Added: No
+
+Submission-ID: 2413177
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Spy-22905
+Added: No
+Virus name alias: Trojan.PWS.OnLineGames.NSR (Bitdefender)
+
+Submission-ID: 2413200
+Sender: Virus Total
+Submission notes: Already detected as Trojan.Dropper-4453
+Added: No
+
+Submission-ID: n/a
+Sender: n/a
+Added: Trojan.Hupigon-7678
+Added: Trojan.Downloader-23251
+Added: Trojan.Downloader-23252
+Added: Trojan.Bancos-8516
+Added: Trojan.Hupigon-7679
+Added: Trojan.Downloader-23253
+Added: Trojan.Bancos-8517
+Added: Trojan.Bancos-8518
+Added: Trojan.Hupigon-7680
+
+-- 
+Best regards,
+  Christoph 
+
+_______________________________________________
+http://lists.clamav.net/cgi-bin/mailman/listinfo/clamav-virusdb
+
+

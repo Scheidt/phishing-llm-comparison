@@ -43,7 +43,7 @@ TEMPERATURE  = 0.0   # Alterar conforme necessário para testar criatividade vs.
 
 # =-=-= Truncamento do corpo do e-mail =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=
 TRUNCATE_EMAIL_BODY = True  # Se True, trunca o corpo do e-mail em EMAIL_BODY_MAX_CHARS
-EMAIL_BODY_MAX_CHARS = 2000  # Tamanho máximo do corpo (caracteres) ao truncar
+EMAIL_BODY_MAX_CHARS = 4000  # Tamanho máximo do corpo (caracteres) ao truncar
 
 # =-=-= Controle de erros =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-==-=-=-=-=-=
 MAX_RETRIES  = 3     # Tentativas em caso de falha de rede
