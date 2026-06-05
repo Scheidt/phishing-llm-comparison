@@ -11,6 +11,8 @@ Formato de saída esperado (JSON):
 import re
 import json
 
+from config import PHISHING_LIKELIHOOD_THRESHOLD
+
 
 VALID_CLASSIFICATIONS = {"phishing", "legitimate"}
 
@@ -222,6 +224,41 @@ def _read_likelihood(data: dict, notes: list) -> int | None:
     return None
 
 
+def _decide_label(likelihood: int | None, classification: str | None,
+                  notes: list) -> str | None:
+    """
+    Decide o rótulo final ('PHISHING'/'LEGÍTIMO') a partir dos campos lidos.
+
+    Fonte primária: a nota numérica `phishing_likelihood`
+    (>= PHISHING_LIKELIHOOD_THRESHOLD => PHISHING). Em modelos pequenos ela é
+    bem mais calibrada que o campo textual `classification`, que costuma dizer
+    "phishing" mesmo com likelihood baixo — ver config.PHISHING_LIKELIHOOD_THRESHOLD.
+
+    O `classification` (já mapeado para o rótulo interno) entra só como
+    FALLBACK quando não há nota numérica utilizável. Quando há nota mas o
+    `classification` a contradiz, registramos a divergência em `notes` (apenas
+    informativo — a decisão segue a nota).
+
+    Returns:
+        'PHISHING' | 'LEGÍTIMO' | None (quando nada utilizável foi encontrado).
+    """
+    if likelihood is not None:
+        label = "PHISHING" if likelihood >= PHISHING_LIKELIHOOD_THRESHOLD else "LEGÍTIMO"
+        if classification is not None and classification != label:
+            notes.append(
+                f"classification ({classification}) diverge do likelihood "
+                f"({likelihood}); usando o likelihood"
+            )
+        return label
+
+    # Sem nota numérica utilizável: recorre ao campo textual, se houver.
+    if classification is not None:
+        notes.append("phishing_likelihood ausente; rótulo definido por classification")
+        return classification
+
+    return None
+
+
 def _read_indicators(data: dict, notes: list) -> list:
     """Lê 'indicators' e devolve a lista de motivos (strings), ou lista vazia se inválida."""
     indicators = data.get("indicators")
@@ -242,6 +279,11 @@ def parse_response(raw_response: str) -> dict:
     """
     Faz o parsing da resposta JSON do modelo no formato esperado e extrai
     os campos estruturados.
+
+    O rótulo (`predicted`) é derivado de `phishing_likelihood`
+    (>= config.PHISHING_LIKELIHOOD_THRESHOLD => PHISHING), não do campo textual
+    `classification` — ver _decide_label. O `classification` é lido apenas como
+    fallback (quando não há nota numérica) e para registrar divergências.
 
     Returns:
         Dict com:
@@ -269,9 +311,13 @@ def parse_response(raw_response: str) -> dict:
     if repaired:
         notes.append("JSON reparado por heurística")
 
-    predicted   = _read_classification(data, notes)
-    likelihood  = _read_likelihood(data, notes)
-    indicators  = _read_indicators(data, notes)
+    classification = _read_classification(data, notes)
+    likelihood     = _read_likelihood(data, notes)
+    indicators     = _read_indicators(data, notes)
+
+    # O rótulo vem da nota numérica (mais calibrada); 'classification' é só
+    # fallback/registro. Ver _decide_label e config.PHISHING_LIKELIHOOD_THRESHOLD.
+    predicted = _decide_label(likelihood, classification, notes)
 
     return {
         "predicted":           predicted,

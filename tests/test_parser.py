@@ -93,6 +93,31 @@ def test_irreparable_returns_none():
     check(r["parse_note"] == "JSON inválido ou ausente", "parse_note adequada")
 
 
+def test_likelihood_overrides_classification():
+    print("\n[6] Likelihood baixo vence 'classification: phishing' (regra B)")
+    # Caso típico do gemma3: diz phishing mas com nota baixa -> deve dar LEGÍTIMO.
+    r = parse_response('{"classification": "phishing", '
+                       '"phishing_likelihood": 10, "indicators": ["x"]}')
+    check(r["predicted"] == "LEGÍTIMO", "rótulo veio do likelihood (LEGÍTIMO), não da string")
+    check("diverge" in r["parse_note"], "registrou a divergência em parse_note")
+
+
+def test_likelihood_threshold_boundary():
+    print("\n[7] Limiar é inclusivo: likelihood == threshold => PHISHING")
+    from config import PHISHING_LIKELIHOOD_THRESHOLD as THR
+    r = parse_response(f'{{"classification": "legitimate", '
+                       f'"phishing_likelihood": {THR}, "indicators": ["x"]}}')
+    check(r["predicted"] == "PHISHING", f"likelihood == {THR} classifica como PHISHING")
+
+
+def test_classification_fallback_when_no_likelihood():
+    print("\n[8] Sem likelihood utilizável, recorre a 'classification'")
+    r = parse_response('{"classification": "phishing", '
+                       '"phishing_likelihood": "n/a", "indicators": ["x"]}')
+    check(r["predicted"] == "PHISHING", "fallback para classification quando a nota é inválida")
+    check("ausente" in r["parse_note"], "registrou uso do fallback em parse_note")
+
+
 def main():
     print(f"{'=-'*30 + '='}")
     print("Teste do parser / reparo heurístico de JSON")
@@ -103,6 +128,9 @@ def main():
     test_truncated_json_repaired()
     test_inner_quotes_repaired()
     test_irreparable_returns_none()
+    test_likelihood_overrides_classification()
+    test_likelihood_threshold_boundary()
+    test_classification_fallback_when_no_likelihood()
 
     print(f"\n{'=-'*30 + '='}")
     print(f"Resultado: {len(PASSED)} OK, {len(FAILED)} falha(s)")

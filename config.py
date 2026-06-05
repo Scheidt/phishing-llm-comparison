@@ -50,6 +50,19 @@ RESUME_PARTIAL_MODEL = True
 MAX_TOKENS   = 512
 TEMPERATURE  = 0.0   # Alterar conforme necessário para testar criatividade vs. precisão
 
+# =-=-= Decisão de rótulo =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-==-=-=-=-=-=
+# O rótulo final (PHISHING/LEGÍTIMO) é derivado do campo numérico
+# `phishing_likelihood`, não do campo textual `classification`. Motivo: em
+# modelos pequenos a nota numérica é bem mais calibrada que a string, que
+# costuma dizer "phishing" mesmo com likelihood baixo (ex.: likelihood 10 +
+# classification "phishing"), gerando falsos positivos. Medido nos logs de
+# smoke test, priorizar o número melhorou a precisão de todos os modelos
+# locais sem piorar nenhum. O `classification` continua no schema/prompt
+# (ajuda o modelo a "se comprometer" com um resultado) e é lido pelo parser
+# apenas para registrar quando diverge da nota.
+# Regra: phishing_likelihood >= PHISHING_LIKELIHOOD_THRESHOLD  => PHISHING.
+PHISHING_LIKELIHOOD_THRESHOLD = 50
+
 # =-=-= Truncamento do corpo do e-mail =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=
 TRUNCATE_EMAIL_BODY = True  # Se True, trunca o corpo do e-mail em EMAIL_BODY_MAX_CHARS
 EMAIL_BODY_MAX_CHARS = 4000  # Tamanho máximo do corpo (caracteres) ao truncar
@@ -64,7 +77,7 @@ RETRY_DELAY  = 2.0   # Segundos entre tentativas
 # formato no prompt. O DMR usa response_format (formato OpenAI/json_schema) e o
 # Claude usa output_config.format (Anthropic). O prompt continua descrevendo o
 # formato — a variante "schema + prompt descritivo" é a que rende melhor.
-USE_CONSTRAINED_DECODING = True
+USE_CONSTRAINED_DECODING = False
 
 # Schema canônico da resposta. Cada cliente o embrulha no formato nativo da sua
 # API a partir desta única definição. Observação: min/max de phishing_likelihood
