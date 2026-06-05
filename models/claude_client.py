@@ -4,7 +4,15 @@ Cliente para a API da Anthropic (Claude).
 import time
 import anthropic
 from config import (ANTHROPIC_API_KEY, CLAUDE_MODEL,
-                    MAX_TOKENS, TEMPERATURE, MAX_RETRIES, RETRY_DELAY)
+                    MAX_TOKENS, TEMPERATURE, MAX_RETRIES, RETRY_DELAY,
+                    USE_CONSTRAINED_DECODING, RESPONSE_SCHEMA)
+
+
+# Constrained decoding no Claude: a API da Anthropic não aceita o response_format
+# do OpenAI; o equivalente é output_config.format com um json_schema (structured
+# outputs, suportado pelo Haiku 4.5). O mesmo RESPONSE_SCHEMA do config é usado.
+# As restrições min/max não suportadas são removidas pelo SDK antes do envio.
+_OUTPUT_CONFIG = {"format": {"type": "json_schema", "schema": RESPONSE_SCHEMA}}
 
 
 class ClaudeClient:
@@ -24,6 +32,9 @@ class ClaudeClient:
             Retorna dict com:
             raw_response, elapsed_seconds, input_tokens, output_tokens, error
         """
+        # Aplica constrained decoding apenas se habilitado no config.
+        extra = {"output_config": _OUTPUT_CONFIG} if USE_CONSTRAINED_DECODING else {}
+
         for attempt in range(1, MAX_RETRIES + 1):
             try:
                 start = time.perf_counter()
@@ -34,6 +45,7 @@ class ClaudeClient:
                     temperature=TEMPERATURE,
                     system=system_prompt,
                     messages=[{"role": "user", "content": user_prompt}],
+                    **extra,
                 )
 
                 elapsed = time.perf_counter() - start

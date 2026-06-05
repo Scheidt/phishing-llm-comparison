@@ -28,7 +28,7 @@ from config import LOCAL_MODELS
 # CONFIGURAÇÃO DO TESTE  (edite à vontade)
 # ============================================================================
 MODEL_KEY = "granite4_tiny"   # chave em config.LOCAL_MODELS
-N_SAMPLES = 10                # quantas amostras do dataset usar
+N_SAMPLES = 50                # quantas amostras do dataset usar
 RESUME    = False             # True = retoma de um log parcial existente
 # ============================================================================
 

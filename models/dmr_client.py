@@ -12,8 +12,22 @@ Gerenciamento de memória:
 """
 import time
 from openai import OpenAI, APIConnectionError, APITimeoutError
-from config import (DMR_BASE_URL, DMR_TIMEOUT, MAX_TOKENS, 
-                    TEMPERATURE, MAX_RETRIES, RETRY_DELAY)
+from config import (DMR_BASE_URL, DMR_TIMEOUT, MAX_TOKENS,
+                    TEMPERATURE, MAX_RETRIES, RETRY_DELAY,
+                    USE_CONSTRAINED_DECODING, RESPONSE_SCHEMA, RESPONSE_SCHEMA_NAME)
+
+
+# Constrained decoding: o DMR (llama.cpp, API compatível com OpenAI) aceita
+# response_format com json_schema e aplica o schema como grammar na geração,
+# garantindo que a saída seja um JSON válido no formato esperado.
+_RESPONSE_FORMAT = {
+    "type": "json_schema",
+    "json_schema": {
+        "name": RESPONSE_SCHEMA_NAME,
+        "strict": True,
+        "schema": RESPONSE_SCHEMA,
+    },
+}
 
 
 class DmrClient:
@@ -64,6 +78,9 @@ class DmrClient:
         """
         token_limit = MAX_TOKENS if max_tokens is None else max_tokens
 
+        # Aplica constrained decoding apenas se habilitado no config.
+        extra = {"response_format": _RESPONSE_FORMAT} if USE_CONSTRAINED_DECODING else {}
+
         for attempt in range(1, MAX_RETRIES + 1):
             try:
                 start = time.perf_counter()
@@ -76,6 +93,7 @@ class DmrClient:
                     ],
                     max_tokens=token_limit,
                     temperature=TEMPERATURE,
+                    **extra,
                 )
 
                 elapsed = time.perf_counter() - start

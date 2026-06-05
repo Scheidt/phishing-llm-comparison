@@ -57,3 +57,39 @@ EMAIL_BODY_MAX_CHARS = 4000  # Tamanho máximo do corpo (caracteres) ao truncar
 # =-=-= Controle de erros =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-==-=-=-=-=-=
 MAX_RETRIES  = 3     # Tentativas em caso de falha de rede
 RETRY_DELAY  = 2.0   # Segundos entre tentativas
+
+# =-=-= Constrained decoding (saída estruturada) =-=-=-=-=-=-=-=-=-=-==-=-=-=
+# Se True, força os modelos a responderem exatamente no schema JSON abaixo via
+# constrained decoding (grammar/structured outputs), em vez de apenas pedir o
+# formato no prompt. O DMR usa response_format (formato OpenAI/json_schema) e o
+# Claude usa output_config.format (Anthropic). O prompt continua descrevendo o
+# formato — a variante "schema + prompt descritivo" é a que rende melhor.
+USE_CONSTRAINED_DECODING = True
+
+# Schema canônico da resposta. Cada cliente o embrulha no formato nativo da sua
+# API a partir desta única definição. Observação: min/max de phishing_likelihood
+# não é garantido de forma confiável pelo grammar (e o SDK da Anthropic remove a
+# restrição antes de enviar) — output_parser.py valida o intervalo 0..100 de
+# qualquer forma.
+RESPONSE_SCHEMA_NAME = "phishing_analysis"
+RESPONSE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "indicators": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Observações concretas sobre o email",
+        },
+        "phishing_likelihood": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+        },
+        "classification": {
+            "type": "string",
+            "enum": ["phishing", "legitimate"],
+        },
+    },
+    "required": ["indicators", "phishing_likelihood", "classification"],
+    "additionalProperties": False,
+}
