@@ -24,6 +24,41 @@ markdown e texto ao redor) e mapeia `classification` para o rótulo interno:
 `1 = PHISHING`, `0 = LEGÍTIMO`. Respostas inválidas ou com falha recebem
 `predicted_label = -1` e são contabilizadas como erro.
 
+### Reparo heurístico de JSON
+
+Modelos menores às vezes entregam um JSON quase-válido: cortado no meio (limite de
+tokens) ou com aspas duplas literais não escapadas dentro de uma string
+(ex.: `"... asks, "what is this?" ..."`). O parser tenta **reparar** esses casos
+em dois últimos fallbacks — fechar o que ficou aberto e escapar aspas órfãs.
+
+Quando uma resposta só pôde ser lida **após reparo**, a saída bruta do modelo
+**não** era um JSON válido. Por isso ela é marcada com `was_repaired = True` e
+**conta como erro** (`is_error = True`) — mas a predição resgatada é
+**preservada** em `predicted_label` (não vira `-1`). Isso permite medir as duas
+coisas separadamente (ver [Métricas](#métricas)). Localizar/extrair um JSON que já
+era bem-formado (cercas markdown, texto ao redor) **não** é considerado reparo.
+
+> O reparo de aspas é uma heurística e roda só como último recurso: uma aspa
+> literal seguida logo de `:` (raro) poderia ser confundida com o fim de uma
+> chave. No pior caso o `json.loads` rejeita e a resposta cai como erro
+> irrecuperável — não há parse silenciosamente errado.
+
+### Métricas
+
+Cada modelo recebe **duas faixas** de métricas, lado a lado no relatório:
+
+- **Bruta (estrito)** — avalia a saída como o modelo a entregou: respostas
+  reparadas contam como erro e ficam de fora da acurácia/precisão/recall/F1.
+  Mede a qualidade real da formatação do modelo. Chaves: `error_rate`,
+  `accuracy`, `f1_score`, `repaired_count`, etc.
+- **Pós-reparo (resgatado)** — aproveita as predições resgatadas pelo reparo;
+  só sobra como erro o que foi irrecuperável (`predicted_label = -1`). Chaves com
+  prefixo `rescued_` (`rescued_error_rate`, `rescued_accuracy`, ...).
+
+A leitura é: *"houve taxa de erro X na saída bruta; ao reparar esses erros com
+heurísticas externas, os resultados passam a ser Y"*. A classe positiva é
+**PHISHING (1)** e o relatório é ordenado por `f1_score`.
+
 ## Pré-requisitos
 
 - **Python 3.10+**.
@@ -67,7 +102,8 @@ Toda a configuração fica em [config.py](config.py). Principais pontos:
 | `DMR_BASE_URL` | Endpoint do Docker Model Runner. |
 | `DATASET_PATH` | Caminho do CSV de e-mails. **Deve ser modificado para o dataset real** |
 | `ENABLE_LLM_LOGGING` | Se `True`, grava um CSV por modelo em `results/llm_logs/`. |
-| `SKIP_COMPLETED_MODELS` | Se `True`, pula modelos que já têm `metrics_<modelo>.json` (permite retomar um benchmark interrompido). |
+| `SKIP_COMPLETED_MODELS` | Se `True`, pula modelos que já têm `metrics_<modelo>.json` (retomada **por modelo** — pula modelos já concluídos). |
+| `RESUME_PARTIAL_MODEL` | Se `True`, retoma **por e-mail** um modelo interrompido no meio: reaproveita os e-mails já gravados no log parcial (menos o último, que é re-testado) e continua no mesmo CSV. Requer `ENABLE_LLM_LOGGING = True`. |
 | `MAX_TOKENS` / `TEMPERATURE` | Parâmetros de geração compartilhados por todos os modelos. |
 | `TRUNCATE_EMAIL_BODY` / `EMAIL_BODY_MAX_CHARS` | Trunca o corpo do e-mail (padrão: 2000 chars). |
 | `MAX_RETRIES` / `RETRY_DELAY` | Política de retentativa em caso de falha de rede. |
@@ -164,6 +200,14 @@ completo recomenda-se realizar os passos a seguir:
   python tests/test_output.py
   ```
 
+- **Parser / reparo de JSON** — teste offline (não usa DMR nem a API) que cobre o
+  parsing e os fallbacks de reparo, incluindo aspas internas não escapadas e JSON
+  truncado:
+
+  ```bash
+  python tests/test_parser.py
+  ```
+
 Para remontar o relatório comparativo juntando os `metrics_*.json` já existentes
 (sem executar nenhum modelo):
 
@@ -171,9 +215,10 @@ Para remontar o relatório comparativo juntando os `metrics_*.json` já existent
 python metrics.py --rebuild
 ```
 
-> Os scripts em `tests/` (`test_model.py`, `test_output.py`) são **scripts
-> executáveis standalone**, não testes pytest, rode-os a partir da raiz do
-> projeto. Não há framework de testes nem linter configurados.
+> Os scripts em `tests/` (`test_model.py`, `test_output.py`, `test_parser.py`,
+> `test_resume.py`) são **scripts executáveis standalone**, não testes pytest,
+> rode-os a partir da raiz do projeto. Não há framework de testes nem linter
+> configurados.
 
 ## Saídas
 
@@ -182,7 +227,9 @@ Tudo é gravado em `results/` (gitignored):
 - `results/reports/metrics_<modelo>.json` — métricas de cada modelo.
 - `results/reports/comparison_report.csv` — comparativo final, ordenado por F1.
 - `results/llm_logs/<modelo>_<timestamp>.csv` — dados de cada e-mail, contendo todas
-  informações relacionadas a cada entrada (se `ENABLE_LLM_LOGGING = True`).
+  informações relacionadas a cada entrada (se `ENABLE_LLM_LOGGING = True`). Inclui a
+  coluna `was_repaired` (`True` quando a resposta só pôde ser lida após reparo
+  heurístico — conta como erro na faixa bruta, mas a predição é preservada).
 
 ## Fluxo / arquitetura
 
@@ -211,8 +258,24 @@ Os dois clientes são intercambiáveis: ambos expõem
 - Os clientes tratam erros internamente e retornam `error` no dict (não levantam
   exceção por e-mail). Um modelo local que falha **não** derruba o benchmark —
   `main.py` segue para o próximo. Já uma falha no Claude faz `sys.exit(1)`.
-- Com `SKIP_COMPLETED_MODELS = True`, é possível retomar um benchmark interrompido,
-  pulando modelos que já possuem `metrics_<modelo>.json`.
+## Retomada de benchmarks interrompidos
+
+Como cada e-mail é gravado no CSV de log na hora (append imediato, não no fim da
+execução), um benchmark que cai no meio pode ser retomado sem refazer tudo. Há dois
+níveis, que funcionam em conjunto:
+
+- **Por modelo** — `SKIP_COMPLETED_MODELS = True`: pula modelos que já têm
+  `metrics_<modelo>.json` (esse JSON só é escrito quando o modelo termina 100%).
+- **Por e-mail** — `RESUME_PARTIAL_MODEL = True`: para o modelo que foi interrompido
+  no meio (sem `metrics_*.json`, mas com log parcial), reaproveita os e-mails já
+  gravados em `results/llm_logs/<modelo>_<timestamp>.csv`, **re-testa apenas o último**
+  (garantindo que a última linha não ficou gravada pela metade) e continua gravando
+  no mesmo arquivo de log. As métricas finais cobrem o conjunto completo.
+
+  Requer `ENABLE_LLM_LOGGING = True`. Para forçar um modelo a rodar do zero, apague
+  o CSV dele em `results/llm_logs/`.
+
+Basta reexecutar `python main.py`: o programa detecta o estado e retoma de onde parou.
 
 ---
 

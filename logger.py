@@ -5,17 +5,32 @@ Gera um log dos resultados das predições e salva no local especificado.
 """
 import os
 import csv
+import glob
 from datetime import datetime
 from config import LLM_LOGS_DIR, ENABLE_LLM_LOGGING
 
 
 class BenchmarkLogger:
-    def __init__(self, model_name: str):
+    def __init__(self, model_name: str, resume_path: str | None = None):
+        """
+        Args:
+            model_name: nome do modelo.
+            resume_path: se informado, continua gravando neste CSV existente
+                         (retomada), sem recriar o arquivo nem o cabeçalho.
+        """
         self.model_name = model_name
         self.csv_path = None
 
-        if ENABLE_LLM_LOGGING:
-            os.makedirs(LLM_LOGS_DIR, exist_ok=True)
+        if not ENABLE_LLM_LOGGING:
+            return
+
+        os.makedirs(LLM_LOGS_DIR, exist_ok=True)
+
+        if resume_path is not None:
+            # Retomada: continua no mesmo log (o cabeçalho já existe).
+            self.csv_path = resume_path
+            print(f"  CSV (retomando):  {self.csv_path}")
+        else:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             self.csv_path = f"{LLM_LOGS_DIR}/{model_name}_{timestamp}.csv"
 
@@ -31,7 +46,7 @@ class BenchmarkLogger:
             "email_id", "model", "true_label", "true_label_text",
             "raw_response", "predicted_label", "predicted_label_text",
             "phishing_likelihood", "reasons", "parse_note",
-            "is_correct", "is_error",
+            "is_correct", "is_error", "was_repaired",
             "elapsed_seconds", "input_tokens", "output_tokens", "error_message",
         ]
 
@@ -48,20 +63,34 @@ class BenchmarkLogger:
         input_tokens: int,
         output_tokens: int,
         error: str | None,
+        repaired: bool = False,
     ) -> dict:
-        """Registra o resultado de uma predição individual."""
+        """
+        Registra o resultado de uma predição individual.
+
+        Sobre 'repaired': quando a resposta só pôde ser lida após reparo
+        heurístico (JSON truncado ou aspas internas não escapadas), a saída
+        bruta do modelo NÃO era um JSON válido. Tratamos isso como erro
+        (is_error=True, marcado em was_repaired) — para que conte na taxa de
+        erro — mas PRESERVAMOS a predição resgatada em predicted_label, para
+        que as métricas "pós-reparo" possam aproveitá-la. Falhas de chamada
+        (error) ou respostas irreparáveis (predicted None) continuam com
+        predicted_label = -1.
+        """
         true_text = "PHISHING" if true_label == 1 else "LEGÍTIMO"
 
         if error or predicted is None:
-            pred_label = -1
-            pred_text  = "ERRO" if error else "INVÁLIDO"
-            is_correct = False
-            is_error   = True
+            pred_label   = -1
+            pred_text    = "ERRO" if error else "INVÁLIDO"
+            is_correct   = False
+            is_error     = True
+            was_repaired = False
         else:
-            pred_label = 1 if predicted == "PHISHING" else 0
-            pred_text  = predicted
-            is_correct = (pred_label == true_label)
-            is_error   = False
+            pred_label   = 1 if predicted == "PHISHING" else 0
+            pred_text    = predicted
+            is_correct   = (pred_label == true_label)
+            was_repaired = repaired
+            is_error     = repaired   # reparo: saída bruta não era JSON válido
 
         record = {
             "email_id":             email_id,
@@ -76,6 +105,7 @@ class BenchmarkLogger:
             "parse_note":           parse_note,
             "is_correct":           is_correct,
             "is_error":             is_error,
+            "was_repaired":         was_repaired,
             "elapsed_seconds":      elapsed,
             "input_tokens":         input_tokens,
             "output_tokens":        output_tokens,
@@ -88,3 +118,80 @@ class BenchmarkLogger:
                 writer.writerow(record)
 
         return record
+
+
+def find_latest_log(model_name: str) -> str | None:
+    """Retorna o CSV de log mais recente deste modelo em LLM_LOGS_DIR, ou None."""
+    matches = sorted(glob.glob(os.path.join(LLM_LOGS_DIR, f"{model_name}_*.csv")))
+    return matches[-1] if matches else None
+
+
+def _coerce_record(row: dict) -> dict:
+    """Converte os tipos de uma linha lida do CSV de volta para o formato dos records."""
+    def to_int(value, default=0):
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return default
+
+    def to_float(value, default=0.0):
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return default
+
+    rec = dict(row)
+    rec["true_label"]      = to_int(row.get("true_label"))
+    rec["predicted_label"] = to_int(row.get("predicted_label"), -1)
+    rec["elapsed_seconds"] = to_float(row.get("elapsed_seconds"))
+    rec["input_tokens"]    = to_int(row.get("input_tokens"))
+    rec["output_tokens"]   = to_int(row.get("output_tokens"))
+    rec["is_correct"]      = str(row.get("is_correct")).strip().lower() == "true"
+    rec["is_error"]        = str(row.get("is_error")).strip().lower() == "true"
+    rec["was_repaired"]    = str(row.get("was_repaired")).strip().lower() == "true"
+    return rec
+
+
+def load_partial_results(model_name: str) -> tuple[str | None, list[dict], set[int]]:
+    """
+    Prepara a retomada de um modelo interrompido a partir do seu log parcial.
+
+    Reaproveita todos os e-mails já gravados, EXCETO o último (que será
+    re-testado, para garantir que foi gravado corretamente). Reescreve o CSV
+    sem essa última linha, de modo que a retomada continue gravando no mesmo
+    arquivo, sem duplicar o e-mail re-testado.
+
+    Returns:
+        (csv_path, records, skip_ids)
+        csv_path: log a reutilizar (None se não houver log parcial / logging off)
+        records:  registros já válidos a reaproveitar no cálculo de métricas
+        skip_ids: ids de e-mail a pular na iteração do dataset
+    """
+    if not ENABLE_LLM_LOGGING:
+        return None, [], set()
+
+    path = find_latest_log(model_name)
+    if path is None:
+        return None, [], set()
+
+    with open(path, newline="", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+
+    if not rows:
+        return path, [], set()
+
+    # Descarta a última linha (último e-mail testado) para re-testá-la.
+    keep = rows[:-1]
+    skip_ids = {int(r["email_id"]) for r in keep}
+
+    # Reescreve o CSV sem a última linha, para a retomada continuar no
+    # mesmo arquivo sem duplicar o e-mail que será re-testado.
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=BenchmarkLogger._csv_fields())
+        writer.writeheader()
+        writer.writerows(keep)
+
+    records = [_coerce_record(r) for r in keep]
+    print(f"  Retomando '{model_name}': {len(records)} e-mail(s) reaproveitado(s), "
+          f"re-testando a partir do id {rows[-1]['email_id']}.")
+    return path, records, skip_ids

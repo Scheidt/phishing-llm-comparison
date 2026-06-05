@@ -1,0 +1,118 @@
+"""
+Testa o parsing e o reparo heurístico de JSON em output_parser.py.
+
+Foco especial no 4º fallback: aspas duplas literais não escapadas dentro de
+strings (erro comum de modelos pequenos), que devem ser RESGATADAS, porém
+marcadas como reparo (repaired=True) — sinal de que a saída bruta não era um
+JSON válido.
+
+Este teste é AUTOCONTIDO e offline (não usa DMR nem a API do Claude).
+
+Uso
+---
+    python tests/test_parser.py
+"""
+import os
+import sys
+
+# adiciona a raiz do projeto ao sys.path para encontrar os módulos.
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, PROJECT_ROOT)
+
+# O console do Windows (cp1252) não imprime alguns caracteres usados nos
+# relatórios (ex.: '─'); força UTF-8 para o teste rodar em qualquer terminal.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
+from output_parser import parse_response
+
+PASSED = []
+FAILED = []
+
+
+def check(cond: bool, msg: str):
+    (PASSED if cond else FAILED).append(msg)
+    print(f"  [{'OK  ' if cond else 'FALHA'}] {msg}")
+
+
+# Caso exato relatado: aspas duplas internas não escapadas em "reasons".
+INNER_QUOTES = '''{
+  "classification": "phishing",
+  "phishing_likelihood": 85,
+  "reasons": [
+    "Suspicious link in the top video URL: http://www.cnn.com/video/partners/email/index.html?url=/video/us/2008/07/31/moos.montauk.monster.cnn",
+    "Urgent, threatening language in the top video description: 'Is it a devil dog? Is it a turtle? Is it the Montauk Monster?'",
+    "Request for sensitive information in the top video description: 'CNN's Jeanne Moos asks, "what is this thing?"'",
+    "Suspicious sender information: The email claims to be from CNN.com, but the sender address is not explicitly provided and may be different from the expected domain."
+  ]
+}'''
+
+
+def test_clean_json_not_repaired():
+    print("\n[1] JSON limpo NÃO é marcado como reparado")
+    r = parse_response('{"classification": "legitimate", '
+                       '"phishing_likelihood": 5, "reasons": ["ok"]}')
+    check(r["predicted"] == "LEGÍTIMO", "classificou como LEGÍTIMO")
+    check(r["repaired"] is False, "repaired=False para JSON limpo")
+    check(r["parse_note"] == "", "sem parse_note")
+
+
+def test_json_in_prose_not_repaired():
+    print("\n[2] JSON bem-formado cercado de texto NÃO conta como reparo")
+    raw = 'Sure! Here is the result:\n{"classification": "phishing", ' \
+          '"phishing_likelihood": 99, "reasons": ["x"]} Hope it helps.'
+    r = parse_response(raw)
+    check(r["predicted"] == "PHISHING", "extraiu PHISHING do meio do texto")
+    check(r["repaired"] is False, "repaired=False (apenas extração, não reparo)")
+
+
+def test_truncated_json_repaired():
+    print("\n[3] JSON truncado é resgatado e marcado como reparo")
+    raw = '{"classification": "phishing", "phishing_likelihood": 80, "reasons": ["corte no meio'
+    r = parse_response(raw)
+    check(r["predicted"] == "PHISHING", "resgatou PHISHING de JSON truncado")
+    check(r["repaired"] is True, "repaired=True para JSON truncado")
+
+
+def test_inner_quotes_repaired():
+    print("\n[4] Aspas internas não escapadas são resgatadas (caso relatado)")
+    r = parse_response(INNER_QUOTES)
+    check(r["predicted"] == "PHISHING", "resgatou classificação PHISHING")
+    check(r["phishing_likelihood"] == 85, "resgatou phishing_likelihood=85")
+    check(len(r["reasons"]) == 4, f"resgatou os 4 reasons (tem: {len(r['reasons'])})")
+    check(r["repaired"] is True, "repaired=True (saída bruta era JSON inválido)")
+    contem_aspas = any('"what is this thing?"' in x for x in r["reasons"])
+    check(contem_aspas, "preservou o texto com as aspas internas no reason")
+
+
+def test_irreparable_returns_none():
+    print("\n[5] Lixo sem JSON retorna None, sem marcar reparo")
+    r = parse_response("desculpe, não consigo responder a isso")
+    check(r["predicted"] is None, "predicted=None para resposta sem JSON")
+    check(r["repaired"] is False, "repaired=False quando nada foi resgatado")
+    check(r["parse_note"] == "JSON inválido ou ausente", "parse_note adequada")
+
+
+def main():
+    print(f"{'=-'*30 + '='}")
+    print("Teste do parser / reparo heurístico de JSON")
+    print(f"{'=-'*30 + '='}")
+
+    test_clean_json_not_repaired()
+    test_json_in_prose_not_repaired()
+    test_truncated_json_repaired()
+    test_inner_quotes_repaired()
+    test_irreparable_returns_none()
+
+    print(f"\n{'=-'*30 + '='}")
+    print(f"Resultado: {len(PASSED)} OK, {len(FAILED)} falha(s)")
+    print(f"{'=-'*30 + '='}")
+    if FAILED:
+        for msg in FAILED:
+            print(f"  FALHOU: {msg}")
+        raise SystemExit(1)
+    print("Todos os testes passaram.")
+
+
+if __name__ == "__main__":
+    main()

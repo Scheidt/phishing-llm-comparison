@@ -37,6 +37,15 @@ ENABLE_LLM_LOGGING = True  # Se False, não gera CSVs em llm_logs
 # Se gerou um log parcial, é bom deletar o log anterior, para não misturar métricas de execuções diferentes.
 SKIP_COMPLETED_MODELS = False
 
+# Retomada POR E-MAIL dentro de um mesmo modelo (resume parcial).
+# Se True, ao reiniciar um modelo interrompido no meio, reaproveita os e-mails
+# já gravados no log parcial (results/llm_logs/<modelo>_<timestamp>.csv) e
+# retoma a partir do último e-mail testado — que é re-testado, por garantia de
+# que foi gravado corretamente. Continua gravando no MESMO arquivo de log.
+# Requer ENABLE_LLM_LOGGING = True (a retomada lê o log parcial).
+# Para forçar um modelo a rodar do zero, apague o log dele em llm_logs/.
+RESUME_PARTIAL_MODEL = True
+
 # =-=-= Parâmetros de geração =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-==-=-=-=
 MAX_TOKENS   = 512
 TEMPERATURE  = 0.0   # Alterar conforme necessário para testar criatividade vs. precisão

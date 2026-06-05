@@ -75,12 +75,79 @@ def _close_json(text: str) -> str:
     return _TRAILING_COMMA_RE.sub(r"\1", repaired)
 
 
-def _extract_json(raw_response: str) -> dict | None:
+# Caracteres que, logo após uma aspa, indicam que ela FECHA uma string
+# (fim de valor: , } ]  /  fim de chave: :). Usados por _escape_inner_quotes.
+_STRING_DELIMITERS = {",", "}", "]", ":"}
+
+
+def _escape_inner_quotes(text: str) -> str:
+    """
+    Escapa aspas duplas literais que aparecem DENTRO de uma string JSON sem
+    estarem escapadas — um erro comum de modelos pequenos, que escrevem algo
+    como  "... asks, "what is this?" ..."  deixando as aspas internas cruas e
+    quebrando o JSON.
+
+    Heurística: percorre o texto rastreando se estamos dentro de uma string.
+    Uma aspa encontrada dentro de uma string só é tratada como FECHAMENTO
+    (estrutural) se o próximo caractere não-espaço for um delimitador JSON
+    (`, } ] :`) ou o fim do texto; caso contrário é considerada literal e
+    recebe uma barra de escape. Aspas já escapadas (\\") são preservadas.
+
+    É uma heurística e pode errar: uma aspa literal seguida logo de ':' (raro)
+    seria confundida com o fecho de uma chave. Por isso só roda como último
+    recurso, depois que o parsing normal já falhou.
+    """
+    out = []
+    in_string = False
+    escaped = False
+    n = len(text)
+
+    for i, ch in enumerate(text):
+        if not in_string:
+            out.append(ch)
+            if ch == '"':
+                in_string = True
+            continue
+
+        # dentro de uma string
+        if escaped:
+            out.append(ch)
+            escaped = False
+            continue
+        if ch == "\\":
+            out.append(ch)
+            escaped = True
+            continue
+        if ch == '"':
+            j = i + 1
+            while j < n and text[j] in " \t\r\n":
+                j += 1
+            if j >= n or text[j] in _STRING_DELIMITERS:
+                out.append(ch)          # aspa estrutural — fecha a string
+                in_string = False
+            else:
+                out.append('\\')        # aspa literal — escapa e segue na string
+                out.append(ch)
+            continue
+        out.append(ch)
+
+    return "".join(out)
+
+
+def _extract_json(raw_response: str) -> tuple[dict | None, bool]:
     """
     Tenta extrair o objeto JSON da resposta bruta do modelo.
 
     Tolera cercas de código markdown (``` / ```json) e texto extra ao redor
-    do JSON. Retorna o dict decodificado ou None se nada válido for encontrado.
+    do JSON.
+
+    Returns:
+        (data, repaired)
+        data:     o dict decodificado, ou None se nada válido for encontrado.
+        repaired: True se foi preciso REPARAR o conteúdo com heurística
+                  (fechar JSON truncado ou escapar aspas internas) para
+                  conseguir decodificar. Localizar/extrair um JSON que já era
+                  bem-formado (tentativas 1 e 2) NÃO conta como reparo.
     """
     text = raw_response.strip()
 
@@ -91,7 +158,7 @@ def _extract_json(raw_response: str) -> dict | None:
     # 1ª tentativa: a resposta inteira já é um JSON válido.
     try:
         data = json.loads(text)
-        return data if isinstance(data, dict) else None
+        return (data if isinstance(data, dict) else None), False
     except (json.JSONDecodeError, TypeError):
         pass
 
@@ -100,21 +167,30 @@ def _extract_json(raw_response: str) -> dict | None:
     if match:
         try:
             data = json.loads(match.group(0))
-            return data if isinstance(data, dict) else None
+            return (data if isinstance(data, dict) else None), False
         except (json.JSONDecodeError, TypeError):
             pass
 
-    # 3ª tentativa: JSON truncado/inacabado — fecha o que ficou aberto
+    # 3ª tentativa (REPARO): JSON truncado/inacabado — fecha o que ficou aberto
     # (adiciona o '}' que faltou) e tenta de novo a partir do primeiro '{'.
     start = text.find("{")
     if start != -1:
         try:
             data = json.loads(_close_json(text[start:]))
-            return data if isinstance(data, dict) else None
+            return (data if isinstance(data, dict) else None), True
         except (json.JSONDecodeError, TypeError):
             pass
 
-    return None
+    # 4ª tentativa (REPARO): aspas duplas literais não escapadas dentro de
+    # strings. Escapa as aspas órfãs e, por garantia, fecha o que sobrar aberto.
+    if start != -1:
+        try:
+            data = json.loads(_close_json(_escape_inner_quotes(text[start:])))
+            return (data if isinstance(data, dict) else None), True
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+    return None, False
 
 
 def _read_classification(data: dict, notes: list) -> str | None:
@@ -173,20 +249,25 @@ def parse_response(raw_response: str) -> dict:
             phishing_likelihood:  int 0..100 | None
             reasons:              list[str] (vazia se ausente/ inválida)
             parse_note:           str descrevendo problemas de parsing (vazio se OK)
+            repaired:             True se o JSON só pôde ser lido após reparo
+                                  heurístico (truncamento ou aspas internas).
     """
     empty = {
         "predicted":           None,
         "phishing_likelihood": None,
         "reasons":             [],
         "parse_note":          "",
+        "repaired":            False,
     }
 
-    data = _extract_json(raw_response)
+    data, repaired = _extract_json(raw_response)
     if data is None:
         print(f"WARNING! Resposta não reconhecida (JSON inválido): '{raw_response}'")
         return {**empty, "parse_note": "JSON inválido ou ausente"}
 
     notes = []
+    if repaired:
+        notes.append("JSON reparado por heurística")
 
     predicted   = _read_classification(data, notes)
     likelihood  = _read_likelihood(data, notes)
@@ -197,4 +278,5 @@ def parse_response(raw_response: str) -> dict:
         "phishing_likelihood": likelihood,
         "reasons":             reasons,
         "parse_note":          "; ".join(notes),
+        "repaired":            repaired,
     }

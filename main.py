@@ -11,7 +11,8 @@ from model_runner import run_model_tests
 from metrics import compute_metrics, save_comparison_report, load_existing_metrics
 from models.claude_client import ClaudeClient
 from models.dmr_client import DmrClient
-from config import LOCAL_MODELS, RUN_CLAUDE, CLAUDE_MODEL, SKIP_COMPLETED_MODELS
+from config import (LOCAL_MODELS, RUN_CLAUDE, CLAUDE_MODEL,
+                    SKIP_COMPLETED_MODELS, RESUME_PARTIAL_MODEL)
 
 
 def main():
@@ -37,6 +38,7 @@ def main():
                     model_name=CLAUDE_MODEL,
                     client=claude_client,
                     dataset=dataset,
+                    resume=RESUME_PARTIAL_MODEL,
                 )
                 metrics_claude = compute_metrics(
                     model_name=CLAUDE_MODEL,
@@ -71,6 +73,7 @@ def main():
                 model_name=model_name,
                 client=client,
                 dataset=dataset,
+                resume=RESUME_PARTIAL_MODEL,
             )
             metrics = compute_metrics(
                 model_name=model_name,
