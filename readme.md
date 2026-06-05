@@ -15,7 +15,7 @@ devem responder com um único objeto JSON:
 {
   "classification": "phishing" | "legitimate",
   "phishing_likelihood": 0,
-  "reasons": ["motivo curto", "motivo curto"]
+  "indicators": ["motivo curto", "motivo curto"]
 }
 ```
 

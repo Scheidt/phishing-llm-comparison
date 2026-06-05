@@ -58,7 +58,7 @@ def run_model_tests(
             parse_response(response["raw_response"])
             if not response["error"]
             else {"predicted": None, "phishing_likelihood": None,
-                  "reasons": [], "parse_note": "", "repaired": False}
+                  "indicators": [], "parse_note": "", "repaired": False}
         )
 
         record = logger.log(
@@ -67,7 +67,7 @@ def run_model_tests(
             raw_response        = response["raw_response"],
             predicted           = parsed["predicted"],
             phishing_likelihood = parsed["phishing_likelihood"],
-            reasons             = parsed["reasons"],
+            indicators             = parsed["indicators"],
             parse_note          = parsed["parse_note"],
             repaired            = parsed["repaired"],
             elapsed             = response["elapsed_seconds"],

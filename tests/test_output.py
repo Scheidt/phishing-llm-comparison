@@ -14,7 +14,7 @@ Formato JSON esperado
     {
       "classification": "phishing" | "legitimate",
       "phishing_likelihood": <inteiro de 0 a 100>,
-      "reasons": ["<motivo curto>", "<motivo curto>", ...]
+      "indicators": ["<motivo curto>", "<motivo curto>", ...]
     }
 
 O e-mail (prompt grande) é lido de um arquivo de texto externo
@@ -80,7 +80,7 @@ format:
 {
   "classification": "phishing" or "legitimate",
   "phishing_likelihood": <integer from 0 to 100>,
-  "reasons": ["<short reason>", "<short reason>", ...]
+  "indicators": ["<short indicator>", "<short indicator>", ...]
 }"""
 
 USER_PROMPT_TEMPLATE = """Subject: {subject}
@@ -122,7 +122,7 @@ def validate_format(raw_response: str) -> dict:
         "is_valid_json":     False,
         "has_classification": False,
         "has_likelihood":     False,
-        "has_reasons":        False,
+        "has_indicators":        False,
         "format_ok":          False,
         "validation_note":    "",
     }
@@ -152,16 +152,16 @@ def validate_format(raw_response: str) -> dict:
     if isinstance(likelihood, int) and not isinstance(likelihood, bool) and 0 <= likelihood <= 100:
         result["has_likelihood"] = True
 
-    # reasons: lista não-vazia de strings
-    reasons = data.get("reasons")
-    if (isinstance(reasons, list) and len(reasons) > 0
-            and all(isinstance(r, str) for r in reasons)):
-        result["has_reasons"] = True
+    # indicators: lista não-vazia de strings
+    indicators = data.get("indicators")
+    if (isinstance(indicators, list) and len(indicators) > 0
+            and all(isinstance(r, str) for r in indicators)):
+        result["has_indicators"] = True
 
     result["format_ok"] = (
         result["has_classification"]
         and result["has_likelihood"]
-        and result["has_reasons"]
+        and result["has_indicators"]
     )
 
     if not result["format_ok"]:
@@ -169,7 +169,7 @@ def validate_format(raw_response: str) -> dict:
             nome for nome, ok in [
                 ("classification", result["has_classification"]),
                 ("phishing_likelihood", result["has_likelihood"]),
-                ("reasons", result["has_reasons"]),
+                ("indicators", result["has_indicators"]),
             ] if not ok
         ]
         result["validation_note"] = f"{fence_note}Campos inválidos/ausentes: {', '.join(faltando)}"
@@ -184,7 +184,7 @@ def validate_format(raw_response: str) -> dict:
 # ─────────────────────────────────────────────────────────────────────────
 CSV_FIELDS = [
     "iteration", "model", "format_ok",
-    "is_valid_json", "has_classification", "has_likelihood", "has_reasons",
+    "is_valid_json", "has_classification", "has_likelihood", "has_indicators",
     "validation_note", "elapsed_seconds", "input_tokens", "output_tokens",
     "raw_response", "error_message",
 ]
@@ -255,7 +255,7 @@ def main():
         if response["error"]:
             v = {k: False for k in
                  ("is_valid_json", "has_classification", "has_likelihood",
-                  "has_reasons", "format_ok")}
+                  "has_indicators", "format_ok")}
             v["validation_note"] = "Requisição falhou (ver error_message)"
         else:
             v = validate_format(response["raw_response"])
@@ -274,7 +274,7 @@ def main():
             "is_valid_json":      v["is_valid_json"],
             "has_classification": v["has_classification"],
             "has_likelihood":     v["has_likelihood"],
-            "has_reasons":        v["has_reasons"],
+            "has_indicators":        v["has_indicators"],
             "validation_note":    v["validation_note"],
             "elapsed_seconds":    response["elapsed_seconds"],
             "input_tokens":       response["input_tokens"],

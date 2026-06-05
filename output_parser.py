@@ -5,7 +5,7 @@ Formato de saída esperado (JSON):
     {
       "classification": "phishing" | "legitimate",
       "phishing_likelihood": <inteiro de 0 a 100>,
-      "reasons": ["<motivo curto>", "<motivo curto>", ...]
+      "indicators": ["<motivo curto>", "<motivo curto>", ...]
     }
 """
 import re
@@ -222,19 +222,19 @@ def _read_likelihood(data: dict, notes: list) -> int | None:
     return None
 
 
-def _read_reasons(data: dict, notes: list) -> list:
-    """Lê 'reasons' e devolve a lista de motivos (strings), ou lista vazia se inválida."""
-    reasons = data.get("reasons")
+def _read_indicators(data: dict, notes: list) -> list:
+    """Lê 'indicators' e devolve a lista de motivos (strings), ou lista vazia se inválida."""
+    indicators = data.get("indicators")
 
     eh_lista_de_strings = (
-        isinstance(reasons, list)
-        and reasons
-        and all(isinstance(r, str) for r in reasons)
+        isinstance(indicators, list)
+        and indicators
+        and all(isinstance(r, str) for r in indicators)
     )
     if eh_lista_de_strings:
-        return [r.strip() for r in reasons]
+        return [r.strip() for r in indicators]
 
-    notes.append(f"reasons inválida: {reasons!r}")
+    notes.append(f"indicators inválida: {indicators!r}")
     return []
 
 
@@ -247,7 +247,7 @@ def parse_response(raw_response: str) -> dict:
         Dict com:
             predicted:            'PHISHING' | 'LEGÍTIMO' | None (não reconhecido)
             phishing_likelihood:  int 0..100 | None
-            reasons:              list[str] (vazia se ausente/ inválida)
+            indicators:              list[str] (vazia se ausente/ inválida)
             parse_note:           str descrevendo problemas de parsing (vazio se OK)
             repaired:             True se o JSON só pôde ser lido após reparo
                                   heurístico (truncamento ou aspas internas).
@@ -255,7 +255,7 @@ def parse_response(raw_response: str) -> dict:
     empty = {
         "predicted":           None,
         "phishing_likelihood": None,
-        "reasons":             [],
+        "indicators":             [],
         "parse_note":          "",
         "repaired":            False,
     }
@@ -271,12 +271,12 @@ def parse_response(raw_response: str) -> dict:
 
     predicted   = _read_classification(data, notes)
     likelihood  = _read_likelihood(data, notes)
-    reasons     = _read_reasons(data, notes)
+    indicators     = _read_indicators(data, notes)
 
     return {
         "predicted":           predicted,
         "phishing_likelihood": likelihood,
-        "reasons":             reasons,
+        "indicators":             indicators,
         "parse_note":          "; ".join(notes),
         "repaired":            repaired,
     }

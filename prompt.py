@@ -7,7 +7,7 @@ Formato de saída esperado (JSON):
     {
       "classification": "phishing" | "legitimate",
       "phishing_likelihood": <inteiro de 0 a 100>,
-      "reasons": ["<motivo curto>", "<motivo curto>", ...]
+      "indicators": ["<motivo curto>", "<motivo curto>", ...]
     }
 """
 import config
@@ -31,9 +31,9 @@ on a scale from 0 to 100, and give a brief justification.
 Respond ONLY with a single JSON object, with no extra text, in exactly this
 format:
 {
-  "classification": "phishing" or "legitimate",
+  "indicators": ["<short indicatior>", "<short indicatior>", ...]
   "phishing_likelihood": <integer from 0 to 100>,
-  "reasons": ["<short reason>", "<short reason>", ...]
+  "classification": "phishing" or "legitimate",
 }"""
 
 USER_PROMPT_TEMPLATE = """Email to analyse:

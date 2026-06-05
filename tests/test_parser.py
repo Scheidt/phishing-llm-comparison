@@ -35,11 +35,11 @@ def check(cond: bool, msg: str):
     print(f"  [{'OK  ' if cond else 'FALHA'}] {msg}")
 
 
-# Caso exato relatado: aspas duplas internas não escapadas em "reasons".
+# Caso exato relatado: aspas duplas internas não escapadas em "indicators".
 INNER_QUOTES = '''{
   "classification": "phishing",
   "phishing_likelihood": 85,
-  "reasons": [
+  "indicators": [
     "Suspicious link in the top video URL: http://www.cnn.com/video/partners/email/index.html?url=/video/us/2008/07/31/moos.montauk.monster.cnn",
     "Urgent, threatening language in the top video description: 'Is it a devil dog? Is it a turtle? Is it the Montauk Monster?'",
     "Request for sensitive information in the top video description: 'CNN's Jeanne Moos asks, "what is this thing?"'",
@@ -51,7 +51,7 @@ INNER_QUOTES = '''{
 def test_clean_json_not_repaired():
     print("\n[1] JSON limpo NÃO é marcado como reparado")
     r = parse_response('{"classification": "legitimate", '
-                       '"phishing_likelihood": 5, "reasons": ["ok"]}')
+                       '"phishing_likelihood": 5, "indicators": ["ok"]}')
     check(r["predicted"] == "LEGÍTIMO", "classificou como LEGÍTIMO")
     check(r["repaired"] is False, "repaired=False para JSON limpo")
     check(r["parse_note"] == "", "sem parse_note")
@@ -60,7 +60,7 @@ def test_clean_json_not_repaired():
 def test_json_in_prose_not_repaired():
     print("\n[2] JSON bem-formado cercado de texto NÃO conta como reparo")
     raw = 'Sure! Here is the result:\n{"classification": "phishing", ' \
-          '"phishing_likelihood": 99, "reasons": ["x"]} Hope it helps.'
+          '"phishing_likelihood": 99, "indicators": ["x"]} Hope it helps.'
     r = parse_response(raw)
     check(r["predicted"] == "PHISHING", "extraiu PHISHING do meio do texto")
     check(r["repaired"] is False, "repaired=False (apenas extração, não reparo)")
@@ -68,7 +68,7 @@ def test_json_in_prose_not_repaired():
 
 def test_truncated_json_repaired():
     print("\n[3] JSON truncado é resgatado e marcado como reparo")
-    raw = '{"classification": "phishing", "phishing_likelihood": 80, "reasons": ["corte no meio'
+    raw = '{"classification": "phishing", "phishing_likelihood": 80, "indicators": ["corte no meio'
     r = parse_response(raw)
     check(r["predicted"] == "PHISHING", "resgatou PHISHING de JSON truncado")
     check(r["repaired"] is True, "repaired=True para JSON truncado")
@@ -79,10 +79,10 @@ def test_inner_quotes_repaired():
     r = parse_response(INNER_QUOTES)
     check(r["predicted"] == "PHISHING", "resgatou classificação PHISHING")
     check(r["phishing_likelihood"] == 85, "resgatou phishing_likelihood=85")
-    check(len(r["reasons"]) == 4, f"resgatou os 4 reasons (tem: {len(r['reasons'])})")
+    check(len(r["indicators"]) == 4, f"resgatou os 4 indicators (tem: {len(r['indicators'])})")
     check(r["repaired"] is True, "repaired=True (saída bruta era JSON inválido)")
-    contem_aspas = any('"what is this thing?"' in x for x in r["reasons"])
-    check(contem_aspas, "preservou o texto com as aspas internas no reason")
+    contem_aspas = any('"what is this thing?"' in x for x in r["indicators"])
+    check(contem_aspas, "preservou o texto com as aspas internas no indicator")
 
 
 def test_irreparable_returns_none():

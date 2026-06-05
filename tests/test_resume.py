@@ -78,7 +78,7 @@ class FakeClient:
 
         return {
             "raw_response":    '{"classification": "phishing", '
-                               '"phishing_likelihood": 90, "reasons": ["x"]}',
+                               '"phishing_likelihood": 90, "indicators": ["x"]}',
             "elapsed_seconds": 0.01,
             "input_tokens":    10,
             "output_tokens":   5,
