@@ -101,7 +101,7 @@ class BenchmarkLogger:
             "predicted_label":      pred_label,
             "predicted_label_text": pred_text,
             "phishing_likelihood":  phishing_likelihood if phishing_likelihood is not None else "",
-            "indicators":              " | ".join(indicators),
+            "indicators":           " | ".join(indicators),
             "parse_note":           parse_note,
             "is_correct":           is_correct,
             "is_error":             is_error,

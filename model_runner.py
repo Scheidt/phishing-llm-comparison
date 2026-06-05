@@ -67,7 +67,7 @@ def run_model_tests(
             raw_response        = response["raw_response"],
             predicted           = parsed["predicted"],
             phishing_likelihood = parsed["phishing_likelihood"],
-            indicators             = parsed["indicators"],
+            indicators          = parsed["indicators"],
             parse_note          = parsed["parse_note"],
             repaired            = parsed["repaired"],
             elapsed             = response["elapsed_seconds"],

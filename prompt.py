@@ -5,9 +5,9 @@ O mesmo prompt é usado para todos os modelos (Claude e os modelos locais) para 
 
 Formato de saída esperado (JSON):
     {
-      "classification": "phishing" | "legitimate",
+      "indicators": ["<indicador curto>", "<indicador curto>", ...],
       "phishing_likelihood": <inteiro de 0 a 100>,
-      "indicators": ["<motivo curto>", "<motivo curto>", ...]
+      "classification": "phishing" | "legitimate"
     }
 """
 import config
@@ -25,13 +25,13 @@ Analyze the email for common phishing indicators, such as:
 - Requests for sensitive information, such as passwords, financial data, or
   personal identification.
 
-Then make a decision, estimate how likely the email is to be a phishing attempt
-on a scale from 0 to 100, and give a brief justification.
+Estimate how likely the email is to be a phishing attempt
+on a scale from 0 to 100, and give a brief justification, then make a decision.
 
 Respond ONLY with a single JSON object, with no extra text, in exactly this
 format:
 {
-  "indicators": ["<short indicatior>", "<short indicatior>", ...]
+  "indicators": ["<short indicator>", "<short indicator>", ...],
   "phishing_likelihood": <integer from 0 to 100>,
   "classification": "phishing" or "legitimate",
 }"""

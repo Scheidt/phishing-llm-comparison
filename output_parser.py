@@ -3,9 +3,9 @@ Parsing da resposta dos modelos para a tarefa de classificação de phishing.
 
 Formato de saída esperado (JSON):
     {
-      "classification": "phishing" | "legitimate",
+      "indicators": ["<indicador curto>", "<indicador curto>", ...],
       "phishing_likelihood": <inteiro de 0 a 100>,
-      "indicators": ["<motivo curto>", "<motivo curto>", ...]
+      "classification": "phishing" | "legitimate"
     }
 """
 import re
@@ -247,7 +247,7 @@ def parse_response(raw_response: str) -> dict:
         Dict com:
             predicted:            'PHISHING' | 'LEGÍTIMO' | None (não reconhecido)
             phishing_likelihood:  int 0..100 | None
-            indicators:              list[str] (vazia se ausente/ inválida)
+            indicators:           list[str] (vazia se ausente/ inválida)
             parse_note:           str descrevendo problemas de parsing (vazio se OK)
             repaired:             True se o JSON só pôde ser lido após reparo
                                   heurístico (truncamento ou aspas internas).
@@ -255,7 +255,7 @@ def parse_response(raw_response: str) -> dict:
     empty = {
         "predicted":           None,
         "phishing_likelihood": None,
-        "indicators":             [],
+        "indicators":          [],
         "parse_note":          "",
         "repaired":            False,
     }
@@ -271,12 +271,12 @@ def parse_response(raw_response: str) -> dict:
 
     predicted   = _read_classification(data, notes)
     likelihood  = _read_likelihood(data, notes)
-    indicators     = _read_indicators(data, notes)
+    indicators  = _read_indicators(data, notes)
 
     return {
         "predicted":           predicted,
         "phishing_likelihood": likelihood,
-        "indicators":             indicators,
+        "indicators":          indicators,
         "parse_note":          "; ".join(notes),
         "repaired":            repaired,
     }
