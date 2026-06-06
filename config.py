@@ -35,7 +35,7 @@ ENABLE_LLM_LOGGING = True  # Se False, não gera CSVs em llm_logs
 # Se True, pula modelos que já possuem metrics_<modelo>.json em reports/.
 # Serve para se o teste for interrompido, permitindo retomar o teste de onde deu erro.
 # Se gerou um log parcial, é bom deletar o log anterior, para não misturar métricas de execuções diferentes.
-SKIP_COMPLETED_MODELS = False
+SKIP_COMPLETED_MODELS = True
 
 # Retomada POR E-MAIL dentro de um mesmo modelo (resume parcial).
 # Se True, ao reiniciar um modelo interrompido no meio, reaproveita os e-mails
@@ -44,7 +44,7 @@ SKIP_COMPLETED_MODELS = False
 # que foi gravado corretamente. Continua gravando no MESMO arquivo de log.
 # Requer ENABLE_LLM_LOGGING = True (a retomada lê o log parcial).
 # Para forçar um modelo a rodar do zero, apague o log dele em llm_logs/.
-RESUME_PARTIAL_MODEL = True
+RESUME_PARTIAL_MODEL = False
 
 # =-=-= Parâmetros de geração =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-==-=-=-=
 MAX_TOKENS   = 512

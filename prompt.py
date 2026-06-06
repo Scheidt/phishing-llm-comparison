@@ -33,7 +33,7 @@ format:
 {
   "indicators": ["<short indicator>", "<short indicator>", ...],
   "phishing_likelihood": <integer from 0 to 100>,
-  "classification": "phishing" or "legitimate",
+  "classification": "phishing" or "legitimate"
 }"""
 
 USER_PROMPT_TEMPLATE = """Email to analyse:
