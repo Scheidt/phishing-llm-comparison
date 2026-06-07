@@ -43,7 +43,7 @@ class BenchmarkLogger:
     @staticmethod
     def _csv_fields() -> list[str]:
         return [
-            "email_id", "model", "true_label", "true_label_text",
+            "email_id", "email_from", "model", "true_label", "true_label_text",
             "raw_response", "predicted_label", "predicted_label_text",
             "phishing_likelihood", "indicators", "parse_note",
             "is_correct", "is_error", "was_repaired",
@@ -53,6 +53,7 @@ class BenchmarkLogger:
     def log(
         self,
         email_id: int,
+        email_from: str,
         true_label: int,
         raw_response: str,
         predicted: str | None,
@@ -94,6 +95,7 @@ class BenchmarkLogger:
 
         record = {
             "email_id":             email_id,
+            "email_from":           (email_from or "").replace("\n", " ").replace("\r", ""),
             "model":                self.model_name,
             "true_label":           true_label,
             "true_label_text":      true_text,

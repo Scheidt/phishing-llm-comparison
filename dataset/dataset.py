@@ -8,7 +8,7 @@ from config import DATASET_PATH
 def load_dataset(path: str = DATASET_PATH) -> pd.DataFrame:
     """
     Carrega o dataset CSV e valida as colunas obrigatórias.
-    Retorna um DataFrame com colunas: id, subject, body, label
+    Retorna um DataFrame com colunas: id, from, subject, body, label
     Args:
         path: Caminho para o arquivo CSV do dataset.
     Raises:
@@ -18,13 +18,14 @@ def load_dataset(path: str = DATASET_PATH) -> pd.DataFrame:
     """
     df = pd.read_csv(path)
 
-    required_cols = {"id", "subject", "body", "label"}
+    required_cols = {"id", "from", "subject", "body", "label"}
     missing = required_cols - set(df.columns)
     if missing:
         raise ValueError(f"Dataset está faltando colunas: {missing}")
 
     df["id"]      = df["id"].astype(int)
     df["label"]   = df["label"].astype(int)
+    df["from"]    = df["from"].fillna("").astype(str)
     df["subject"] = df["subject"].fillna("").astype(str)
     df["body"]    = df["body"].fillna("").astype(str)
 

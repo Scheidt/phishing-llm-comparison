@@ -47,7 +47,7 @@ SKIP_COMPLETED_MODELS = True
 RESUME_PARTIAL_MODEL = False
 
 # =-=-= Parâmetros de geração =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-==-=-=-=
-MAX_TOKENS   = 512
+MAX_TOKENS   = 800
 TEMPERATURE  = 0.0   # Alterar conforme necessário para testar criatividade vs. precisão
 
 # =-=-= Decisão de rótulo =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-==-=-=-=-=-=
@@ -65,7 +65,7 @@ PHISHING_LIKELIHOOD_THRESHOLD = 50
 
 # =-=-= Truncamento do corpo do e-mail =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=
 TRUNCATE_EMAIL_BODY = True  # Se True, trunca o corpo do e-mail em EMAIL_BODY_MAX_CHARS
-EMAIL_BODY_MAX_CHARS = 4000  # Tamanho máximo do corpo (caracteres) ao truncar
+EMAIL_BODY_MAX_CHARS = 5000  # Tamanho máximo do corpo (caracteres) ao truncar
 
 # =-=-= Controle de erros =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-==-=-=-=-=-=
 MAX_RETRIES  = 3     # Tentativas em caso de falha de rede

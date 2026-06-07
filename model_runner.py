@@ -21,7 +21,7 @@ def run_model_tests(
     Args:
         model_name: Nome do modelo (ex: "claude_haiku", "qwen3_4b")
         client: Instância do cliente (ClaudeClient ou DmrClient)
-        dataset: DataFrame com colunas id, subject, body, label
+        dataset: DataFrame com colunas id, from, subject, body, label
         resume: Se True, retoma de um log parcial existente, reaproveitando os
                 e-mails já testados (menos o último, que é re-testado) e grava
                 no mesmo CSV. Sem log parcial, roda normalmente do zero.
@@ -47,9 +47,11 @@ def run_model_tests(
               f"restam {len(pending)}.")
 
     for _, row in tqdm(pending.iterrows(), total=len(pending), desc=model_name):
+        email_from = str(row.get("from", "") or "")
         system_prompt, user_prompt = build_prompt(
             subject=row["subject"],
             body=row["body"],
+            sender=email_from,
         )
 
         response = client.classify(system_prompt, user_prompt)
@@ -63,6 +65,7 @@ def run_model_tests(
 
         record = logger.log(
             email_id            = int(row["id"]),
+            email_from          = email_from,
             true_label          = int(row["label"]),
             raw_response        = response["raw_response"],
             predicted           = parsed["predicted"],
