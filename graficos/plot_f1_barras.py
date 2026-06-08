@@ -93,7 +93,6 @@ def gerar(modelos, out_path=None, show=False):
     ax.set_xticklabels(nomes)
     ax.set_ylim(0, 105)
     ax.set_ylabel("F1 da classe phishing (%)")
-    ax.set_title("F1 por modelo nas três regras operacionais")
     ax.legend(title="Regra", loc="lower right", fontsize=9, framealpha=0.95)
     ax.grid(axis="y", alpha=0.3)
     fig.tight_layout()

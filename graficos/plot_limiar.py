@@ -61,7 +61,6 @@ def gerar(model_name=MODEL_NAME, log_path=LOG_PATH, out_path=None, step=STEP, sh
     ax.set_ylim(0, 100)
     ax.set_xlabel("Limiar sobre phishing_likelihood")
     ax.set_ylabel("F1 da classe phishing (%)")
-    ax.set_title(f"F1 x limiar - {model}")
     ax.legend(loc="lower center", fontsize=10, framealpha=0.95)
     ax.grid(alpha=0.3)
     fig.tight_layout()

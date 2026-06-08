@@ -143,7 +143,6 @@ def gerar(model_name=MODEL_NAME, log_path=LOG_PATH, out_path=None, show=False):
     ax.set_ylim(-0.02, 1.02)
     ax.set_xlabel("Taxa de falsos positivos  (1 - especificidade)")
     ax.set_ylabel("Recall de phishing  (TPR)")
-    ax.set_title(f"Curva ROC - {model}")
     ax.legend(loc="lower right", fontsize=9, framealpha=0.95)
     ax.grid(alpha=0.3)
     fig.tight_layout()
