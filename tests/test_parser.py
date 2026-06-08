@@ -6,6 +6,10 @@ strings (erro comum de modelos pequenos), que devem ser RESGATADAS, porém
 marcadas como reparo (repaired=True) — sinal de que a saída bruta não era um
 JSON válido.
 
+O parser NÃO decide rótulo nem acerto (isso é do scorer, ver tests/test_scorer.py):
+aqui só verificamos a EXTRAÇÃO dos campos (classification_text, phishing_likelihood,
+indicators) e o reparo.
+
 Este teste é AUTOCONTIDO e offline (não usa DMR nem a API do Claude).
 
 Uso
@@ -49,10 +53,11 @@ INNER_QUOTES = '''{
 
 
 def test_clean_json_not_repaired():
-    print("\n[1] JSON limpo NÃO é marcado como reparado")
+    print("\n[1] JSON limpo é extraído e NÃO marcado como reparado")
     r = parse_response('{"classification": "legitimate", '
                        '"phishing_likelihood": 5, "indicators": ["ok"]}')
-    check(r["predicted"] == "LEGÍTIMO", "classificou como LEGÍTIMO")
+    check(r["classification_text"] == "LEGÍTIMO", "classification_text=LEGÍTIMO")
+    check(r["phishing_likelihood"] == 5, "phishing_likelihood=5")
     check(r["repaired"] is False, "repaired=False para JSON limpo")
     check(r["parse_note"] == "", "sem parse_note")
 
@@ -62,7 +67,8 @@ def test_json_in_prose_not_repaired():
     raw = 'Sure! Here is the result:\n{"classification": "phishing", ' \
           '"phishing_likelihood": 99, "indicators": ["x"]} Hope it helps.'
     r = parse_response(raw)
-    check(r["predicted"] == "PHISHING", "extraiu PHISHING do meio do texto")
+    check(r["classification_text"] == "PHISHING", "extraiu classification_text=PHISHING do meio do texto")
+    check(r["phishing_likelihood"] == 99, "extraiu phishing_likelihood=99")
     check(r["repaired"] is False, "repaired=False (apenas extração, não reparo)")
 
 
@@ -70,14 +76,15 @@ def test_truncated_json_repaired():
     print("\n[3] JSON truncado é resgatado e marcado como reparo")
     raw = '{"classification": "phishing", "phishing_likelihood": 80, "indicators": ["corte no meio'
     r = parse_response(raw)
-    check(r["predicted"] == "PHISHING", "resgatou PHISHING de JSON truncado")
+    check(r["phishing_likelihood"] == 80, "resgatou phishing_likelihood=80 de JSON truncado")
+    check(r["classification_text"] == "PHISHING", "resgatou classification_text=PHISHING")
     check(r["repaired"] is True, "repaired=True para JSON truncado")
 
 
 def test_inner_quotes_repaired():
     print("\n[4] Aspas internas não escapadas são resgatadas (caso relatado)")
     r = parse_response(INNER_QUOTES)
-    check(r["predicted"] == "PHISHING", "resgatou classificação PHISHING")
+    check(r["classification_text"] == "PHISHING", "resgatou classification_text=PHISHING")
     check(r["phishing_likelihood"] == 85, "resgatou phishing_likelihood=85")
     check(len(r["indicators"]) == 4, f"resgatou os 4 indicators (tem: {len(r['indicators'])})")
     check(r["repaired"] is True, "repaired=True (saída bruta era JSON inválido)")
@@ -86,36 +93,21 @@ def test_inner_quotes_repaired():
 
 
 def test_irreparable_returns_none():
-    print("\n[5] Lixo sem JSON retorna None, sem marcar reparo")
+    print("\n[5] Lixo sem JSON retorna campos None, sem marcar reparo")
     r = parse_response("desculpe, não consigo responder a isso")
-    check(r["predicted"] is None, "predicted=None para resposta sem JSON")
+    check(r["classification_text"] is None, "classification_text=None para resposta sem JSON")
+    check(r["phishing_likelihood"] is None, "phishing_likelihood=None para resposta sem JSON")
     check(r["repaired"] is False, "repaired=False quando nada foi resgatado")
     check(r["parse_note"] == "JSON inválido ou ausente", "parse_note adequada")
 
 
-def test_likelihood_overrides_classification():
-    print("\n[6] Likelihood baixo vence 'classification: phishing' (regra B)")
-    # Caso típico do gemma3: diz phishing mas com nota baixa -> deve dar LEGÍTIMO.
-    r = parse_response('{"classification": "phishing", '
-                       '"phishing_likelihood": 10, "indicators": ["x"]}')
-    check(r["predicted"] == "LEGÍTIMO", "rótulo veio do likelihood (LEGÍTIMO), não da string")
-    check("diverge" in r["parse_note"], "registrou a divergência em parse_note")
-
-
-def test_likelihood_threshold_boundary():
-    print("\n[7] Limiar é inclusivo: likelihood == threshold => PHISHING")
-    from config import PHISHING_LIKELIHOOD_THRESHOLD as THR
-    r = parse_response(f'{{"classification": "legitimate", '
-                       f'"phishing_likelihood": {THR}, "indicators": ["x"]}}')
-    check(r["predicted"] == "PHISHING", f"likelihood == {THR} classifica como PHISHING")
-
-
-def test_classification_fallback_when_no_likelihood():
-    print("\n[8] Sem likelihood utilizável, recorre a 'classification'")
+def test_invalid_likelihood_is_none():
+    print("\n[6] phishing_likelihood não-inteiro é registrado como inválido (None)")
     r = parse_response('{"classification": "phishing", '
                        '"phishing_likelihood": "n/a", "indicators": ["x"]}')
-    check(r["predicted"] == "PHISHING", "fallback para classification quando a nota é inválida")
-    check("ausente" in r["parse_note"], "registrou uso do fallback em parse_note")
+    check(r["phishing_likelihood"] is None, "phishing_likelihood=None quando a nota é inválida")
+    check(r["classification_text"] == "PHISHING", "classification_text ainda é extraída")
+    check("phishing_likelihood inválido" in r["parse_note"], "registrou a nota inválida em parse_note")
 
 
 def main():
@@ -128,9 +120,7 @@ def main():
     test_truncated_json_repaired()
     test_inner_quotes_repaired()
     test_irreparable_returns_none()
-    test_likelihood_overrides_classification()
-    test_likelihood_threshold_boundary()
-    test_classification_fallback_when_no_likelihood()
+    test_invalid_likelihood_is_none()
 
     print(f"\n{'=-'*30 + '='}")
     print(f"Resultado: {len(PASSED)} OK, {len(FAILED)} falha(s)")

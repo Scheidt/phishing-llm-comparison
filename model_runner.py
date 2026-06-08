@@ -26,9 +26,11 @@ def run_model_tests(
                 e-mails já testados (menos o último, que é re-testado) e grava
                 no mesmo CSV. Sem log parcial, roda normalmente do zero.
     Returns:
-        Lista de dicionários para cada email com:
-        email_id, true_label, raw_response, predicted, elapsed,
-        input_tokens, output_tokens, is_correct, is_error, error
+        Lista de registros (fatos da inferência) por e-mail. is_error/was_repaired
+        já vêm preenchidos (validade não depende do corte); já as colunas que
+        dependem do corte (predicted_label, predicted_label_text, is_correct) vêm
+        VAZIAS e devem ser preenchidas pelo scorer (apply_thresholds.py) antes do
+        cálculo de métricas.
     """
     print(f"\n{'=-'*30 + '='}")
     print(f"Iniciando testes: {model_name.upper()}")
@@ -59,7 +61,7 @@ def run_model_tests(
         parsed = (
             parse_response(response["raw_response"])
             if not response["error"]
-            else {"predicted": None, "classification_text": None,
+            else {"classification_text": None,
                   "phishing_likelihood": None, "indicators": [],
                   "parse_note": "", "repaired": False}
         )
@@ -69,7 +71,6 @@ def run_model_tests(
             email_from          = email_from,
             true_label          = int(row["label"]),
             raw_response        = response["raw_response"],
-            predicted           = parsed["predicted"],
             classification_text = parsed["classification_text"],
             phishing_likelihood = parsed["phishing_likelihood"],
             indicators          = parsed["indicators"],
@@ -82,9 +83,12 @@ def run_model_tests(
         )
         results.append(record)
 
-    total   = len(results)
-    errors  = sum(1 for r in results if r["is_error"])
-    correct = sum(1 for r in results if r["is_correct"])
-    print(f"\n[{model_name}] Concluído: {correct}/{total - errors} corretos, {errors} erros")
+    # Resumo só com fatos da inferência — o acerto é calculado depois, no scorer.
+    total         = len(results)
+    client_errors = sum(1 for r in results if r["error_message"])
+    repaired      = sum(1 for r in results if r["was_repaired"])
+    print(f"\n[{model_name}] Inferência concluída: {total} e-mail(s), "
+          f"{client_errors} erro(s) de chamada, {repaired} com JSON reparado. "
+          f"O acerto é calculado no scoring (apply_thresholds.py).")
 
     return results

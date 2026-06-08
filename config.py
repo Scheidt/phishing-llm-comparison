@@ -50,18 +50,40 @@ RESUME_PARTIAL_MODEL = False
 MAX_TOKENS   = 800
 TEMPERATURE  = 0.0   # Alterar conforme necessário para testar criatividade vs. precisão
 
-# =-=-= Decisão de rótulo =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-==-=-=-=-=-=
-# O rótulo final (PHISHING/LEGÍTIMO) é derivado do campo numérico
-# `phishing_likelihood`, não do campo textual `classification`. Motivo: em
-# modelos pequenos a nota numérica é bem mais calibrada que a string, que
-# costuma dizer "phishing" mesmo com likelihood baixo (ex.: likelihood 10 +
-# classification "phishing"), gerando falsos positivos. Medido nos logs de
-# smoke test, priorizar o número melhorou a precisão de todos os modelos
-# locais sem piorar nenhum. O `classification` continua no schema/prompt
-# (ajuda o modelo a "se comprometer" com um resultado) e é lido pelo parser
-# apenas para registrar quando diverge da nota.
-# Regra: phishing_likelihood >= PHISHING_LIKELIHOOD_THRESHOLD  => PHISHING.
+# =-=-= Decisão de rótulo (feita no SCORING, não na inferência) =-=-=-=-=-=-=
+# O rótulo final (PHISHING/LEGÍTIMO) e o acerto NÃO são decididos durante a
+# inferência. A inferência apenas grava os fatos da resposta (entre eles a nota
+# `phishing_likelihood`); quem decide o rótulo e calcula o acerto é o scorer
+# (apply_thresholds.py), chamado depois de cada modelo. Isso desacopla a coleta
+# do julgamento e permite re-decidir tudo apenas mudando os cortes abaixo e
+# re-rodando o scorer (sem re-inferir nenhum modelo).
+#
+# O rótulo vem da nota numérica `phishing_likelihood`, não do campo textual
+# `classification`. Motivo: em modelos pequenos a nota é bem mais calibrada que
+# a string, que costuma dizer "phishing" mesmo com likelihood baixo (ex.:
+# likelihood 10 + classification "phishing"), gerando falsos positivos.
+# Priorizar o número melhorou a precisão de todos os modelos locais sem piorar
+# nenhum. O `classification` continua no schema/prompt (ajuda o modelo a "se
+# comprometer" com um resultado), mas é apenas registrado, não decide o rótulo.
+#
+# Regra do scorer: phishing_likelihood >= corte DO MODELO => PHISHING; sem nota
+# numérica utilizável => erro (predicted_label = -1).
+#
+# Corte padrão (fallback) para modelos sem corte próprio:
 PHISHING_LIKELIHOOD_THRESHOLD = 50
+
+# Cortes (thresholds) POR MODELO. Cada modelo tem um ponto de corte calibrado —
+# a escala da nota varia de modelo para modelo, então um corte único não é o
+# ideal. A chave é o nome do modelo EXATAMENTE como aparece na coluna 'model'
+# dos logs (nome amigável nos locais; CLAUDE_MODEL no Claude). Modelos sem corte
+# próprio caem na chave "Default". Lido pelo scorer (apply_thresholds.py).
+PHISHING_LIKELIHOOD_THRESHOLDS = {
+    CLAUDE_MODEL:    76.5,   # claude-haiku-4-5-20251001
+    "gemma3_4b_qat": 80.0,
+    "qwen3_4b":      92.5,
+    "granite4_tiny": 82.5,
+    "Default":       PHISHING_LIKELIHOOD_THRESHOLD,  # 50
+}
 
 # =-=-= Truncamento do corpo do e-mail =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=
 TRUNCATE_EMAIL_BODY = True  # Se True, trunca o corpo do e-mail em EMAIL_BODY_MAX_CHARS

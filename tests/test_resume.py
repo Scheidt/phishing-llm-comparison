@@ -39,6 +39,7 @@ import pandas as pd
 
 import logger as logger_mod
 import metrics as metrics_mod
+import apply_thresholds
 from logger import find_latest_log
 from model_runner import run_model_tests
 from metrics import compute_metrics
@@ -161,10 +162,12 @@ def scenario_resume_after_crash(logs_dir: str):
     check(len(results) == N_EMAILS,
           f"results cobre os {N_EMAILS} e-mails (tem: {len(results)})")
 
-    # As métricas precisam rodar sobre o conjunto completo sem erro de tipo.
-    m = compute_metrics(MODEL_NAME, results)
+    # Pontua o log (scoring desacoplado), como faz o main.py, e então as
+    # métricas precisam rodar sobre o conjunto completo sem erro de tipo.
+    scored = apply_thresholds.score_log_file(partial_path)
+    m = compute_metrics(MODEL_NAME, scored)
     check(m["total_samples"] == N_EMAILS and m["error_count"] == 0,
-          "compute_metrics aceita os registros reaproveitados (tipos corretos)")
+          "compute_metrics roda sobre os registros pontuados (tipos corretos)")
 
 
 def scenario_resume_without_partial(logs_dir: str):

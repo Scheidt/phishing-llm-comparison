@@ -57,7 +57,6 @@ class BenchmarkLogger:
         email_from: str,
         true_label: int,
         raw_response: str,
-        predicted: str | None,
         phishing_likelihood: int | None,
         indicators: list[str],
         parse_note: str,
@@ -69,31 +68,32 @@ class BenchmarkLogger:
         classification_text: str | None = None,
     ) -> dict:
         """
-        Registra o resultado de uma predição individual.
+        Registra os FATOS de uma resposta individual, SEM julgar acerto.
 
-        Sobre 'repaired': quando a resposta só pôde ser lida após reparo
-        heurístico (JSON truncado ou aspas internas não escapadas), a saída
-        bruta do modelo NÃO era um JSON válido. Tratamos isso como erro
-        (is_error=True, marcado em was_repaired) — para que conte na taxa de
-        erro — mas PRESERVAMOS a predição resgatada em predicted_label, para
-        que as métricas "pós-reparo" possam aproveitá-la. Falhas de chamada
-        (error) ou respostas irreparáveis (predicted None) continuam com
-        predicted_label = -1.
+        A inferência coleta os fatos da resposta — a nota numérica
+        (phishing_likelihood), o classification textual, os indicators, se houve
+        reparo de JSON (was_repaired), eventual erro de chamada (error_message) —
+        e marca a VALIDADE da resposta em is_error (erro de chamada, OU JSON
+        reparado, OU sem nota numérica utilizável). Validade não depende do
+        corte, então fica aqui; e por ser uma coluna estável ela pode ser
+        corrigida à mão (ex.: consertar um JSON reparado e marcar is_error=False)
+        sem que o scorer a sobrescreva.
+
+        As colunas de VEREDICTO que dependem do corte — predicted_label,
+        predicted_label_text, is_correct — ficam VAZIAS aqui e são preenchidas
+        depois pelo scorer (apply_thresholds.py). Isso desacopla a coleta do
+        julgamento e permite re-decidir o rótulo mudando só os cortes.
+
+        Sobre is_error vs was_repaired: was_repaired é o fato cru "o JSON precisou
+        de reparo?"; is_error é a validade agregada. Reparo conta como erro na
+        faixa estrita das métricas, mas a predição resgatada ainda é aproveitada
+        na faixa pós-reparo (ver metrics.py).
         """
         true_text = "PHISHING" if true_label == 1 else "LEGÍTIMO"
 
-        if error or predicted is None:
-            pred_label   = -1
-            pred_text    = "ERRO" if error else "INVÁLIDO"
-            is_correct   = False
-            is_error     = True
-            was_repaired = False
-        else:
-            pred_label   = 1 if predicted == "PHISHING" else 0
-            pred_text    = predicted
-            is_correct   = (pred_label == true_label)
-            was_repaired = repaired
-            is_error     = repaired   # reparo: saída bruta não era JSON válido
+        # Validade da resposta (não depende do corte): erro de chamada, JSON
+        # reparado, ou ausência de nota numérica utilizável.
+        is_error = bool(error) or repaired or (phishing_likelihood is None)
 
         record = {
             "email_id":             email_id,
@@ -102,17 +102,18 @@ class BenchmarkLogger:
             "true_label":           true_label,
             "true_label_text":      true_text,
             "raw_response":         raw_response.replace("\n", " ").replace("\r", ""),
-            "predicted_label":      pred_label,
-            "predicted_label_text": pred_text,
+            # Veredictos (dependem do corte) preenchidos depois pelo scorer:
+            "predicted_label":      "",
+            "predicted_label_text": "",
             # classification textual do próprio modelo (não decide o rótulo;
-            # registrado para análise — ver output_parser._decide_label).
+            # registrado para análise).
             "predicted_classification_text": classification_text or "",
             "phishing_likelihood":  phishing_likelihood if phishing_likelihood is not None else "",
             "indicators":           " | ".join(indicators),
             "parse_note":           parse_note,
-            "is_correct":           is_correct,
+            "is_correct":           "",
             "is_error":             is_error,
-            "was_repaired":         was_repaired,
+            "was_repaired":         repaired,
             "elapsed_seconds":      elapsed,
             "input_tokens":         input_tokens,
             "output_tokens":        output_tokens,

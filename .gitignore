@@ -10,3 +10,5 @@ dataset/CEAS_08.csv
 dataset/emails_dataset.csv
 dataset/testing/dataset_ruim/*
 graficos/images/*
+.venv/
+

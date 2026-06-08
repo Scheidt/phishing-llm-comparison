@@ -6,6 +6,7 @@ uma requisição para um modelo diferente do que está em memória, não rodando
 modelos simultaneamente.
 """
 import sys
+import apply_thresholds
 from dataset.dataset import load_dataset
 from model_runner import run_model_tests
 from metrics import compute_metrics, save_comparison_report, load_existing_metrics
@@ -40,6 +41,9 @@ def main():
                     dataset=dataset,
                     resume=RESUME_PARTIAL_MODEL,
                 )
+                # Scoring desacoplado: a inferência só coletou os fatos; aqui
+                # aplicamos o corte do modelo e calculamos o acerto.
+                results_claude = apply_thresholds.score_run(CLAUDE_MODEL, results_claude)
                 metrics_claude = compute_metrics(
                     model_name=CLAUDE_MODEL,
                     results=results_claude,
@@ -75,6 +79,8 @@ def main():
                 dataset=dataset,
                 resume=RESUME_PARTIAL_MODEL,
             )
+            # Scoring desacoplado: aplica o corte do modelo e calcula o acerto.
+            results = apply_thresholds.score_run(model_name, results)
             metrics = compute_metrics(
                 model_name=model_name,
                 results=results,
