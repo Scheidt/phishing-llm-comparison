@@ -45,6 +45,7 @@ class BenchmarkLogger:
         return [
             "email_id", "email_from", "model", "true_label", "true_label_text",
             "raw_response", "predicted_label", "predicted_label_text",
+            "predicted_classification_text",
             "phishing_likelihood", "indicators", "parse_note",
             "is_correct", "is_error", "was_repaired",
             "elapsed_seconds", "input_tokens", "output_tokens", "error_message",
@@ -65,6 +66,7 @@ class BenchmarkLogger:
         output_tokens: int,
         error: str | None,
         repaired: bool = False,
+        classification_text: str | None = None,
     ) -> dict:
         """
         Registra o resultado de uma predição individual.
@@ -102,6 +104,9 @@ class BenchmarkLogger:
             "raw_response":         raw_response.replace("\n", " ").replace("\r", ""),
             "predicted_label":      pred_label,
             "predicted_label_text": pred_text,
+            # classification textual do próprio modelo (não decide o rótulo;
+            # registrado para análise — ver output_parser._decide_label).
+            "predicted_classification_text": classification_text or "",
             "phishing_likelihood":  phishing_likelihood if phishing_likelihood is not None else "",
             "indicators":           " | ".join(indicators),
             "parse_note":           parse_note,

@@ -288,6 +288,10 @@ def parse_response(raw_response: str) -> dict:
     Returns:
         Dict com:
             predicted:            'PHISHING' | 'LEGÍTIMO' | None (não reconhecido)
+            classification_text:  'PHISHING' | 'LEGÍTIMO' | None — o campo textual
+                                  `classification` do MODELO (já mapeado para o
+                                  rótulo interno), independente do likelihood.
+                                  Registrado para análise; não decide o rótulo.
             phishing_likelihood:  int 0..100 | None
             indicators:           list[str] (vazia se ausente/ inválida)
             parse_note:           str descrevendo problemas de parsing (vazio se OK)
@@ -296,6 +300,7 @@ def parse_response(raw_response: str) -> dict:
     """
     empty = {
         "predicted":           None,
+        "classification_text": None,
         "phishing_likelihood": None,
         "indicators":          [],
         "parse_note":          "",
@@ -321,6 +326,7 @@ def parse_response(raw_response: str) -> dict:
 
     return {
         "predicted":           predicted,
+        "classification_text": classification,
         "phishing_likelihood": likelihood,
         "indicators":          indicators,
         "parse_note":          "; ".join(notes),

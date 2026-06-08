@@ -9,6 +9,7 @@ Métricas calculadas:
   - Tempo médio de resposta (segundos)
   - Taxa de erro (% de respostas inválidas ou com falha)
 """
+import csv
 import glob
 import json
 import os
@@ -17,7 +18,8 @@ from sklearn.metrics import (
     accuracy_score, precision_score, recall_score,
     f1_score, confusion_matrix,
 )
-from config import REPORTS_DIR, COMPARATIVE_REPORT_FILENAME
+from config import REPORTS_DIR, LLM_LOGS_DIR, COMPARATIVE_REPORT_FILENAME
+from logger import _coerce_record
 
 
 def compute_metrics(model_name: str, results: list[dict]) -> dict:
@@ -232,12 +234,93 @@ def rebuild_comparison() -> pd.DataFrame:
     return save_comparison_report(all_metrics)
 
 
+def _latest_log_per_model() -> dict[str, str]:
+    """
+    Mapeia nome do modelo -> CSV de log mais recente em LLM_LOGS_DIR.
+
+    O nome do modelo é lido da coluna 'model' de cada log (não do nome do
+    arquivo), então funciona inclusive para logs corrigidos à mão e salvos com
+    outro nome (ex.: '*_corrigido.csv'). Quando há mais de um log do mesmo
+    modelo, vence o modificado mais recentemente — ou seja, a última versão que
+    você editou.
+    """
+    latest: dict[str, tuple[float, str]] = {}
+    for path in glob.glob(os.path.join(LLM_LOGS_DIR, "*.csv")):
+        try:
+            with open(path, newline="", encoding="utf-8") as f:
+                first = next(csv.DictReader(f), None)
+        except OSError:
+            continue
+        if not first or not first.get("model"):
+            continue
+        model = first["model"]
+        mtime = os.path.getmtime(path)
+        if model not in latest or mtime > latest[model][0]:
+            latest[model] = (mtime, path)
+    return {model: path for model, (_, path) in latest.items()}
+
+
+def _load_log_records(path: str) -> list[dict]:
+    """Lê um CSV de log e devolve os registros no formato esperado por compute_metrics."""
+    with open(path, newline="", encoding="utf-8") as f:
+        return [_coerce_record(row) for row in csv.DictReader(f)]
+
+
+def rebuild_metrics_from_logs() -> pd.DataFrame:
+    """
+    Recalcula metrics_<modelo>.json e o comparativo a partir dos CSVs de log em
+    results/llm_logs/, sem re-rodar nenhum modelo.
+
+    Para cada modelo usa o log mais recente e lê as colunas exatamente como
+    estão no CSV (predicted_label, is_error, was_repaired, phishing_likelihood,
+    elapsed_seconds, ...). Por isso, correções manuais feitas nos logs já entram
+    direto no cálculo. É o caminho a usar depois de consertar à mão os erros de
+    formatação das respostas.
+    Returns:
+        DataFrame comparativo (vazio se não houver logs utilizáveis).
+    """
+    logs = _latest_log_per_model()
+    if not logs:
+        print(f"Nenhum log .csv encontrado em {LLM_LOGS_DIR}.")
+        return pd.DataFrame()
+
+    all_metrics = []
+    for model, path in sorted(logs.items()):
+        records = _load_log_records(path)
+        if not records:
+            print(f"[{model}] log vazio ({os.path.basename(path)}) — pulado.")
+            continue
+        print(f"\n[{model}] recalculando a partir de {os.path.basename(path)} "
+              f"({len(records)} registro(s))")
+        all_metrics.append(compute_metrics(model, records))
+
+    if not all_metrics:
+        print("Nenhum registro utilizável nos logs.")
+        return pd.DataFrame()
+
+    return save_comparison_report(all_metrics)
+
+
 if __name__ == "__main__":
-    # Re-monta o comparativo a partir dos JSONs já existentes dos resultados individuais de cada modelo (reports/metrics_<modelo>.json).
     import sys
 
-    if len(sys.argv) >= 2 and sys.argv[1] == "--rebuild":
+    # No console do Windows o stdout costuma vir em cp1252 e quebra ao imprimir
+    # os acentos/box-drawing do relatório. Força UTF-8 quando o terminal permite.
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except (AttributeError, ValueError):
+        pass
+
+    arg = sys.argv[1] if len(sys.argv) >= 2 else None
+
+    if arg == "--rebuild":
+        # Remonta o comparativo a partir dos metrics_<modelo>.json já existentes.
         rebuild_comparison()
+    elif arg == "--from-logs":
+        # Recalcula os metrics_<modelo>.json E o comparativo a partir dos
+        # CSVs de log (results/llm_logs/), refletindo correções manuais.
+        rebuild_metrics_from_logs()
     else:
         print("Uso:\n"
-              "  python metrics.py --rebuild   # remonta o comparativo")
+              "  python metrics.py --rebuild     # remonta o comparativo a partir dos metrics_*.json\n"
+              "  python metrics.py --from-logs   # recalcula as métricas a partir dos logs CSV (results/llm_logs/)")
