@@ -21,6 +21,7 @@ if hasattr(sys.stdout, "reconfigure"):
 
 from dataset.dataset import load_dataset
 from model_runner import run_model_tests
+from apply_thresholds import score_run
 from metrics import compute_metrics
 from models.dmr_client import DmrClient
 from config import LOCAL_MODELS
@@ -28,11 +29,11 @@ from config import LOCAL_MODELS
 # ============================================================================
 # CONFIGURAÇÃO DO TESTE  (edite à vontade)
 # ============================================================================
-MODEL_KEY = "granite4_tiny"   # chave em config.LOCAL_MODELS (o modelo a re-testar)
+MODEL_KEY = "llama3_3b"   # chave em config.LOCAL_MODELS (o modelo a re-testar)
 
 # IDs dos e-mails a reprocessar (os que vieram com JSON cortado).
 # Ex.: gemma3 -> [154, 289, 468, ...] / granite4 -> [591, 928, 1334]
-FORCED_IDS = [591, 928, 1334, 1452, 1485]
+FORCED_IDS = [450, 709, 968, 1163, 1345]
 
 # Limite de tokens da resposta, MAIOR que config.MAX_TOKENS (800), para o JSON
 # não ser cortado de novo.
@@ -88,4 +89,8 @@ client = _ClienteTokensMaiores(LOCAL_MODELS[MODEL_KEY], MAX_OUTPUT_TOKENS)
 client.warm_up()
 
 results = run_model_tests(MODEL_NAME, client, dataset, resume=RESUME)
+# A inferência só grava os fatos; o veredito (predicted_label) é decidido pelo
+# scorer. Sem este passo, predicted_label fica em branco e compute_metrics
+# quebra. (No pipeline real, main.py chama score_run entre os dois.)
+results = score_run(MODEL_NAME, results)
 compute_metrics(MODEL_NAME, results)

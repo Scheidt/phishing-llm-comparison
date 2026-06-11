@@ -18,20 +18,23 @@ MODELOS_DISPONIVEIS = {
     "Gemma3":   ("Gemma 3 4B QAT",   "results/llm_logs/gemma3_4b_qat_20260607_015900.csv"),
     "Qwen3":    ("Qwen 3 4B",        "results/llm_logs/qwen3_4b_20260607_065655.csv"),
     "Granite4": ("Granite 4 Tiny",   "results/llm_logs/granite4_tiny_20260607_130903.csv"),
+    "Llama3_3b": ("Llama 3 3B",      "results/llm_logs/llama3_3b_20260610_095114.csv"),
 }
 
 # Modelos a plotar (apelidos do catalogo acima)
-MODELOS = ["Claude", "Gemma3", "Qwen3", "Granite4"]
+MODELOS = ["Claude", "Gemma3", "Qwen3", "Granite4", "Llama3_3b"]
 
 # Quais graficos gerar para cada modelo
 PLOT_ROC = True       # curva ROC (plot_roc.py)
 PLOT_LIMIAR = True   # F1 x limiar (plot_limiar.py)
 PLOT_MATRIZ = True    # matriz de confusao (plot_matriz_confusao.py)
+PLOT_LIKELIHOOD_ID = True  # phishing_likelihood x email_id (plot_likelihood_por_id.py)
 # ============================================================
 
 import plot_roc
 import plot_limiar
 import plot_matriz_confusao
+import plot_likelihood_por_id
 
 
 def main():
@@ -49,6 +52,8 @@ def main():
             plot_limiar.gerar(nome, log_path)
         if PLOT_MATRIZ:
             plot_matriz_confusao.gerar(nome, log_path)
+        if PLOT_LIKELIHOOD_ID:
+            plot_likelihood_por_id.gerar(nome, log_path)
 
 
 if __name__ == "__main__":

@@ -15,7 +15,8 @@ dos email_id validos COMUNS ao par (local + Claude), alinhados por email_id.
 
 F1 e MCC sao avaliados no LIMIAR OTIMO DE F1 de cada modelo (mesmo criterio de
 limiar.py / plot_mcnemar.py), calculado UMA vez sobre o conjunto valido completo
-do modelo e mantido fixo durante o bootstrap. A AUC nao depende de limiar.
+do modelo e mantido fixo durante o bootstrap. Com USAR_LIMIAR_PADRAO = True,
+todos os modelos usam o mesmo LIMIAR fixo. A AUC nao depende de limiar.
 
 O IC e o intervalo percentil de 95% das diferencas reamostradas; reportamos
 tambem a estimativa pontual (sobre o conjunto comum, sem reamostrar) e um
@@ -27,6 +28,10 @@ em graficos/images/bootstrap_ci.png.
 """
 
 # ============================================================
+USAR_LIMIAR_PADRAO = False  # True = todos os modelos usam o mesmo LIMIAR fixo;
+                            # False = limiar otimo de F1 por modelo
+LIMIAR = 50.0          # limiar fixo de phishing_likelihood (0-100) usado quando
+                       # USAR_LIMIAR_PADRAO = True (score >= LIMIAR -> phishing)
 BASELINE = "Claude"    # apelido do modelo usado como referencia
 N_BOOT = 10000         # numero de reamostragens de bootstrap
 CONF = 0.95            # nivel de confianca do IC
@@ -64,15 +69,19 @@ def _carregar_modelo(log_path):
 
     y      -> rotulo verdadeiro (0/1)
     score  -> phishing_likelihood (0-100)
-    t_opt  -> limiar otimo de F1 do modelo, calculado sobre seu conjunto valido
-              completo e mantido fixo no bootstrap (igual a plot_mcnemar.py).
+    t_opt  -> limiar do modelo: o LIMIAR fixo se USAR_LIMIAR_PADRAO, senao o
+              limiar otimo de F1, calculado sobre seu conjunto valido completo
+              e mantido fixo no bootstrap (igual a plot_mcnemar.py).
     """
     df = pd.read_csv(os.path.join(ROOT, log_path))
     y_all, score_all, valid = carregar(df)
     ids = df.loc[valid, "email_id"].values
     y = pd.Series(y_all[valid].astype(int).values, index=ids)
     score = pd.Series(score_all[valid].astype(float).values, index=ids)
-    t_opt, _ = melhor_limiar_f1(y.values, score.values)
+    if USAR_LIMIAR_PADRAO:
+        t_opt = LIMIAR
+    else:
+        t_opt, _ = melhor_limiar_f1(y.values, score.values)
     return y, score, t_opt
 
 

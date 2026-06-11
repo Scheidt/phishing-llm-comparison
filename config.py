@@ -17,6 +17,7 @@ LOCAL_MODELS = {
     "gemma3_4b_qat": "ai/gemma3-qat:4B-Q4_K_M",
     "qwen3_4b":      "ai/qwen3:4B-UD-Q8_K_XL",
     "granite4_tiny": "ai/granite-4.0-h-tiny:7B-Q4_K_M",
+    "llama3_3b":      "ai/llama3.2:3B-Q4_0",
 }
 
 # =-=-= Dataset =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-==-=-=-=
@@ -82,6 +83,7 @@ PHISHING_LIKELIHOOD_THRESHOLDS = {
     "gemma3_4b_qat": 80.0,
     "qwen3_4b":      92.5,
     "granite4_tiny": 82.5,
+    "llama3_3b":     45.0,
     "Default":       PHISHING_LIKELIHOOD_THRESHOLD,  # 50
 }
 

@@ -27,7 +27,7 @@ from config import LOCAL_MODELS
 # ============================================================================
 # CONFIGURAÇÃO DO TESTE  (edite à vontade)
 # ============================================================================
-MODEL_KEY = "gemma3_4b_qat"   # chave em config.LOCAL_MODELS
+MODEL_KEY = "llama3_3b"   # chave em config.LOCAL_MODELS
 N_SAMPLES = 20                # quantas amostras do dataset usar
 RESUME    = False             # True = retoma de um log parcial existente
 # ============================================================================
