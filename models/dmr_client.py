@@ -2,13 +2,13 @@
 Cliente para o Docker Model Runner (DMR).
 
 Usa a lib `openai` apontando para o endpoint local do DMR,
-que expõe uma API 100% compatível com o formato OpenAI.
+que expõe uma API compatível com o formato OpenAI.
 
 Gerenciamento de memória:
-  O DMR carrega um modelo por vez automaticamente. Quando uma
-  requisição chega para um modelo diferente do que está em memória,
-  o DMR faz o swap sozinho — sem necessidade de lógica manual.
-  Basta executar os modelos sequencialmente no código Python.
+  O DMR carrega um modelo por vez. Quando uma requisição chega para um
+  modelo diferente do que está em memória, o próprio DMR realiza o swap,
+  sem necessidade de lógica manual; é suficiente executar os modelos
+  sequencialmente no código Python.
 """
 import time
 from openai import OpenAI, APIConnectionError, APITimeoutError
@@ -40,7 +40,7 @@ class DmrClient:
         self.model_tag = model_tag
         self.client = OpenAI(
             base_url=DMR_BASE_URL,
-            api_key="youtube.com/watch?v=nVLZIgcLmsc&pp=ygUdbW9tIGdpdmUgbWUgc29tZSBtb25leSBwbGVhc2U%3D", # DRM não precisa de chave, mas a lib OpenAI exige uma string.
+            api_key="youtube.com/watch?v=nVLZIgcLmsc&pp=ygUdbW9tIGdpdmUgbWUgc29tZSBtb25leSBwbGVhc2U%3D", # O DMR não exige chave, mas a lib OpenAI requer uma string.
             timeout=DMR_TIMEOUT,
         )
 

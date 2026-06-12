@@ -70,24 +70,25 @@ class BenchmarkLogger:
         """
         Registra os FATOS de uma resposta individual, SEM julgar acerto.
 
-        A inferência coleta os fatos da resposta — a nota numérica
-        (phishing_likelihood), o classification textual, os indicators, se houve
-        reparo de JSON (was_repaired), eventual erro de chamada (error_message) —
-        e marca a VALIDADE da resposta em is_error (erro de chamada, OU JSON
-        reparado, OU sem nota numérica utilizável). Validade não depende do
-        corte, então fica aqui; e por ser uma coluna estável ela pode ser
-        corrigida à mão (ex.: consertar um JSON reparado e marcar is_error=False)
-        sem que o scorer a sobrescreva.
+        A inferência coleta os fatos da resposta (a nota numérica
+        phishing_likelihood, o classification textual, os indicators, se houve
+        reparo de JSON em was_repaired e eventual erro de chamada em
+        error_message) e marca a VALIDADE da resposta em is_error (erro de
+        chamada, OU JSON reparado, OU sem nota numérica utilizável). A validade
+        não depende do corte, então é definida aqui; por ser uma coluna
+        estável, pode ser corrigida à mão (ex.: consertar um JSON reparado e
+        marcar is_error=False) sem que o scorer a sobrescreva.
 
-        As colunas de VEREDICTO que dependem do corte — predicted_label,
-        predicted_label_text, is_correct — ficam VAZIAS aqui e são preenchidas
-        depois pelo scorer (apply_thresholds.py). Isso desacopla a coleta do
-        julgamento e permite re-decidir o rótulo mudando só os cortes.
+        As colunas de VEREDICTO que dependem do corte (predicted_label,
+        predicted_label_text, is_correct) ficam VAZIAS aqui e são preenchidas
+        depois pelo scorer (apply_thresholds.py). Esse desenho desacopla a
+        coleta do julgamento e permite re-decidir o rótulo alterando apenas os
+        cortes.
 
-        Sobre is_error vs was_repaired: was_repaired é o fato cru "o JSON precisou
-        de reparo?"; is_error é a validade agregada. Reparo conta como erro na
-        faixa estrita das métricas, mas a predição resgatada ainda é aproveitada
-        na faixa pós-reparo (ver metrics.py).
+        Sobre is_error vs was_repaired: was_repaired é o fato cru ("o JSON
+        precisou de reparo?"); is_error é a validade agregada. O reparo conta
+        como erro na faixa estrita das métricas, mas a predição resgatada ainda
+        é aproveitada na faixa pós-reparo (ver metrics.py).
         """
         true_text = "PHISHING" if true_label == 1 else "LEGÍTIMO"
 

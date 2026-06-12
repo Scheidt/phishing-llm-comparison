@@ -45,7 +45,7 @@ from config import LOCAL_MODELS, LLM_LOGS_DIR
 from models.dmr_client import DmrClient
 
 # ─────────────────────────────────────────────────────────────────────────
-# CONFIGURAÇÃO DO TESTE  (edite à vontade)
+# CONFIGURAÇÃO DO TESTE  (ajuste conforme necessário)
 # ─────────────────────────────────────────────────────────────────────────
 MODEL_KEY       = "gemma3_4b_qat"   # chave em config.LOCAL_MODELS
 REPETITIONS     = 20                # quantas vezes rodar o mesmo prompt
@@ -116,7 +116,7 @@ def validate_format(raw_response: str) -> dict:
     Cercas de código markdown (``` / ```json) são toleradas: são removidas
     antes do parse e apenas anotadas em 'validation_note'. Texto extra fora
     do JSON, JSON malformado ou campos ausentes/com tipo errado fazem a
-    checagem falhar — que é o que queremos detectar.
+    checagem falhar, comportamento que o teste se propõe a detectar.
     """
     result = {
         "is_valid_json":     False,

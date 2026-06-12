@@ -1,14 +1,14 @@
 """
 Testa o parsing e o reparo heurístico de JSON em output_parser.py.
 
-Foco especial no 4º fallback: aspas duplas literais não escapadas dentro de
-strings (erro comum de modelos pequenos), que devem ser RESGATADAS, porém
-marcadas como reparo (repaired=True) — sinal de que a saída bruta não era um
+O foco principal é o 4º fallback: aspas duplas literais não escapadas dentro
+de strings (erro comum de modelos pequenos), que devem ser RESGATADAS, porém
+marcadas como reparo (repaired=True), sinal de que a saída bruta não era um
 JSON válido.
 
-O parser NÃO decide rótulo nem acerto (isso é do scorer, ver tests/test_scorer.py):
-aqui só verificamos a EXTRAÇÃO dos campos (classification_text, phishing_likelihood,
-indicators) e o reparo.
+O parser NÃO decide rótulo nem acerto (papel do scorer, ver
+tests/test_scorer.py): verifica-se aqui apenas a EXTRAÇÃO dos campos
+(classification_text, phishing_likelihood, indicators) e o reparo.
 
 Este teste é AUTOCONTIDO e offline (não usa DMR nem a API do Claude).
 

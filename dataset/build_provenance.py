@@ -4,7 +4,7 @@ Tabela de proveniência do dataset do benchmark (para o relatório de reprodutib
 Para CADA e-mail do dataset final efetivamente usado (dataset/emails_dataset.csv),
 resolve sua origem no CSV bruto:
 
-  - LEGÍTIMOS (label=0): origem única — dataset/legitimo/emails.csv (corpus
+  - LEGÍTIMOS (label=0): origem única, dataset/legitimo/emails.csv (corpus
     Enron). O identificador original é o campo `file` do Enron (ex.:
     "kaminski-v/conferences/133.").
   - PHISHING (label=1): origem em UM dos três CSVs, resolvida pela MESMA regra
@@ -13,11 +13,11 @@ resolve sua origem no CSV bruto:
     coluna de id, o identificador original é o índice da linha de dados (0-based,
     igual ao índice do pandas após o cabeçalho).
 
-A fonte de verdade é o próprio dataset final (o que foi dado aos modelos), e não
-o dataset_sample_ids.json — que pode estar defasado. O casamento dataset->origem
-é feito por CORPO NORMALIZADO (espaços colapsados), porque o round-trip de
-to_csv/read_csv altera quebras de linha dentro do corpo de ~5% dos phishing,
-quebrando o hash exato embora o e-mail seja o mesmo.
+A fonte de verdade é o próprio dataset final (o que foi dado aos modelos), e
+não o dataset_sample_ids.json, que pode estar defasado. O casamento
+dataset->origem é feito por CORPO NORMALIZADO (espaços colapsados), porque o
+round-trip de to_csv/read_csv altera quebras de linha dentro do corpo de ~5%
+dos phishing, quebrando o hash exato embora o e-mail seja o mesmo.
 
 Saída: dataset/dataset_provenance.csv com colunas
     dataset_id, label, src_id, source_file, source_row
@@ -75,7 +75,7 @@ def phishing_origin_by_body(folder: str) -> dict[str, tuple[str, int, str]]:
                 continue
             key = _norm(body)
             if key in origin:
-                continue  # 1ª ocorrência vence (prioridade do CSV)
+                continue  # mantém-se a 1ª ocorrência (prioridade do CSV)
             origin[key] = (name, int(row_idx), content_key(subj, body))
     return origin
 

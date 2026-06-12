@@ -83,7 +83,7 @@ def run_model_tests(
         )
         results.append(record)
 
-    # Resumo só com fatos da inferência — o acerto é calculado depois, no scorer.
+    # Resumo apenas com fatos da inferência; o acerto é calculado depois, no scorer.
     total         = len(results)
     client_errors = sum(1 for r in results if r["error_message"])
     repaired      = sum(1 for r in results if r["was_repaired"])

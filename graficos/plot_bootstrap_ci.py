@@ -7,22 +7,23 @@ modelo LOCAL e o Claude (baseline), para tres metricas:
     dAUC = AUC(local) - AUC(Claude)    (area sob a ROC, independente de limiar)
 
 Como TODOS os modelos sao avaliados sobre OS MESMOS e-mails, o bootstrap e
-PAREADO: a cada reamostragem sorteamos um conjunto de email_id (com reposicao)
-e recomputamos as duas metricas (local e Claude) SOBRE O MESMO conjunto, e so
-entao a diferenca. Isso preserva a correlacao entre os modelos e da um IC bem
-mais justo do que tratar cada modelo isoladamente. O conjunto reamostrado e o
-dos email_id validos COMUNS ao par (local + Claude), alinhados por email_id.
+PAREADO: a cada reamostragem sorteia-se um conjunto de email_id (com reposicao)
+e recomputam-se as duas metricas (local e Claude) SOBRE O MESMO conjunto, e so
+entao a diferenca. Esse procedimento preserva a correlacao entre os modelos e
+da um IC bem mais justo do que tratar cada modelo isoladamente. O conjunto
+reamostrado e o dos email_id validos COMUNS ao par (local + Claude), alinhados
+por email_id.
 
 F1 e MCC sao avaliados no LIMIAR OTIMO DE F1 de cada modelo (mesmo criterio de
 limiar.py / plot_mcnemar.py), calculado UMA vez sobre o conjunto valido completo
 do modelo e mantido fixo durante o bootstrap. Com USAR_LIMIAR_PADRAO = True,
 todos os modelos usam o mesmo LIMIAR fixo. A AUC nao depende de limiar.
 
-O IC e o intervalo percentil de 95% das diferencas reamostradas; reportamos
+O IC e o intervalo percentil de 95% das diferencas reamostradas; reportam-se
 tambem a estimativa pontual (sobre o conjunto comum, sem reamostrar) e um
 p-valor de bootstrap bicaudal (fracao de reamostragens que cruza o zero).
 
-O catalogo de modelos vem de plot.py (MODELOS_DISPONIVEIS / MODELOS). Rode
+O catalogo de modelos vem de plot.py (MODELOS_DISPONIVEIS / MODELOS). Execute
 `python plot_bootstrap_ci.py` a partir de qualquer diretorio. A figura e salva
 em graficos/images/bootstrap_ci.png.
 """
@@ -106,8 +107,8 @@ def _bootstrap_par(y, s_loc, s_cla, t_loc, t_cla, n_boot, rng):
     """Bootstrap pareado das diferencas (local - Claude) para as 3 metricas.
 
     y, s_loc, s_cla sao vetores alinhados (mesmos email_id). A cada iteracao
-    sorteamos os MESMOS indices para os dois modelos. Devolve um dict metrica ->
-    array (n_boot,) das diferencas reamostradas.
+    sorteiam-se os MESMOS indices para os dois modelos. Devolve um dict
+    metrica -> array (n_boot,) das diferencas reamostradas.
     """
     n = len(y)
     out = {"dF1": np.empty(n_boot), "dMCC": np.empty(n_boot), "dAUC": np.empty(n_boot)}

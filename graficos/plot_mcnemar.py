@@ -9,7 +9,7 @@ pares DISCORDANTES (um acerta e o outro erra):
 
 A estatistica (com correcao de continuidade) e  chi2 = (|b-c|-1)**2 / (b+c),
 com 1 grau de liberdade. Para b+c pequeno, o p-valor exato (binomial, p=0.5)
-e mais confiavel, entao usamos o binomial exato como p-valor reportado.
+e mais confiavel, entao o binomial exato e usado como p-valor reportado.
 
 Cada barra do par mostra b e c; quanto mais assimetrico o par, mais forte a
 evidencia de que um modelo e melhor que o outro. A significancia (estrelas) e o
@@ -19,7 +19,7 @@ A correcao de cada e-mail e recomputada no LIMIAR OTIMO DE F1 de cada modelo
 (mesmo criterio de limiar.py usado nos outros graficos), sobre o conjunto de
 e-mails validos COMUM aos dois modelos (alinhados por email_id).
 
-O catalogo de modelos vem de plot.py (MODELOS_DISPONIVEIS / MODELOS). Rode
+O catalogo de modelos vem de plot.py (MODELOS_DISPONIVEIS / MODELOS). Execute
 `python plot_mcnemar.py` a partir de qualquer diretorio. A figura e salva em
 graficos/images/mcnemar.png.
 """

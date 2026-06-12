@@ -1,9 +1,9 @@
 """
 Executa o benchmark.
 
-O Docker Model Runner faz o swap de modelos automaticamente ao receber
-uma requisição para um modelo diferente do que está em memória, não rodando
-modelos simultaneamente.
+O Docker Model Runner mantém um modelo por vez em memória e realiza o swap
+ao receber uma requisição para um modelo diferente do carregado; por isso os
+modelos são executados sequencialmente.
 """
 import sys
 import apply_thresholds
@@ -41,8 +41,8 @@ def main():
                     dataset=dataset,
                     resume=RESUME_PARTIAL_MODEL,
                 )
-                # Scoring desacoplado: a inferência só coletou os fatos; aqui
-                # aplicamos o corte do modelo e calculamos o acerto.
+                # Scoring desacoplado: a inferência só coletou os fatos;
+                # aplica-se agora o corte do modelo e calcula-se o acerto.
                 results_claude = apply_thresholds.score_run(CLAUDE_MODEL, results_claude)
                 metrics_claude = compute_metrics(
                     model_name=CLAUDE_MODEL,

@@ -27,16 +27,16 @@ def compute_metrics(model_name: str, results: list[dict]) -> dict:
     Recebe a lista de resultados do model_runner e retorna um dicionário
     com todas as métricas calculadas, em DUAS faixas:
 
-    - **Bruta (estrito)**: avalia a saída como o modelo a entregou. Respostas
+    - Bruta (estrito): avalia a saída como o modelo a entregou. Respostas
       que só puderam ser lidas após reparo heurístico (was_repaired) contam
-      como ERRO e ficam de fora da acurácia/precisão/recall/F1. Mede a
+      como ERRO e ficam fora da acurácia/precisão/recall/F1. Mede a
       qualidade real da formatação do modelo (`error_rate`, `accuracy`, ...).
-    - **Pós-reparo (resgatado)**: aproveita as predições resgatadas pelo reparo
-      heurístico. Só sobram como erro as respostas irrecuperáveis
+    - Pós-reparo (resgatado): aproveita as predições resgatadas pelo reparo
+      heurístico. Permanecem como erro apenas as respostas irrecuperáveis
       (predicted_label == -1). Métricas com prefixo `rescued_`.
 
-    A ideia é responder "houve taxa de erro X na saída bruta; ao reparar esses
-    erros com heurísticas externas, os resultados passam a ser Y".
+    A interpretação pretendida é "houve taxa de erro X na saída bruta; ao
+    reparar esses erros com heurísticas externas, os resultados passam a ser Y".
 
     Args:
         model_name: Nome do modelo
@@ -241,8 +241,8 @@ def _latest_log_per_model() -> dict[str, str]:
     O nome do modelo é lido da coluna 'model' de cada log (não do nome do
     arquivo), então funciona inclusive para logs corrigidos à mão e salvos com
     outro nome (ex.: '*_corrigido.csv'). Quando há mais de um log do mesmo
-    modelo, vence o modificado mais recentemente — ou seja, a última versão que
-    você editou.
+    modelo, prevalece o modificado mais recentemente, isto é, a última versão
+    editada.
     """
     latest: dict[str, tuple[float, str]] = {}
     for path in glob.glob(os.path.join(LLM_LOGS_DIR, "*.csv")):
@@ -273,9 +273,9 @@ def rebuild_metrics_from_logs() -> pd.DataFrame:
 
     Para cada modelo usa o log mais recente e lê as colunas exatamente como
     estão no CSV (predicted_label, is_error, was_repaired, phishing_likelihood,
-    elapsed_seconds, ...). Por isso, correções manuais feitas nos logs já entram
-    direto no cálculo. É o caminho a usar depois de consertar à mão os erros de
-    formatação das respostas.
+    elapsed_seconds, ...). Por isso, correções manuais feitas nos logs entram
+    direto no cálculo; este é o caminho indicado depois de consertar à mão os
+    erros de formatação das respostas.
     Returns:
         DataFrame comparativo (vazio se não houver logs utilizáveis).
     """
@@ -288,7 +288,7 @@ def rebuild_metrics_from_logs() -> pd.DataFrame:
     for model, path in sorted(logs.items()):
         records = _load_log_records(path)
         if not records:
-            print(f"[{model}] log vazio ({os.path.basename(path)}) — pulado.")
+            print(f"[{model}] log vazio ({os.path.basename(path)}); pulado.")
             continue
         print(f"\n[{model}] recalculando a partir de {os.path.basename(path)} "
               f"({len(records)} registro(s))")

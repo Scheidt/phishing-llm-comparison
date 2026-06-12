@@ -4,29 +4,30 @@ Montagem reprodutível do dataset do benchmark a partir das pastas de origem.
 Junta duas fontes em um único dataset balanceado no formato esperado pelo
 pipeline (id, from, subject, body, label):
 
-  - LEGÍTIMOS (label=0): dataset/legitimo/emails.csv — corpus Enron, cujo CSV
+  - LEGÍTIMOS (label=0): dataset/legitimo/emails.csv (corpus Enron), cujo CSV
     tem as colunas `file, message`, onde `message` é o e-mail RFC822 bruto
-    (cabeçalhos + corpo). Extraímos `From`, `Subject` e o corpo (preferindo
-    text/plain, caindo para text/html sem tags). Como o arquivo é grande
-    (~1.4 GB), a amostragem é feita por *reservoir sampling* em uma única
-    passada, sem carregar tudo na memória.
-  - PHISHING (label=1): montado por *preenchimento prioritário*. Primeiro a
-    BASE — phishing.csv + phishing_2024.csv; se não alcançar a cota por classe,
-    o RESTANTE é completado com o FILL — Nazario_5.csv. Todas essas fontes têm
-    `sender, subject, body` (usamos `sender` como `from`). Só linhas label=1, e
-    qualquer corpo já presente na base é descartado. (email_reserva.csv NÃO é
-    usado: só tem `label, text`, sem remetente — deixaria `from` vazio apenas
-    em phishing, um vazamento de formato.)
+    (cabeçalhos + corpo). São extraídos `From`, `Subject` e o corpo
+    (preferindo text/plain, com fallback para text/html sem tags). Como o
+    arquivo é grande (~1.4 GB), a amostragem é feita por *reservoir sampling*
+    em uma única passada, sem carregar tudo na memória.
+  - PHISHING (label=1): montado por *preenchimento prioritário*. Primeiro
+    entra a BASE (phishing.csv + phishing_2024.csv); se a cota por classe não
+    for alcançada, o restante é completado com o FILL (Nazario_5.csv). Todas
+    essas fontes têm `sender, subject, body` (`sender` é usado como `from`).
+    Só entram linhas com label=1, e qualquer corpo já presente na base é
+    descartado. (email_reserva.csv NÃO é usado: só tem `label, text`, sem
+    remetente, o que deixaria `from` vazio apenas em phishing, um vazamento
+    de formato.)
 
 Em ambas as classes, todo e-mail passa por um filtro de qualidade semântica
 (ver body_is_semantic / MIN_BODY_*): precisa ter texto legível suficiente para
-uma IA analisar — descartando HTML vazio, corpos só-URL, tokens codificados e
-fragmentos minúsculos. Tudo é também deduplicado por corpo (sem repetidos,
-inclusive entre as classes).
+análise por um modelo de linguagem, descartando-se HTML vazio, corpos
+compostos apenas por URL, tokens codificados e fragmentos minúsculos. Tudo é
+também deduplicado por corpo (sem repetidos, inclusive entre as classes).
 
 Amostragem balanceada 50/50: `--samples` define o total (dividido por 2). Se
-uma das classes não tiver amostras suficientes, o script reduz automaticamente
-o `per_class` ao mínimo disponível e avisa (mantendo o dataset balanceado).
+uma das classes não tiver amostras suficientes, o script reduz o `per_class`
+ao mínimo disponível e avisa, mantendo o dataset balanceado.
 
 Reprodutibilidade
 -----------------
@@ -34,8 +35,9 @@ Os identificadores das amostras sorteadas são salvos em
 dataset/dataset_sample_ids.json (os `file` do Enron para os legítimos e o hash
 de conteúdo para os phishing), junto com a semente e metadados. O modo
 `--rebuild` reconstrói o mesmo dataset a partir desses ids, sem re-amostrar.
-Isso é mais robusto que confiar só no --seed, pois o resultado do sorteio pode
-variar entre versões de bibliotecas — a lista explícita de ids, não.
+Esse caminho é mais robusto que confiar apenas no --seed, pois o resultado do
+sorteio pode variar entre versões de bibliotecas, enquanto a lista explícita
+de ids não varia.
 
 Uso:
     python dataset/prepare_dataset.py                  # sorteia e salva ids + metadados
@@ -62,18 +64,20 @@ csv.field_size_limit(2**31 - 1)
 # (remetente real, importante para o campo `from`). A BASE entra primeiro; o
 # FILL completa a cota quando a base não basta. email_reserva.csv NÃO é usado:
 # só tem `label, text` (sem remetente), o que deixaria `from` vazio apenas em
-# phishing — um vazamento de formato.
+# phishing, um vazamento de formato.
 BASE_PHISHING_FILES = ["phishing.csv", "phishing_2024.csv"]
 FILL_PHISHING_FILES = ["Nazario_5.csv"]
 
 # Filtros de qualidade semântica: o e-mail precisa ter texto legível suficiente
-# para uma IA analisar. Medidos sobre o TEXTO (HTML removido, espaços colapsados):
+# para análise. Medidos sobre o TEXTO (HTML removido, espaços colapsados):
 #   - MIN_BODY_CHARS:  comprimento mínimo do texto;
-#   - MIN_BODY_WORDS:  nº mínimo de palavras com letras, após remover URLs/e-mails
-#                      (mata corpos só-URL e tokens codificados tipo base64);
-#   - MIN_ALPHA_RATIO: piso de proporção alfabética (mata blobs codificados);
-#                      baixo de propósito — e-mails legítimos com tabelas, linhas
-#                      "Forwarded by" e telefones têm proporção naturalmente baixa.
+#   - MIN_BODY_WORDS:  nº mínimo de palavras com letras, após remover URLs e
+#                      e-mails (descarta corpos compostos apenas por URL e
+#                      tokens codificados tipo base64);
+#   - MIN_ALPHA_RATIO: piso de proporção alfabética (descarta blobs
+#                      codificados); mantido propositalmente baixo, pois
+#                      e-mails legítimos com tabelas, linhas "Forwarded by" e
+#                      telefones têm proporção naturalmente baixa.
 MIN_BODY_CHARS = 20
 MIN_BODY_WORDS = 5
 MIN_ALPHA_RATIO = 0.35
@@ -110,8 +114,9 @@ def body_is_semantic(body: str) -> bool:
     """True se o corpo tem conteúdo textual com significado suficiente para análise.
 
     Aplica os três filtros (MIN_BODY_CHARS / MIN_ALPHA_RATIO / MIN_BODY_WORDS)
-    sobre o texto legível, descartando e-mails sem nada a analisar (HTML vazio,
-    só-URL, tokens codificados, fragmentos minúsculos).
+    sobre o texto legível, descartando e-mails sem conteúdo analisável (HTML
+    vazio, corpos compostos apenas por URL, tokens codificados, fragmentos
+    minúsculos).
     """
     text = readable_text(body)
     if len(text) < MIN_BODY_CHARS:
@@ -155,12 +160,13 @@ def sample_legit(path: str, per_class: int, seed: int) -> pd.DataFrame:
     """
     Sorteia `per_class` e-mails legítimos do Enron via reservoir sampling.
 
-    Sorteamos um reservatório maior (com folga) sobre as linhas brutas, e só
-    então parseamos/filtramos por corpo não-vazio — assim evitamos parsear o
-    corpus inteiro e ainda garantimos amostras úteis suficientes.
+    Sorteia-se um reservatório maior (com folga) sobre as linhas brutas e só
+    então as mensagens são parseadas e filtradas por corpo não-vazio. Dessa
+    forma, evita-se parsear o corpus inteiro e ainda se garantem amostras
+    úteis suficientes.
     """
     rng = random.Random(seed)
-    pool_size = per_class * 3 + 500  # folga p/ descartar não-semânticos e duplicados
+    pool_size = per_class * 3 + 500  # folga para descartar não-semânticos e duplicados
 
     reservoir: list[tuple[str, str]] = []
     for i, (file, raw) in enumerate(iter_enron_rows(path)):
@@ -176,7 +182,7 @@ def sample_legit(path: str, per_class: int, seed: int) -> pd.DataFrame:
     for file, raw in reservoir:
         sender, subject, body = _parse_enron_message(raw)
         if not body_is_semantic(body):
-            continue  # sem texto com significado, a IA não tem o que analisar
+            continue  # sem texto com significado, não há o que analisar
         if body in seen_bodies:
             continue  # dedup por corpo: e-mails idênticos não se repetem
         seen_bodies.add(body)
@@ -309,7 +315,7 @@ def build(args) -> None:
     )
 
     combined = pd.concat([phishing_sample, legit_sample], ignore_index=True)
-    # Embaralha para não ficar phishing seguidos dos legítimos.
+    # Embaralha para que os phishing não fiquem agrupados antes dos legítimos.
     combined = combined.sample(frac=1, random_state=args.seed).reset_index(drop=True)
 
     out = write_dataset(combined, args.output)

@@ -32,18 +32,17 @@ def _close_json(text: str) -> str:
     """
     Fecha um objeto JSON truncado/inacabado, acrescentando o que ficou aberto.
 
-    Modelos podem cortar a resposta no meio (ex.: atingiram o limite de tokens)
-    e deixar o objeto sem o '}' final, um array sem ']' ou uma string sem as
-    aspas de fechamento. Esta função percorre o texto rastreando o que está
-    aberto e devolve o texto com os fechamentos que faltam, na ordem correta —
-    garantindo que o objeto JSON SEMPRE feche, nem que seja preciso adicionar
-    o '}'.
+    Modelos podem cortar a resposta no meio (ex.: ao atingir o limite de
+    tokens) e deixar o objeto sem o '}' final, um array sem ']' ou uma string
+    sem as aspas de fechamento. Esta função percorre o texto rastreando o que
+    está aberto e devolve o texto com os fechamentos que faltam, na ordem
+    correta, de modo que o objeto JSON sempre feche.
 
-    A função é O(n), mas é o terceiro fallback, e possui latência desprezível
-    comparada ao tempo de resposta dos modelos.
+    A função é O(n), mas roda apenas como terceiro fallback e tem latência
+    desprezível comparada ao tempo de resposta dos modelos.
     """
     stack = []            # pilha de aberturas '{' / '[' ainda não fechadas
-    in_string = False     # estamos dentro de uma string?
+    in_string = False     # a leitura está dentro de uma string?
     escaped = False       # o caractere anterior foi uma barra de escape?
 
     for ch in text:
@@ -83,19 +82,20 @@ _STRING_DELIMITERS = {",", "}", "]", ":"}
 def _escape_inner_quotes(text: str) -> str:
     """
     Escapa aspas duplas literais que aparecem DENTRO de uma string JSON sem
-    estarem escapadas — um erro comum de modelos pequenos, que escrevem algo
-    como  "... asks, "what is this?" ..."  deixando as aspas internas cruas e
+    estarem escapadas, um erro comum de modelos pequenos, que escrevem algo
+    como  "... asks, "what is this?" ..."  e deixam as aspas internas cruas,
     quebrando o JSON.
 
-    Heurística: percorre o texto rastreando se estamos dentro de uma string.
-    Uma aspa encontrada dentro de uma string só é tratada como FECHAMENTO
-    (estrutural) se o próximo caractere não-espaço for um delimitador JSON
-    (`, } ] :`) ou o fim do texto; caso contrário é considerada literal e
-    recebe uma barra de escape. Aspas já escapadas (\\") são preservadas.
+    Heurística: percorre o texto rastreando se a leitura está dentro de uma
+    string. Uma aspa encontrada dentro de uma string só é tratada como
+    FECHAMENTO (estrutural) se o próximo caractere não-espaço for um
+    delimitador JSON (`, } ] :`) ou o fim do texto; caso contrário é
+    considerada literal e recebe uma barra de escape. Aspas já escapadas (\\")
+    são preservadas.
 
-    É uma heurística e pode errar: uma aspa literal seguida logo de ':' (raro)
-    seria confundida com o fecho de uma chave. Por isso só roda como último
-    recurso, depois que o parsing normal já falhou.
+    Por ser heurística, pode errar: uma aspa literal seguida de ':' (caso
+    raro) seria confundida com o fecho de uma chave. Por isso só roda como
+    último recurso, depois que o parsing normal já falhou.
     """
     out = []
     in_string = False
@@ -123,10 +123,10 @@ def _escape_inner_quotes(text: str) -> str:
             while j < n and text[j] in " \t\r\n":
                 j += 1
             if j >= n or text[j] in _STRING_DELIMITERS:
-                out.append(ch)          # aspa estrutural — fecha a string
+                out.append(ch)          # aspa estrutural: fecha a string
                 in_string = False
             else:
-                out.append('\\')        # aspa literal — escapa e segue na string
+                out.append('\\')        # aspa literal: escapa e segue na string
                 out.append(ch)
             continue
         out.append(ch)
@@ -171,7 +171,7 @@ def _extract_json(raw_response: str) -> tuple[dict | None, bool]:
         except (json.JSONDecodeError, TypeError):
             pass
 
-    # 3ª tentativa (REPARO): JSON truncado/inacabado — fecha o que ficou aberto
+    # 3ª tentativa (REPARO): JSON truncado/inacabado. Fecha o que ficou aberto
     # (adiciona o '}' que faltou) e tenta de novo a partir do primeiro '{'.
     start = text.find("{")
     if start != -1:
@@ -242,17 +242,17 @@ def parse_response(raw_response: str) -> dict:
     """
     Faz o parsing da resposta JSON do modelo e EXTRAI os campos estruturados.
 
-    NÃO decide rótulo nem acerto — isso é feito depois pelo scorer
-    (apply_thresholds.py), a partir de `phishing_likelihood`. Aqui apenas
-    extraímos e registramos os fatos da resposta.
+    NÃO decide rótulo nem acerto: essa decisão é tomada depois pelo scorer
+    (apply_thresholds.py), a partir de `phishing_likelihood`. Aqui apenas se
+    extraem e registram os fatos da resposta.
 
     Returns:
         Dict com:
-            classification_text:  'PHISHING' | 'LEGÍTIMO' | None — o campo textual
+            classification_text:  'PHISHING' | 'LEGÍTIMO' | None. O campo textual
                                   `classification` do MODELO (já mapeado para o
                                   rótulo interno). Apenas registrado; não decide
                                   o rótulo.
-            phishing_likelihood:  int 0..100 | None — a nota do modelo (base da
+            phishing_likelihood:  int 0..100 | None. A nota do modelo (base da
                                   decisão, tomada depois pelo scorer).
             indicators:           list[str] (vazia se ausente/ inválida)
             parse_note:           str descrevendo problemas de parsing (vazio se OK)

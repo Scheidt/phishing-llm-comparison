@@ -34,17 +34,18 @@ ENABLE_LLM_LOGGING = True  # Se False, não gera CSVs em llm_logs
 
 # =-=-= Retomada (resume) =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-==-=-=-=-=-=
 # Se True, pula modelos que já possuem metrics_<modelo>.json em reports/.
-# Serve para se o teste for interrompido, permitindo retomar o teste de onde deu erro.
-# Se gerou um log parcial, é bom deletar o log anterior, para não misturar métricas de execuções diferentes.
+# Permite retomar um benchmark interrompido sem repetir os modelos concluídos.
+# Caso tenha restado um log parcial, recomenda-se removê-lo antes, para não
+# misturar métricas de execuções diferentes.
 SKIP_COMPLETED_MODELS = True
 
 # Retomada POR E-MAIL dentro de um mesmo modelo (resume parcial).
 # Se True, ao reiniciar um modelo interrompido no meio, reaproveita os e-mails
 # já gravados no log parcial (results/llm_logs/<modelo>_<timestamp>.csv) e
-# retoma a partir do último e-mail testado — que é re-testado, por garantia de
-# que foi gravado corretamente. Continua gravando no MESMO arquivo de log.
+# retoma a partir do último e-mail testado, que é re-testado para garantir que
+# foi gravado corretamente. A gravação continua no MESMO arquivo de log.
 # Requer ENABLE_LLM_LOGGING = True (a retomada lê o log parcial).
-# Para forçar um modelo a rodar do zero, apague o log dele em llm_logs/.
+# Para forçar um modelo a executar do zero, apague o log dele em llm_logs/.
 RESUME_PARTIAL_MODEL = False
 
 # =-=-= Parâmetros de geração =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-==-=-=-=
@@ -54,18 +55,18 @@ TEMPERATURE  = 0.0   # Alterar conforme necessário para testar criatividade vs.
 # =-=-= Decisão de rótulo (feita no SCORING, não na inferência) =-=-=-=-=-=-=
 # O rótulo final (PHISHING/LEGÍTIMO) e o acerto NÃO são decididos durante a
 # inferência. A inferência apenas grava os fatos da resposta (entre eles a nota
-# `phishing_likelihood`); quem decide o rótulo e calcula o acerto é o scorer
-# (apply_thresholds.py), chamado depois de cada modelo. Isso desacopla a coleta
-# do julgamento e permite re-decidir tudo apenas mudando os cortes abaixo e
-# re-rodando o scorer (sem re-inferir nenhum modelo).
+# `phishing_likelihood`); o rótulo e o acerto são definidos pelo scorer
+# (apply_thresholds.py), chamado após cada modelo. Esse desenho desacopla a
+# coleta do julgamento e permite re-decidir tudo apenas alterando os cortes
+# abaixo e re-executando o scorer, sem re-inferir nenhum modelo.
 #
-# O rótulo vem da nota numérica `phishing_likelihood`, não do campo textual
-# `classification`. Motivo: em modelos pequenos a nota é bem mais calibrada que
-# a string, que costuma dizer "phishing" mesmo com likelihood baixo (ex.:
-# likelihood 10 + classification "phishing"), gerando falsos positivos.
+# O rótulo deriva da nota numérica `phishing_likelihood`, não do campo textual
+# `classification`. Em modelos pequenos, a nota mostrou-se mais calibrada que a
+# string, que costuma indicar "phishing" mesmo com likelihood baixo (ex.:
+# likelihood 10 + classification "phishing"), o que gera falsos positivos.
 # Priorizar o número melhorou a precisão de todos os modelos locais sem piorar
-# nenhum. O `classification` continua no schema/prompt (ajuda o modelo a "se
-# comprometer" com um resultado), mas é apenas registrado, não decide o rótulo.
+# nenhum. O `classification` permanece no schema e no prompt (induz o modelo a
+# registrar uma decisão explícita), mas é apenas registrado para análise.
 #
 # Regra do scorer: phishing_likelihood >= corte DO MODELO => PHISHING; sem nota
 # numérica utilizável => erro (predicted_label = -1).
@@ -73,9 +74,9 @@ TEMPERATURE  = 0.0   # Alterar conforme necessário para testar criatividade vs.
 # Corte padrão (fallback) para modelos sem corte próprio:
 PHISHING_LIKELIHOOD_THRESHOLD = 50
 
-# Cortes (thresholds) POR MODELO. Cada modelo tem um ponto de corte calibrado —
-# a escala da nota varia de modelo para modelo, então um corte único não é o
-# ideal. A chave é o nome do modelo EXATAMENTE como aparece na coluna 'model'
+# Cortes (thresholds) POR MODELO. Cada modelo tem um ponto de corte calibrado,
+# pois a escala da nota varia de modelo para modelo e um corte único não seria
+# o ideal. A chave é o nome do modelo EXATAMENTE como aparece na coluna 'model'
 # dos logs (nome amigável nos locais; CLAUDE_MODEL no Claude). Modelos sem corte
 # próprio caem na chave "Default". Lido pelo scorer (apply_thresholds.py).
 PHISHING_LIKELIHOOD_THRESHOLDS = {
@@ -100,14 +101,15 @@ RETRY_DELAY  = 2.0   # Segundos entre tentativas
 # constrained decoding (grammar/structured outputs), em vez de apenas pedir o
 # formato no prompt. O DMR usa response_format (formato OpenAI/json_schema) e o
 # Claude usa output_config.format (Anthropic). O prompt continua descrevendo o
-# formato — a variante "schema + prompt descritivo" é a que rende melhor.
+# formato, já que a variante "schema + prompt descritivo" é a de melhor
+# rendimento.
 USE_CONSTRAINED_DECODING = False
 
-# Schema canônico da resposta. Cada cliente o embrulha no formato nativo da sua
-# API a partir desta única definição. Observação: min/max de phishing_likelihood
-# não é garantido de forma confiável pelo grammar (e o SDK da Anthropic remove a
-# restrição antes de enviar) — output_parser.py valida o intervalo 0..100 de
-# qualquer forma.
+# Schema canônico da resposta. Cada cliente o encapsula no formato nativo da
+# sua API a partir desta única definição. Observação: o min/max de
+# phishing_likelihood não é garantido de forma confiável pelo grammar (e o SDK
+# da Anthropic remove a restrição antes do envio); output_parser.py valida o
+# intervalo 0..100 de qualquer forma.
 RESPONSE_SCHEMA_NAME = "phishing_analysis"
 RESPONSE_SCHEMA = {
     "type": "object",

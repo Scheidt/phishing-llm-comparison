@@ -4,8 +4,8 @@ com uma cor diferente. O AUC de cada curva aparece na legenda, e as curvas sao
 ordenadas por AUC (maior primeiro) para facilitar a leitura.
 
 O catalogo de modelos (apelido -> nome de exibicao, caminho do log) e lido de
-plot.py (MODELOS_DISPONIVEIS / MODELOS), entao basta editar la quais modelos
-entram. Rode `python plot_roc_todos.py` a partir de qualquer diretorio.
+plot.py (MODELOS_DISPONIVEIS / MODELOS); a selecao dos modelos exibidos e
+editada la. Execute `python plot_roc_todos.py` a partir de qualquer diretorio.
 A figura e salva em graficos/images/roc_todos.png.
 """
 

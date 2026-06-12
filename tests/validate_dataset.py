@@ -4,19 +4,19 @@ Valida a QUALIDADE e a VALIDADE de um dataset antes de rodar o benchmark.
 Motivação: o pipeline trata `label=1` como "phishing" e `label=0` como
 "legítimo", mas nada garante que os dados realmente representem isso. Um corpus
 clássico de ham+spam (spam de farmácia/adulto + threads de listas técnicas)
-passa em `load_dataset()` sem reclamar e produz um benchmark que MEDE OUTRA
+passa em `load_dataset()` sem erro e produz um benchmark que MEDE OUTRA
 COISA (spam x tráfego de lista), invalidando a conclusão sobre phishing.
 
 Este script sinaliza esse tipo de problema com heurísticas transparentes:
   - distribuição/balanceamento dos rótulos;
-  - % de `label=1` com cara de phishing/golpe (isca + link/ação);
+  - % de `label=1` com aparência de phishing/golpe (isca + link/ação);
   - caracterização do que o `label=1` realmente é (farmácia, adulto, etc.);
   - % de `label=0` que parece tráfego de lista técnica (pouco representativo
     de "e-mail legítimo");
   - higiene geral: duplicatas, corpos/assuntos vazios, e-mails muito curtos;
   - amostras para inspeção visual (label=1 que NÃO parece phishing; label=0).
 
-As heurísticas são RUIDOSAS por natureza — servem para LEVANTAR SUSPEITA, não
+As heurísticas são RUIDOSAS por natureza: servem para levantar suspeita, não
 para rotular. A saída é um resumo PASS / AVISO / FALHA, e o processo termina com
 código != 0 se algum problema crítico for detectado (para servir de "portão"
 antes de um run).
@@ -148,16 +148,16 @@ def check_phishing_like(df):
     like = _texts(pos).map(_is_phishing_like)
     n_like = int(like.sum())
     ratio = n_like / n
-    print(f"      {n_like}/{n} ({_pct(n_like, n)}) têm cara de phishing/golpe "
+    print(f"      {n_like}/{n} ({_pct(n_like, n)}) têm aparência de phishing/golpe "
           f"(isca forte, ou link + ação)")
     if ratio < FAIL_PHISHING_LIKE_RATIO:
-        fail(f"apenas {_pct(n_like, n)} do label=1 parece phishing — o rótulo "
+        fail(f"apenas {_pct(n_like, n)} do label=1 parece phishing; o rótulo "
              f"'phishing' provavelmente NÃO corresponde ao conteúdo")
     elif ratio < MIN_PHISHING_LIKE_RATIO:
-        warn(f"só {_pct(n_like, n)} do label=1 parece phishing; o resto parece "
+        warn(f"apenas {_pct(n_like, n)} do label=1 parece phishing; o resto parece "
              f"spam genérico (ver categorias abaixo)")
     else:
-        ok(f"{_pct(n_like, n)} do label=1 tem cara de phishing")
+        ok(f"{_pct(n_like, n)} do label=1 tem aparência de phishing")
 
     # Caracteriza o que o label=1 de fato é.
     print("      composição do label=1 (categorias podem se sobrepor):")
@@ -179,7 +179,7 @@ def check_legit_representativeness(df):
     print(f"      {n_techy}/{n} ({_pct(n_techy, n)}) parecem tráfego de lista "
           f"técnica/discussão (Re:, citações '>', PGP, [lista], etc.)")
     if n_techy / n > MAX_TECH_LIST_RATIO:
-        warn(f"{_pct(n_techy, n)} do label=0 é tráfego de lista técnica — "
+        warn(f"{_pct(n_techy, n)} do label=0 é tráfego de lista técnica, "
              f"pouco representativo de e-mail legítimo genérico "
              f"(faltam transacionais, corporativos, newsletters)")
     else:
@@ -202,15 +202,15 @@ def check_hygiene(df):
     lengths = (df["subject"].str.len() + df["body"].str.len())
     short = int((lengths < SHORT_EMAIL_CHARS).sum())
     if short:
-        warn(f"{short} e-mail(s) muito curto(s) (< {SHORT_EMAIL_CHARS} chars) — "
-             f"pouco conteúdo para classificar")
+        warn(f"{short} e-mail(s) muito curto(s) (< {SHORT_EMAIL_CHARS} chars), "
+             f"com pouco conteúdo para classificar")
     else:
         ok(f"nenhum e-mail abaixo de {SHORT_EMAIL_CHARS} chars")
 
     dup = int((df["subject"] + "\x00" + df["body"]).duplicated().sum())
     if dup and dup / total > MAX_DUP_RATIO:
         warn(f"{dup} duplicata(s) exata(s) de assunto+corpo "
-             f"({_pct(dup, total)}) — pode inflar métricas")
+             f"({_pct(dup, total)}), o que pode inflar métricas")
     elif dup:
         ok(f"{dup} duplicata(s) ({_pct(dup, total)}, dentro do tolerável)")
     else:
@@ -218,15 +218,15 @@ def check_hygiene(df):
 
     dup_id = int(df["id"].duplicated().sum())
     if dup_id:
-        warn(f"{dup_id} id(s) repetido(s) — ids deveriam ser únicos")
+        warn(f"{dup_id} id(s) repetido(s); ids deveriam ser únicos")
 
 
 def show_samples(df):
     print("\n[5] Amostras para inspeção visual")
     pos = df[df["label"] == 1]
     not_phish = pos[~_texts(pos).map(_is_phishing_like)]
-    print(f"\n   label=1 que NÃO parece phishing ({len(not_phish)} no total) "
-          f"— suspeitos de rótulo errado:")
+    print(f"\n   label=1 que NÃO parece phishing ({len(not_phish)} no total), "
+          f"suspeitos de rótulo errado:")
     for _, r in not_phish.head(5).iterrows():
         print(f"     · id {r['id']} | {r['subject'][:60]!r}")
         print(f"          {r['body'][:90]!r}")
@@ -267,7 +267,7 @@ def main():
             print(f"  - {m}")
         raise SystemExit(1)
     if WARNINGS:
-        print("Avisos — revise antes de confiar nos resultados:")
+        print("Avisos (revise antes de confiar nos resultados):")
         for m in WARNINGS:
             print(f"  - {m}")
         # Avisos não falham o portão: são para julgamento humano.

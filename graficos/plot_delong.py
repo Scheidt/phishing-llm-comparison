@@ -4,8 +4,8 @@ do Claude (o baseline). O teste de DeLong avalia se a diferenca entre duas AUCs
 (areas sob a ROC) e estatisticamente significativa, levando em conta a
 covariancia entre as duas curvas por serem avaliadas SOBRE OS MESMOS e-mails
 (teste pareado/correlacionado, bem mais sensivel que comparar ICs isolados).
-Como a AUC nao depende de limiar, comparamos os scores brutos
-(phishing_likelihood) diretamente -- nenhum limiar e aplicado aqui.
+Como a AUC nao depende de limiar, os scores brutos (phishing_likelihood) sao
+comparados diretamente; nenhum limiar e aplicado aqui.
 
 Usa a biblioteca MLStatKit (MLstatkit.Delong_test), que devolve a estatistica z
 (com sinal = AUC_local - AUC_Claude), o p-valor bicaudal e o IC95% de cada AUC.
@@ -15,7 +15,7 @@ a significancia (estrelas) do teste de DeLong aparecem sobre o par. A comparacao
 e feita sobre o conjunto de e-mails validos COMUM aos dois modelos (alinhados
 por email_id), com o MESMO rotulo verdadeiro.
 
-O catalogo de modelos vem de plot.py (MODELOS_DISPONIVEIS / MODELOS). Rode
+O catalogo de modelos vem de plot.py (MODELOS_DISPONIVEIS / MODELOS). Execute
 `python plot_delong.py` a partir de qualquer diretorio. A figura e salva em
 graficos/images/delong.png.
 """

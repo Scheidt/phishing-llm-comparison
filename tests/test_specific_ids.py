@@ -1,9 +1,10 @@
-# test_specific_ids.py — re-teste de e-mails específicos com mais tokens de saída.
+# test_specific_ids.py: re-teste de e-mails específicos com mais tokens de saída.
 #
 # Serve para reprocessar os e-mails cujo JSON veio CORTADO (truncado pelo limite
-# de tokens) no benchmark. Em vez de rodar o dataset inteiro, você força só os
-# IDs problemáticos (FORCED_IDS) em um único modelo (MODEL_KEY), agora com um
-# limite de tokens de saída maior (MAX_OUTPUT_TOKENS) para o JSON caber inteiro.
+# de tokens) no benchmark. Em vez de rodar o dataset inteiro, processam-se
+# apenas os IDs problemáticos (FORCED_IDS) em um único modelo (MODEL_KEY), com
+# um limite de tokens de saída maior (MAX_OUTPUT_TOKENS) para o JSON caber
+# inteiro.
 #
 # Os IDs cortados por modelo saem do relatório de analysis/error_correction.py
 # (seção "RESPOSTAS CORTADAS").
@@ -27,7 +28,7 @@ from models.dmr_client import DmrClient
 from config import LOCAL_MODELS
 
 # ============================================================================
-# CONFIGURAÇÃO DO TESTE  (edite à vontade)
+# CONFIGURAÇÃO DO TESTE  (ajuste conforme necessário)
 # ============================================================================
 MODEL_KEY = "llama3_3b"   # chave em config.LOCAL_MODELS (o modelo a re-testar)
 

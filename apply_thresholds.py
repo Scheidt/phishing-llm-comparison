@@ -1,9 +1,9 @@
 """
 Scorer: verificação de ACERTO desacoplada da inferência.
 
-A inferência (model_runner + logger) apenas grava os FATOS de cada resposta — a
-nota `phishing_likelihood`, o classification textual, indicators, se houve reparo
-de JSON e eventual erro de chamada — e já marca a validade em is_error,
+A inferência (model_runner + logger) apenas grava os FATOS de cada resposta (a
+nota `phishing_likelihood`, o classification textual, os indicators, se houve
+reparo de JSON e eventual erro de chamada) e já marca a validade em is_error,
 deixando vazias apenas as colunas que dependem do corte. Este módulo preenche
 essas colunas:
     - predicted_label        (1 se phishing_likelihood >= corte DO MODELO, senão 0;
@@ -11,20 +11,21 @@ essas colunas:
     - predicted_label_text   ("PHISHING" / "LEGÍTIMO" / "ERRO" / "INVÁLIDO")
     - is_correct             (predicted_label == true_label)
 
-NÃO mexe em is_error nem was_repaired: validade não depende do corte e é definida
-na inferência (logger.py) — assim correções manuais nos logs (ex.: consertar um
-JSON reparado e marcar is_error=False) sobrevivem a um re-scoring.
+NÃO altera is_error nem was_repaired: a validade não depende do corte e é
+definida na inferência (logger.py). Dessa forma, correções manuais nos logs
+(ex.: consertar um JSON reparado e marcar is_error=False) sobrevivem a um
+re-scoring.
 
-Os cortes por modelo ficam em config.PHISHING_LIKELIHOOD_THRESHOLDS (chave = nome
-do modelo na coluna 'model'; quem não tiver corte próprio usa "Default"). Como o
-rótulo vem sempre da nota (nunca do rótulo anterior), pontuar é idempotente e
-pode ser re-rodado à vontade.
+Os cortes por modelo ficam em config.PHISHING_LIKELIHOOD_THRESHOLDS (chave =
+nome do modelo na coluna 'model'; modelos sem corte próprio usam "Default").
+Como o rótulo deriva sempre da nota (nunca do rótulo anterior), a pontuação é
+idempotente e pode ser re-executada quantas vezes for necessário.
 
 Dois usos:
   1) No pipeline: o main.py chama score_run() logo após cada modelo, antes das
      métricas (ver score_run).
   2) Standalone: re-pontua TODOS os logs em results/llm_logs/ e recalcula as
-     métricas — use quando mudar algum corte em config.py.
+     métricas; deve ser usado após alterar algum corte em config.py.
 
 Uso standalone:
     python apply_thresholds.py            # re-pontua os logs e recalcula métricas
@@ -49,7 +50,7 @@ def threshold_for(model_name: str) -> float:
 
 
 def _safe_int(value) -> int | None:
-    """Converte para int, ou None se não der."""
+    """Converte para int, ou None em caso de falha."""
     try:
         return int(value)
     except (TypeError, ValueError):
@@ -61,7 +62,7 @@ def _parse_likelihood(value) -> float | None:
     Devolve a nota como float 0..100, ou None se vazia/fora do intervalo.
 
     Aceita tanto inteiros ("92", do Claude) quanto floats ("85.0", dos modelos
-    locais) — os logs gravam a nota nos dois formatos.
+    locais), pois os logs gravam a nota nos dois formatos.
     """
     try:
         n = float(value)
@@ -75,10 +76,10 @@ def score_record(rec: dict, threshold: float) -> dict:
     Preenche os veredictos dependentes do corte em UM registro (in-place).
 
     Lê os fatos da inferência (phishing_likelihood, error_message, true_label) e
-    define predicted_label, predicted_label_text e is_correct. NÃO mexe em
-    is_error (validade, definida na inferência — ver logger.py). Funciona tanto
+    define predicted_label, predicted_label_text e is_correct. NÃO altera
+    is_error (validade, definida na inferência; ver logger.py). Funciona tanto
     para registros em memória (vindos do logger, já tipados) quanto para linhas
-    lidas de um CSV (valores em string) — tudo é coagido aqui.
+    lidas de um CSV (valores em string): a coerção de tipos é feita aqui.
 
     Regra:
       - erro de chamada OU sem nota numérica utilizável => predicted_label = -1
@@ -143,9 +144,9 @@ def score_run(model_name: str, raw_results: list[dict]) -> list[dict]:
     Pontua um modelo recém-inferido. Chamado pelo main.py logo após a inferência,
     antes das métricas.
 
-    Com logging ligado, pontua o log no disco (fonte da verdade — fica gravado
-    para re-scoring futuro) e devolve os registros tipados. Sem logging, pontua
-    os registros em memória devolvidos pela inferência.
+    Com logging ligado, pontua o log no disco (fonte da verdade, gravada para
+    re-scoring futuro) e devolve os registros tipados. Sem logging, pontua os
+    registros em memória devolvidos pela inferência.
     """
     threshold = threshold_for(model_name)
     if ENABLE_LLM_LOGGING:
@@ -164,7 +165,7 @@ def _score_and_report(path: str, dry_run: bool) -> None:
         rows = list(reader)
 
     if not rows:
-        print(f"  {nome}: vazio — pulado.")
+        print(f"  {nome}: vazio (pulado).")
         return
 
     model = rows[0].get("model") or "?"

@@ -57,7 +57,7 @@ class FakeClient:
 
     Retorna sempre um JSON válido e registra o id de cada e-mail processado
     (extraído do user_prompt, cujo 'Subject:' é "id-<n>"). Se `crash_at` for
-    informado, levanta uma exceção na enésima chamada — simulando uma queda no
+    informado, levanta uma exceção na enésima chamada, simulando uma queda no
     meio do benchmark.
     """
     def __init__(self, crash_at: int | None = None):

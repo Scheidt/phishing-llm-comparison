@@ -1,10 +1,10 @@
-# test_model.py — smoke test: valide um modelo antes de rodar o benchmark completo.
+# test_model.py: smoke test para validar um modelo antes do benchmark completo.
 #
 # Roda poucas amostras (N_SAMPLES) em um modelo real e imprime as métricas.
 # Serve também para testar a RETOMADA por e-mail (resume) em um modelo real:
-#   1. Rode uma vez e interrompa no meio (Ctrl+C ou deixe cair).
-#   2. Ponha RESUME = True e rode de novo: deve reaproveitar os e-mails já
-#      gravados no log e continuar de onde parou, no MESMO arquivo de log.
+#   1. Execute uma vez e interrompa no meio (Ctrl+C ou queda).
+#   2. Defina RESUME = True e execute de novo: o teste deve reaproveitar os
+#      e-mails já gravados no log e continuar de onde parou, no MESMO arquivo.
 import os
 import sys
 
@@ -25,7 +25,7 @@ from models.claude_client import ClaudeClient
 from config import LOCAL_MODELS
 
 # ============================================================================
-# CONFIGURAÇÃO DO TESTE  (edite à vontade)
+# CONFIGURAÇÃO DO TESTE  (ajuste conforme necessário)
 # ============================================================================
 MODEL_KEY = "llama3_3b"   # chave em config.LOCAL_MODELS
 N_SAMPLES = 20                # quantas amostras do dataset usar
