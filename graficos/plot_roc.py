@@ -19,7 +19,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from limiar import melhor_limiar_f1, carregar
+from limiar import melhor_limiar_f1, carregar, razao_segura
 
 # diretorios resolvidos a partir da localizacao deste script (graficos/),
 # para que possa ser chamado de qualquer diretorio
@@ -50,11 +50,14 @@ def classification_from_raw(raw):
     if not isinstance(raw, str):
         return None
     m = re.search(r'"?classification"?\s*:\s*"?([A-Za-z\u00C0-\u00FF]+)', raw, re.I)
-    return text_to_label(m.group(1)) if m else None
+    if m is None:
+        return None
+    return text_to_label(m.group(1))
 
 
 def confusion(y_true, y_pred):
-    y_true, y_pred = np.asarray(y_true), np.asarray(y_pred)
+    y_true = np.asarray(y_true)
+    y_pred = np.asarray(y_pred)
     tp = int(np.sum((y_true == 1) & (y_pred == 1)))
     tn = int(np.sum((y_true == 0) & (y_pred == 0)))
     fp = int(np.sum((y_true == 0) & (y_pred == 1)))
@@ -65,10 +68,10 @@ def confusion(y_true, y_pred):
 def rates(y_true, y_pred):
     """Retorna (fpr, tpr, f1) para a classe phishing."""
     tp, fp, tn, fn = confusion(y_true, y_pred)
-    tpr = tp / (tp + fn) if (tp + fn) else 0.0
-    fpr = fp / (fp + tn) if (fp + tn) else 0.0
-    prec = tp / (tp + fp) if (tp + fp) else 0.0
-    f1 = 2 * prec * tpr / (prec + tpr) if (prec + tpr) else 0.0
+    tpr = razao_segura(tp, tp + fn)
+    fpr = razao_segura(fp, fp + tn)
+    prec = razao_segura(tp, tp + fp)
+    f1 = razao_segura(2 * prec * tpr, prec + tpr)
     return fpr, tpr, f1
 
 
@@ -121,8 +124,6 @@ def gerar(model_name=MODEL_NAME, log_path=LOG_PATH, out_path=None, show=False):
     p2 = rates(y, (score >= 50).astype(int))    # Regra 2: likelihood>=50
     p3 = rates(y, (score >= t_opt).astype(int)) # Regra 3: F1-otimo
 
-    model = model_name
-
     # --- plot ---
     fig, ax = plt.subplots(figsize=(7, 7))
     ax.plot(roc[:, 0], roc[:, 1], color="#185FA5", lw=2,
@@ -148,8 +149,11 @@ def gerar(model_name=MODEL_NAME, log_path=LOG_PATH, out_path=None, show=False):
     fig.tight_layout()
 
     os.makedirs(IMAGES_DIR, exist_ok=True)
-    out = out_path or os.path.join(
-        IMAGES_DIR, f"roc_{re.sub(r'[^A-Za-z0-9._-]+', '_', model)}.png")
+    if out_path is None:
+        slug = re.sub(r"[^A-Za-z0-9._-]+", "_", model_name)
+        out = os.path.join(IMAGES_DIR, f"roc_{slug}.png")
+    else:
+        out = out_path
     fig.savefig(out, dpi=150)
     print(f"Figura salva em: {out}")
     if show:

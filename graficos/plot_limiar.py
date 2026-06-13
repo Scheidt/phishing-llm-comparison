@@ -43,8 +43,6 @@ def gerar(model_name=MODEL_NAME, log_path=LOG_PATH, out_path=None, step=STEP, sh
     best_t, best_f1 = melhor_limiar_f1(y, score)
     print(f"Melhor F1 = {best_f1*100:.2f}% no limiar {best_t:g}")
 
-    model = model_name
-
     # plot
     fig, ax = plt.subplots(figsize=(8, 5))
     ax.plot(thresholds, f1s * 100, color="#185FA5", lw=2)
@@ -66,8 +64,11 @@ def gerar(model_name=MODEL_NAME, log_path=LOG_PATH, out_path=None, step=STEP, sh
     fig.tight_layout()
 
     os.makedirs(IMAGES_DIR, exist_ok=True)
-    out = out_path or os.path.join(
-        IMAGES_DIR, f"f1_threshold_{re.sub(r'[^A-Za-z0-9._-]+', '_', model)}.png")
+    if out_path is None:
+        slug = re.sub(r"[^A-Za-z0-9._-]+", "_", model_name)
+        out = os.path.join(IMAGES_DIR, f"f1_threshold_{slug}.png")
+    else:
+        out = out_path
     fig.savefig(out, dpi=150)
     print(f"Figura salva em: {out}")
     if show:

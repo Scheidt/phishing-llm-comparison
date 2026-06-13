@@ -123,7 +123,10 @@ def extract_json(text: str) -> dict | None:
         return None
     # Pega do primeiro '{' ao ultimo '}', tolerando texto em volta.
     match = re.search(r"\{.*\}", text, re.DOTALL)
-    candidate = match.group(0) if match else text
+    if match:
+        candidate = match.group(0)
+    else:
+        candidate = text
     try:
         obj = json.loads(candidate)
     except (json.JSONDecodeError, ValueError):
@@ -197,10 +200,20 @@ def call_constrained(client, model, subject, body, system_prompt) -> CallResult:
     return CallResult(parsed, latency, 1)
 
 
+def call_constrained_only(client, model, subject, body) -> CallResult:
+    """Variante (b): grammar com prompt minimo (sem descrever o formato)."""
+    return call_constrained(client, model, subject, body, SYSTEM_PROMPT_MINIMAL)
+
+
+def call_both(client, model, subject, body) -> CallResult:
+    """Variante (c): grammar + prompt descritivo."""
+    return call_constrained(client, model, subject, body, SYSTEM_PROMPT_FULL)
+
+
 VARIANTS = {
-    "prompt_only": lambda c, m, s, b: call_prompt_only(c, m, s, b),
-    "constrained_only": lambda c, m, s, b: call_constrained(c, m, s, b, SYSTEM_PROMPT_MINIMAL),
-    "both": lambda c, m, s, b: call_constrained(c, m, s, b, SYSTEM_PROMPT_FULL),
+    "prompt_only": call_prompt_only,
+    "constrained_only": call_constrained_only,
+    "both": call_both,
 }
 
 
@@ -226,18 +239,26 @@ class Metrics:
         # denominador exclui erros de contexto: eles sao ortogonais ao formato
         # e atingem todas as variantes igualmente, entao nao penalizam nenhuma.
         denom = self.completed()
-        return self.correct / denom if denom else 0.0
+        if denom == 0:
+            return 0.0
+        return self.correct / denom
 
     def accuracy_parseable(self):
-        return self.correct_parseable / self.parseable if self.parseable else 0.0
+        if self.parseable == 0:
+            return 0.0
+        return self.correct_parseable / self.parseable
 
     def failure_rate(self):
         # falha de formato REAL: sobre as chamadas que completaram
         denom = self.completed()
-        return self.failures / denom if denom else 0.0
+        if denom == 0:
+            return 0.0
+        return self.failures / denom
 
     def context_error_rate(self):
-        return self.context_errors / self.total if self.total else 0.0
+        if self.total == 0:
+            return 0.0
+        return self.context_errors / self.total
 
 
 def run_variant(name, fn, client, model, dataset) -> Metrics:
@@ -248,7 +269,11 @@ def run_variant(name, fn, client, model, dataset) -> Metrics:
         except Exception as e:
             # Erro de contexto/API: a chamada nem completou. Balde separado,
             # porque NAO eh falha de formato e atinge as 3 variantes igual.
-            kind = "contexto" if "context" in str(e).lower() or "length" in str(e).lower() else "API"
+            mensagem = str(e).lower()
+            if "context" in mensagem or "length" in mensagem:
+                kind = "contexto"
+            else:
+                kind = "API"
             print(f"  [{name}] exemplo {i}: erro de {kind} ({str(e)[:80]})")
             m.context_errors += 1
             continue
@@ -261,8 +286,11 @@ def run_variant(name, fn, client, model, dataset) -> Metrics:
         if is_correct:
             m.correct_parseable += 1
             m.correct += 1  # falha de formato ja nao chega aqui, logo conta como erro
+            marcador = "OK"
+        else:
+            marcador = "X"
         print(f"  [{name}] {i}/{m.total}  pred={res.parsed['classification']:<11} "
-              f"gold={ex['label']:<11} {'OK' if is_correct else 'X'}  "
+              f"gold={ex['label']:<11} {marcador}  "
               f"({res.latency:.2f}s, {res.attempts} call(s))")
     return m
 
@@ -274,8 +302,12 @@ def print_table(results: dict):
     print("\n" + line)
     print("-" * len(line))
     for name, m in results.items():
-        lat_mean = statistics.mean(m.latencies) if m.latencies else 0.0
-        lat_median = statistics.median(m.latencies) if m.latencies else 0.0
+        if m.latencies:
+            lat_mean = statistics.mean(m.latencies)
+            lat_median = statistics.median(m.latencies)
+        else:
+            lat_mean = 0.0
+            lat_median = 0.0
         row = [
             name,
             f"{m.accuracy():.1%}",
@@ -294,17 +326,20 @@ def print_table(results: dict):
 # --------------------------------------------------------------------------- #
 
 def main():
-    df = load_dataset(DATASET_PATH).head(50)  # so os 20 primeiros para teste rapido; mude ou remova para rodar tudo
+    df = load_dataset(DATASET_PATH).head(50)  # so os 50 primeiros para teste rapido; mude ou remova para rodar tudo
     # Mapeia o rotulo inteiro do CSV (0=legitimo, 1=phishing) para a string que
     # o modelo emite, para casar com res.parsed["classification"] em run_variant.
-    dataset = [
-        {
+    dataset = []
+    for row in df.itertuples():
+        if row.label == 1:
+            label = "phishing"
+        else:
+            label = "legitimate"
+        dataset.append({
             "subject": row.subject,
             "body": row.body,
-            "label": "phishing" if row.label == 1 else "legitimate",
-        }
-        for row in df.itertuples()
-    ]
+            "label": label,
+        })
 
     client = OpenAI(base_url=DMR_BASE_URL, api_key="not-needed")
 

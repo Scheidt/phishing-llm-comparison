@@ -76,10 +76,16 @@ class DmrClient:
             Retorna dict com:
             raw_response, elapsed_seconds, input_tokens, output_tokens, error
         """
-        token_limit = MAX_TOKENS if max_tokens is None else max_tokens
+        if max_tokens is None:
+            token_limit = MAX_TOKENS
+        else:
+            token_limit = max_tokens
 
         # Aplica constrained decoding apenas se habilitado no config.
-        extra = {"response_format": _RESPONSE_FORMAT} if USE_CONSTRAINED_DECODING else {}
+        if USE_CONSTRAINED_DECODING:
+            extra = {"response_format": _RESPONSE_FORMAT}
+        else:
+            extra = {}
 
         for attempt in range(1, MAX_RETRIES + 1):
             try:
@@ -99,11 +105,19 @@ class DmrClient:
                 elapsed = time.perf_counter() - start
                 raw     = response.choices[0].message.content or ""
 
+                # Nem todo backend devolve as contagens de uso de tokens.
+                if response.usage is not None:
+                    input_tokens  = response.usage.prompt_tokens
+                    output_tokens = response.usage.completion_tokens
+                else:
+                    input_tokens  = 0
+                    output_tokens = 0
+
                 return {
                     "raw_response":    raw,
                     "elapsed_seconds": round(elapsed, 4),
-                    "input_tokens":    response.usage.prompt_tokens     if response.usage else 0,
-                    "output_tokens":   response.usage.completion_tokens if response.usage else 0,
+                    "input_tokens":    input_tokens,
+                    "output_tokens":   output_tokens,
                     "error":           None,
                 }
 

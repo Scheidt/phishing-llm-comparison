@@ -90,7 +90,9 @@ _TECH_LIST = re.compile(
 
 def _is_phishing_like(text: str) -> bool:
     """Heurística: tem isca forte, OU um link combinado com verbo de ação."""
-    return bool(_LURE.search(text)) or bool(_URL.search(text) and _ACTION.search(text))
+    tem_isca = bool(_LURE.search(text))
+    tem_link_com_acao = bool(_URL.search(text)) and bool(_ACTION.search(text))
+    return tem_isca or tem_link_com_acao
 
 
 # =-=-= Acumuladores do resultado =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=-=-==-=-=
@@ -113,7 +115,9 @@ def ok(msg: str):
 
 
 def _pct(part: int, total: int) -> str:
-    return f"{(100 * part / total):.1f}%" if total else "n/a"
+    if total == 0:
+        return "n/a"
+    return f"{(100 * part / total):.1f}%"
 
 
 def _texts(df):
@@ -238,7 +242,10 @@ def show_samples(df):
 
 
 def main():
-    path = sys.argv[1] if len(sys.argv) > 1 else DATASET_PATH
+    if len(sys.argv) > 1:
+        path = sys.argv[1]
+    else:
+        path = DATASET_PATH
     print(f"{'=-'*30 + '='}")
     print(f"Validação de dataset: {path}")
     print(f"{'=-'*30 + '='}")

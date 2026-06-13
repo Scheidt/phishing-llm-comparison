@@ -121,12 +121,20 @@ def body_is_semantic(body: str) -> bool:
     text = readable_text(body)
     if len(text) < MIN_BODY_CHARS:
         return False
+
     compact = re.sub(r"\s", "", text)
-    if compact and sum(c.isalpha() for c in compact) / len(compact) < MIN_ALPHA_RATIO:
-        return False
+    if compact:
+        proporcao_alfabetica = sum(c.isalpha() for c in compact) / len(compact)
+        if proporcao_alfabetica < MIN_ALPHA_RATIO:
+            return False
+
+    # Conta apenas palavras com letras, ignorando URLs e endereços de e-mail.
     core = _URL_RE.sub(" ", text)
-    words = [w for w in core.split() if any(c.isalpha() for c in w)]
-    return len(words) >= MIN_BODY_WORDS
+    palavras_com_letras = []
+    for w in core.split():
+        if any(c.isalpha() for c in w):
+            palavras_com_letras.append(w)
+    return len(palavras_com_letras) >= MIN_BODY_WORDS
 
 
 # --------------------------------------------------------------------------- #
@@ -139,7 +147,10 @@ def _parse_enron_message(raw: str) -> tuple[str, str, str]:
     subject = (msg.get("Subject") or "").strip()
     try:
         part = msg.get_body(preferencelist=("plain", "html"))
-        text = part.get_content() if part is not None else ""
+        if part is not None:
+            text = part.get_content()
+        else:
+            text = ""
     except Exception:
         text = ""
     body = " ".join(text.split())

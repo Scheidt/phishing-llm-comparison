@@ -128,7 +128,10 @@ def validate_format(raw_response: str) -> dict:
     }
 
     text, had_fence = strip_code_fence(raw_response)
-    fence_note = "envolto em cerca de código; " if had_fence else ""
+    if had_fence:
+        fence_note = "envolto em cerca de código; "
+    else:
+        fence_note = ""
 
     try:
         data = json.loads(text)
@@ -165,13 +168,15 @@ def validate_format(raw_response: str) -> dict:
     )
 
     if not result["format_ok"]:
-        faltando = [
-            nome for nome, ok in [
-                ("classification", result["has_classification"]),
-                ("phishing_likelihood", result["has_likelihood"]),
-                ("indicators", result["has_indicators"]),
-            ] if not ok
+        checagens = [
+            ("classification", result["has_classification"]),
+            ("phishing_likelihood", result["has_likelihood"]),
+            ("indicators", result["has_indicators"]),
         ]
+        faltando = []
+        for nome, ok in checagens:
+            if not ok:
+                faltando.append(nome)
         result["validation_note"] = f"{fence_note}Campos inválidos/ausentes: {', '.join(faltando)}"
     else:
         result["validation_note"] = fence_note.strip("; ").strip()
@@ -225,9 +230,12 @@ def main():
 
     # Primeira linha = assunto; o restante = corpo (espelha os campos
     # 'subject' e 'body' do dataset).
-    lines   = email_text.splitlines()
-    subject = lines[0].strip() if lines else ""
-    body    = "\n".join(lines[1:]).strip()
+    lines = email_text.splitlines()
+    if lines:
+        subject = lines[0].strip()
+    else:
+        subject = ""
+    body = "\n".join(lines[1:]).strip()
 
     model_tag   = LOCAL_MODELS[MODEL_KEY]
     user_prompt = USER_PROMPT_TEMPLATE.format(subject=subject, body=body)
@@ -253,17 +261,23 @@ def main():
                                     max_tokens=TEST_MAX_TOKENS)
 
         if response["error"]:
-            v = {k: False for k in
-                 ("is_valid_json", "has_classification", "has_likelihood",
-                  "has_indicators", "format_ok")}
-            v["validation_note"] = "Requisição falhou (ver error_message)"
+            v = {
+                "is_valid_json":      False,
+                "has_classification": False,
+                "has_likelihood":     False,
+                "has_indicators":     False,
+                "format_ok":          False,
+                "validation_note":    "Requisição falhou (ver error_message)",
+            }
         else:
             v = validate_format(response["raw_response"])
 
         if v["format_ok"]:
             ok_count += 1
+            status = "OK "
+        else:
+            status = "FALHA"
 
-        status = "OK " if v["format_ok"] else "FALHA"
         print(f"  [{i:>3}/{REPETITIONS}] {status}  "
               f"({response['elapsed_seconds']}s)  {v['validation_note']}")
 
@@ -283,7 +297,10 @@ def main():
             "error_message":      response["error"] or "",
         })
 
-    rate = (ok_count / REPETITIONS * 100) if REPETITIONS else 0
+    if REPETITIONS:
+        rate = ok_count / REPETITIONS * 100
+    else:
+        rate = 0
     print(f"\n{'=-'*30 + '='}")
     print(f"Resultado: {ok_count}/{REPETITIONS} no formato correto ({rate:.1f}%)")
     print(f"CSV salvo em: {csv_path}")

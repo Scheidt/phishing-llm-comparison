@@ -136,19 +136,27 @@ def _plot(resultados, nome_base, alpha, out_path, show):
     fig, ax = plt.subplots(figsize=(max(7, 2.4 * len(nomes) + 2), 6.5))
 
     for i, (_, auc_loc, ci_loc, auc_base, ci_base, _, _, _, _) in enumerate(resultados):
+        # A legenda so deve ganhar uma entrada por serie, no primeiro par.
+        if i == 0:
+            label_base = f"AUC {nome_base}"
+            label_local = "AUC modelo local"
+        else:
+            label_base = None
+            label_local = None
+
         # baseline (Claude) a esquerda, modelo local a direita
         ax.errorbar(x[i] - desloc, auc_base,
                     yerr=[[auc_base - ci_base[0]], [ci_base[1] - auc_base]],
                     fmt="o", color=COR_BASE, ecolor=COR_BASE,
                     elinewidth=2.2, capsize=6, capthick=2.2, markersize=10,
                     markeredgecolor="white", markeredgewidth=1.2, zorder=5,
-                    label=f"AUC {nome_base}" if i == 0 else None)
+                    label=label_base)
         ax.errorbar(x[i] + desloc, auc_loc,
                     yerr=[[auc_loc - ci_loc[0]], [ci_loc[1] - auc_loc]],
                     fmt="s", color=COR_LOCAL, ecolor=COR_LOCAL,
                     elinewidth=2.2, capsize=6, capthick=2.2, markersize=10,
                     markeredgecolor="white", markeredgewidth=1.2, zorder=5,
-                    label="AUC modelo local" if i == 0 else None)
+                    label=label_local)
         ax.text(x[i] - desloc, ci_base[1] + 0.006, f"{auc_base:.3f}",
                 ha="center", va="bottom", fontsize=9, color=COR_BASE)
         ax.text(x[i] + desloc, ci_loc[1] + 0.006, f"{auc_loc:.3f}",
@@ -186,7 +194,10 @@ def _plot(resultados, nome_base, alpha, out_path, show):
     fig.tight_layout()
 
     os.makedirs(IMAGES_DIR, exist_ok=True)
-    out = out_path or os.path.join(IMAGES_DIR, "delong.png")
+    if out_path is None:
+        out = os.path.join(IMAGES_DIR, "delong.png")
+    else:
+        out = out_path
     fig.savefig(out, dpi=150, bbox_inches="tight")
     print(f"Figura salva em: {out}")
     if show:

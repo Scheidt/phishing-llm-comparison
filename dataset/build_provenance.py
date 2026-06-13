@@ -108,24 +108,30 @@ def main() -> None:
     print(f"Varrendo o Enron para resolver {len(legit_bodies)} legítimos (pode demorar)...", file=sys.stderr)
     legit_origin = legit_origin_by_body(LEGIT_CSV, legit_bodies)
 
-    rows, unresolved = [], 0
+    rows = []
+    unresolved = 0
     for _, r in ds.iterrows():
         key = _norm(r["body"])
         if r["label"] == 1:
             hit = ph_origin.get(key)
             if hit is None:
                 unresolved += 1
-                source_file, source_row, src_id = "?", "", content_key(r["subject"], r["body"])
+                source_file = "?"
+                source_row = ""
+                src_id = content_key(r["subject"], r["body"])
             else:
                 name, src_row, src_id = hit
-                source_file, source_row = f"dataset/phishing/{name}", src_row
+                source_file = f"dataset/phishing/{name}"
+                source_row = src_row
         else:
             file = legit_origin.get(key)
             if file is None:
                 unresolved += 1
+                src_id = "?"
+            else:
+                src_id = file  # o id original do Enron É o src_id (campo `file`)
             source_file = "dataset/legitimo/emails.csv"
-            source_row = ""  # o id original do Enron É o src_id (campo `file`)
-            src_id = file if file is not None else "?"
+            source_row = ""
         rows.append(
             {
                 "dataset_id": int(r["id"]),

@@ -98,7 +98,10 @@ def gerar(modelos, out_path=None, show=False):
     fig.tight_layout()
 
     os.makedirs(IMAGES_DIR, exist_ok=True)
-    out = out_path or os.path.join(IMAGES_DIR, "f1_barras_comparacao.png")
+    if out_path is None:
+        out = os.path.join(IMAGES_DIR, "f1_barras_comparacao.png")
+    else:
+        out = out_path
     fig.savefig(out, dpi=150)
     print(f"Figura salva em: {out}")
     if show:
@@ -111,7 +114,10 @@ def gerar(modelos, out_path=None, show=False):
 def main():
     # usa a mesma selecao/catalogo de plot.py
     from plot import MODELOS, MODELOS_DISPONIVEIS
-    modelos = [MODELOS_DISPONIVEIS[a] for a in MODELOS if a in MODELOS_DISPONIVEIS]
+    modelos = []
+    for apelido in MODELOS:
+        if apelido in MODELOS_DISPONIVEIS:
+            modelos.append(MODELOS_DISPONIVEIS[apelido])
     gerar(modelos, OUT_PATH, show=True)
 
 

@@ -88,7 +88,10 @@ def gerar(modelos=MODELOS, out_path=None, show=False):
     fig.tight_layout()
 
     os.makedirs(IMAGES_DIR, exist_ok=True)
-    out = out_path or os.path.join(IMAGES_DIR, "roc_todos.png")
+    if out_path is None:
+        out = os.path.join(IMAGES_DIR, "roc_todos.png")
+    else:
+        out = out_path
     fig.savefig(out, dpi=150)
     print(f"Figura salva em: {out}")
     if show:

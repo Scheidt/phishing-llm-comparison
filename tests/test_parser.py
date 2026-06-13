@@ -35,8 +35,12 @@ FAILED = []
 
 
 def check(cond: bool, msg: str):
-    (PASSED if cond else FAILED).append(msg)
-    print(f"  [{'OK  ' if cond else 'FALHA'}] {msg}")
+    if cond:
+        PASSED.append(msg)
+        print(f"  [OK  ] {msg}")
+    else:
+        FAILED.append(msg)
+        print(f"  [FALHA] {msg}")
 
 
 # Caso exato relatado: aspas duplas internas não escapadas em "indicators".

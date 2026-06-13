@@ -16,15 +16,29 @@ COL_SCORE = "phishing_likelihood"  # 0-100
 COL_PRED = "predicted_label"       # usado so para descartar -1 (falha de parse)
 
 
+def razao_segura(numerador, denominador):
+    """Divide numerador/denominador, devolvendo 0.0 quando o denominador e zero.
+
+    Evita divisao por zero nos calculos de precisao/recall/F1 quando uma das
+    classes nao aparece no conjunto avaliado.
+    """
+    if denominador == 0:
+        return 0.0
+    return numerador / denominador
+
+
 def f1_phishing(y_true, y_pred):
     """F1 da classe phishing (1 = positivo)."""
-    y_true, y_pred = np.asarray(y_true), np.asarray(y_pred)
+    y_true = np.asarray(y_true)
+    y_pred = np.asarray(y_pred)
+
     tp = np.sum((y_true == 1) & (y_pred == 1))
     fp = np.sum((y_true == 0) & (y_pred == 1))
     fn = np.sum((y_true == 1) & (y_pred == 0))
-    prec = tp / (tp + fp) if (tp + fp) else 0.0
-    rec = tp / (tp + fn) if (tp + fn) else 0.0
-    return 2 * prec * rec / (prec + rec) if (prec + rec) else 0.0
+
+    prec = razao_segura(tp, tp + fp)
+    rec = razao_segura(tp, tp + fn)
+    return razao_segura(2 * prec * rec, prec + rec)
 
 
 def melhor_limiar_f1(y_true, score):
@@ -39,16 +53,24 @@ def melhor_limiar_f1(y_true, score):
     """
     y_true = np.asarray(y_true)
     score = np.asarray(score, dtype=float)
-    us = np.unique(np.round(score, 4))
-    if len(us) == 0:
+    scores_unicos = np.unique(np.round(score, 4))
+    if len(scores_unicos) == 0:
         return 0.0, 0.0
-    # menor score (tudo positivo) + pontos medios entre scores consecutivos
-    cands = [float(us[0])] + [float((us[i] + us[i + 1]) / 2) for i in range(len(us) - 1)]
-    best_t, best_f1 = cands[0], -1.0
-    for t in cands:
+
+    # Candidatos: o menor score (tudo classificado como phishing) mais os
+    # pontos medios entre cada par de scores consecutivos.
+    candidatos = [float(scores_unicos[0])]
+    for i in range(len(scores_unicos) - 1):
+        ponto_medio = (scores_unicos[i] + scores_unicos[i + 1]) / 2
+        candidatos.append(float(ponto_medio))
+
+    best_t = candidatos[0]
+    best_f1 = -1.0
+    for t in candidatos:
         f1 = f1_phishing(y_true, (score >= t).astype(int))
         if f1 > best_f1:
-            best_f1, best_t = f1, float(t)
+            best_f1 = f1
+            best_t = float(t)
     return best_t, best_f1
 
 

@@ -33,8 +33,12 @@ FAILED = []
 
 
 def check(cond: bool, msg: str):
-    (PASSED if cond else FAILED).append(msg)
-    print(f"  [{'OK  ' if cond else 'FALHA'}] {msg}")
+    if cond:
+        PASSED.append(msg)
+        print(f"  [OK  ] {msg}")
+    else:
+        FAILED.append(msg)
+        print(f"  [FALHA] {msg}")
 
 
 def rec(likelihood="", true_label=1, repaired=False, error=""):

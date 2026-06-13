@@ -34,8 +34,12 @@ def gerar(model_name=MODEL_NAME, log_path=LOG_PATH, out_path=None, show=False):
     df = pd.read_csv(os.path.join(ROOT, log_path))
 
     y_all, score_all, valid = carregar(df)
+
     # eixo X: usa o email_id se numerico; senao, o indice da linha
-    ids_all = pd.to_numeric(df[COL_ID], errors="coerce") if COL_ID in df.columns else pd.Series(np.nan, index=df.index)
+    if COL_ID in df.columns:
+        ids_all = pd.to_numeric(df[COL_ID], errors="coerce")
+    else:
+        ids_all = pd.Series(np.nan, index=df.index)
     if ids_all.isna().all():
         ids_all = pd.Series(np.arange(len(df)), index=df.index)
 
@@ -47,8 +51,6 @@ def gerar(model_name=MODEL_NAME, log_path=LOG_PATH, out_path=None, show=False):
     # limiar otimo (menor que maximiza o F1 de phishing)
     best_t, best_f1 = melhor_limiar_f1(y, score)
     print(f"Melhor F1 = {best_f1*100:.2f}% no limiar {best_t:g}")
-
-    model = model_name
 
     # plot: um ponto por e-mail, cor pelo rotulo verdadeiro
     fig, ax = plt.subplots(figsize=(11, 5))
@@ -71,8 +73,11 @@ def gerar(model_name=MODEL_NAME, log_path=LOG_PATH, out_path=None, show=False):
     fig.tight_layout()
 
     os.makedirs(IMAGES_DIR, exist_ok=True)
-    out = out_path or os.path.join(
-        IMAGES_DIR, f"likelihood_por_id_{re.sub(r'[^A-Za-z0-9._-]+', '_', model)}.png")
+    if out_path is None:
+        slug = re.sub(r"[^A-Za-z0-9._-]+", "_", model_name)
+        out = os.path.join(IMAGES_DIR, f"likelihood_por_id_{slug}.png")
+    else:
+        out = out_path
     fig.savefig(out, dpi=150)
     print(f"Figura salva em: {out}")
     if show:

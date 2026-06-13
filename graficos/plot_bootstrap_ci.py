@@ -96,10 +96,21 @@ def _metricas(y, score, t_opt):
     classes = np.unique(y)
     if len(classes) < 2:
         return np.nan, np.nan, np.nan
+
     f1 = f1_score(y, pred, pos_label=1, zero_division=0)
-    # MCC e AUC indefinidos se a predicao tem uma so classe / score constante
-    mcc = matthews_corrcoef(y, pred) if len(np.unique(pred)) > 1 else 0.0
-    auc = roc_auc_score(y, score) if len(np.unique(score)) > 1 else np.nan
+
+    # MCC indefinido se a predicao tem uma so classe.
+    if len(np.unique(pred)) > 1:
+        mcc = matthews_corrcoef(y, pred)
+    else:
+        mcc = 0.0
+
+    # AUC indefinida se o score e constante.
+    if len(np.unique(score)) > 1:
+        auc = roc_auc_score(y, score)
+    else:
+        auc = np.nan
+
     return f1, mcc, auc
 
 
@@ -130,7 +141,10 @@ def _resumo(diffs, ponto, conf):
     hi = float(np.nanpercentile(diffs, 100 * (1 - alpha)))
     # p-valor de bootstrap bicaudal: 2x a menor cauda em torno de zero
     n = np.sum(~np.isnan(diffs))
-    frac_neg = np.sum(diffs < 0) / n if n else np.nan
+    if n:
+        frac_neg = np.sum(diffs < 0) / n
+    else:
+        frac_neg = np.nan
     p = float(min(1.0, 2 * min(frac_neg, 1 - frac_neg)))
     if lo > 0:
         cor = COR_POS
@@ -160,9 +174,10 @@ def gerar(baseline=BASELINE, modelos=MODELOS, n_boot=N_BOOT, conf=CONF,
     # resultados[apelido] = {nome, metrica -> (est, lo, hi, p, cor)}
     resultados = []
     for apelido in modelos:
-        if apelido == baseline or apelido not in MODELOS_DISPONIVEIS:
-            if apelido != baseline:
-                print(f"[aviso] modelo desconhecido, pulando: {apelido}")
+        if apelido == baseline:
+            continue
+        if apelido not in MODELOS_DISPONIVEIS:
+            print(f"[aviso] modelo desconhecido, pulando: {apelido}")
             continue
         nome, log_path = MODELOS_DISPONIVEIS[apelido]
         try:
@@ -190,7 +205,10 @@ def gerar(baseline=BASELINE, modelos=MODELOS, n_boot=N_BOOT, conf=CONF,
         print(f"\n{nome} vs {nome_base}  (n={len(comum)}, limiar F1 local={t_loc:g})")
         for chave, rot in METRICAS:
             est, lo, hi, p, _ = res[chave]
-            sig = "" if lo <= 0 <= hi else "  *"
+            if lo <= 0 <= hi:
+                sig = ""        # IC cruza o zero: sem diferenca significativa
+            else:
+                sig = "  *"
             print(f"  {chave:5s}: {est:+.4f}  IC{int(conf*100)}%=[{lo:+.4f}, {hi:+.4f}]"
                   f"  p_boot={p:.3g}{sig}")
 
@@ -261,7 +279,10 @@ def _plot(resultados, nome_base, conf, n_boot, out_path, show):
     fig.tight_layout(rect=[0, 0.06, 1, 0.97])
 
     os.makedirs(IMAGES_DIR, exist_ok=True)
-    out = out_path or os.path.join(IMAGES_DIR, "bootstrap_ci.png")
+    if out_path is None:
+        out = os.path.join(IMAGES_DIR, "bootstrap_ci.png")
+    else:
+        out = out_path
     fig.savefig(out, dpi=150, bbox_inches="tight")
     print(f"\nFigura salva em: {out}")
     if show:

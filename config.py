@@ -37,7 +37,7 @@ ENABLE_LLM_LOGGING = True  # Se False, não gera CSVs em llm_logs
 # Permite retomar um benchmark interrompido sem repetir os modelos concluídos.
 # Caso tenha restado um log parcial, recomenda-se removê-lo antes, para não
 # misturar métricas de execuções diferentes.
-SKIP_COMPLETED_MODELS = True
+SKIP_COMPLETED_MODELS = False
 
 # Retomada POR E-MAIL dentro de um mesmo modelo (resume parcial).
 # Se True, ao reiniciar um modelo interrompido no meio, reaproveita os e-mails

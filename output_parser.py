@@ -68,7 +68,10 @@ def _close_json(text: str) -> str:
     if in_string:               # fecha string aberta
         repaired += '"'
     for opener in reversed(stack):   # fecha do mais interno ao mais externo
-        repaired += "}" if opener == "{" else "]"
+        if opener == "{":
+            repaired += "}"
+        else:
+            repaired += "]"
 
     # Uma string/valor truncado pode ter deixado uma vírgula pendurada.
     return _TRAILING_COMMA_RE.sub(r"\1", repaired)
@@ -134,6 +137,13 @@ def _escape_inner_quotes(text: str) -> str:
     return "".join(out)
 
 
+def _somente_dict(data) -> dict | None:
+    """Devolve o próprio valor se for um dict; senão, None (JSON de outro tipo)."""
+    if isinstance(data, dict):
+        return data
+    return None
+
+
 def _extract_json(raw_response: str) -> tuple[dict | None, bool]:
     """
     Tenta extrair o objeto JSON da resposta bruta do modelo.
@@ -158,7 +168,7 @@ def _extract_json(raw_response: str) -> tuple[dict | None, bool]:
     # 1ª tentativa: a resposta inteira já é um JSON válido.
     try:
         data = json.loads(text)
-        return (data if isinstance(data, dict) else None), False
+        return _somente_dict(data), False
     except (json.JSONDecodeError, TypeError):
         pass
 
@@ -167,7 +177,7 @@ def _extract_json(raw_response: str) -> tuple[dict | None, bool]:
     if match:
         try:
             data = json.loads(match.group(0))
-            return (data if isinstance(data, dict) else None), False
+            return _somente_dict(data), False
         except (json.JSONDecodeError, TypeError):
             pass
 
@@ -177,7 +187,7 @@ def _extract_json(raw_response: str) -> tuple[dict | None, bool]:
     if start != -1:
         try:
             data = json.loads(_close_json(text[start:]))
-            return (data if isinstance(data, dict) else None), True
+            return _somente_dict(data), True
         except (json.JSONDecodeError, TypeError):
             pass
 
@@ -186,7 +196,7 @@ def _extract_json(raw_response: str) -> tuple[dict | None, bool]:
     if start != -1:
         try:
             data = json.loads(_close_json(_escape_inner_quotes(text[start:])))
-            return (data if isinstance(data, dict) else None), True
+            return _somente_dict(data), True
         except (json.JSONDecodeError, TypeError):
             pass
 

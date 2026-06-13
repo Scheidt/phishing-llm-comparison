@@ -20,7 +20,7 @@ def main():
     print(f"\n{'=-'*30 + '='}")
     print("\n"*2)
 
-    dataset = load_dataset()
+    dataset = load_dataset().head(3)
     all_metrics = []
 
     # Claude

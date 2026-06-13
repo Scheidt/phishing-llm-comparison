@@ -55,9 +55,14 @@ def compute_metrics(model_name: str, results: list[dict]) -> dict:
     usable        = [r for r in results if r["predicted_label"] != -1]
     hard_errors   = [r for r in results if r["predicted_label"] == -1]  # irrecuperáveis
 
-    error_rate         = len(strict_errors) / total if total > 0 else 0.0
-    rescued_error_rate = len(hard_errors)   / total if total > 0 else 0.0
-    avg_time           = sum(r["elapsed_seconds"] for r in results) / total if total > 0 else 0.0
+    if total > 0:
+        error_rate         = len(strict_errors) / total
+        rescued_error_rate = len(hard_errors) / total
+        avg_time           = sum(r["elapsed_seconds"] for r in results) / total
+    else:
+        error_rate         = 0.0
+        rescued_error_rate = 0.0
+        avg_time           = 0.0
 
     if not usable:
         print(f"[{model_name}] AVISO: nenhuma predição utilizável para calcular métricas.")
@@ -120,7 +125,10 @@ def _classification_metrics(records: list[dict]) -> dict:
     y_pred = [r["predicted_label"] for r in records]
 
     cm = confusion_matrix(y_true, y_pred, labels=[0, 1])
-    tn, fp, fn, tp = cm.ravel() if cm.size == 4 else (0, 0, 0, 0)
+    if cm.size == 4:
+        tn, fp, fn, tp = cm.ravel()
+    else:
+        tn, fp, fn, tp = 0, 0, 0, 0
 
     return {
         "accuracy":        round(accuracy_score(y_true, y_pred), 4),
@@ -311,7 +319,10 @@ if __name__ == "__main__":
     except (AttributeError, ValueError):
         pass
 
-    arg = sys.argv[1] if len(sys.argv) >= 2 else None
+    if len(sys.argv) >= 2:
+        arg = sys.argv[1]
+    else:
+        arg = None
 
     if arg == "--rebuild":
         # Remonta o comparativo a partir dos metrics_<modelo>.json já existentes.

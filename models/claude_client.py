@@ -33,7 +33,10 @@ class ClaudeClient:
             raw_response, elapsed_seconds, input_tokens, output_tokens, error
         """
         # Aplica constrained decoding apenas se habilitado no config.
-        extra = {"output_config": _OUTPUT_CONFIG} if USE_CONSTRAINED_DECODING else {}
+        if USE_CONSTRAINED_DECODING:
+            extra = {"output_config": _OUTPUT_CONFIG}
+        else:
+            extra = {}
 
         for attempt in range(1, MAX_RETRIES + 1):
             try:

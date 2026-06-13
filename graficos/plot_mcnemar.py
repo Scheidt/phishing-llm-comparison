@@ -70,7 +70,7 @@ def _mcnemar(b, c):
     n = b + c
     if n == 0:
         return 0.0, 1.0, "n/d"
-    chi2_cc = (abs(b - c) - 1) ** 2 / n if n > 0 else 0.0
+    chi2_cc = (abs(b - c) - 1) ** 2 / n
     chi2_cc = max(chi2_cc, 0.0)
     # p-valor exato (binomial bicaudal, H0: p=0.5) -- robusto para n pequeno
     p_exato = binomtest(min(b, c), n, 0.5, alternative="two-sided").pvalue
@@ -150,7 +150,10 @@ def gerar(baseline=BASELINE, modelos=MODELOS, out_path=None, show=False):
         ax.bar_label(barras, padding=2, fontsize=10)
 
     # anotacao de p-valor + significancia sobre cada par
-    topo = max(max(bs), max(cs)) if (bs or cs) else 1
+    if bs or cs:
+        topo = max(max(bs), max(cs))
+    else:
+        topo = 1
     for i, (_, b, c, _, _, chi2_cc, p, sig) in enumerate(resultados):
         y = max(b, c) + topo * 0.10
         ax.text(x[i], y,
@@ -170,7 +173,10 @@ def gerar(baseline=BASELINE, modelos=MODELOS, out_path=None, show=False):
     fig.tight_layout()
 
     os.makedirs(IMAGES_DIR, exist_ok=True)
-    out = out_path or os.path.join(IMAGES_DIR, "mcnemar.png")
+    if out_path is None:
+        out = os.path.join(IMAGES_DIR, "mcnemar.png")
+    else:
+        out = out_path
     fig.savefig(out, dpi=150, bbox_inches="tight")
     print(f"Figura salva em: {out}")
     if show:

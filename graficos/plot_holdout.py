@@ -135,8 +135,11 @@ def gerar_curva(model_name, log_path, test_size=TEST_SIZE, seed=SEED,
     fig.tight_layout()
 
     os.makedirs(IMAGES_DIR, exist_ok=True)
-    out = out_path or os.path.join(
-        IMAGES_DIR, f"holdout_curva_{re.sub(r'[^A-Za-z0-9._-]+', '_', model_name)}.png")
+    if out_path is None:
+        slug = re.sub(r"[^A-Za-z0-9._-]+", "_", model_name)
+        out = os.path.join(IMAGES_DIR, f"holdout_curva_{slug}.png")
+    else:
+        out = out_path
     fig.savefig(out, dpi=150)
     print(f"  figura salva em: {out}")
     if show:
@@ -188,7 +191,9 @@ def gerar_barras(modelos, test_size=TEST_SIZE, n_splits=N_SPLITS, conf=CONF,
     ]
     nomes = []
     medias = []   # por modelo: [(m,lo,hi) treino, (m,lo,hi) teste, (m,lo,hi) teto]
-    n_tr_rep = n_te_rep = None   # tamanhos representativos do split (1o modelo valido)
+    # tamanhos representativos do split (calculados no 1o modelo valido)
+    n_tr_rep = None
+    n_te_rep = None
     for nome, log_path in modelos:
         try:
             y, score = _carregar_valido(log_path)
@@ -245,7 +250,10 @@ def gerar_barras(modelos, test_size=TEST_SIZE, n_splits=N_SPLITS, conf=CONF,
     fig.tight_layout()
 
     os.makedirs(IMAGES_DIR, exist_ok=True)
-    out = out_path or os.path.join(IMAGES_DIR, "holdout_barras.png")
+    if out_path is None:
+        out = os.path.join(IMAGES_DIR, "holdout_barras.png")
+    else:
+        out = out_path
     fig.savefig(out, dpi=150)
     print(f"Figura salva em: {out}")
     if show:
@@ -257,7 +265,10 @@ def gerar_barras(modelos, test_size=TEST_SIZE, n_splits=N_SPLITS, conf=CONF,
 
 def main():
     from plot import MODELOS, MODELOS_DISPONIVEIS
-    modelos = [MODELOS_DISPONIVEIS[a] for a in MODELOS if a in MODELOS_DISPONIVEIS]
+    modelos = []
+    for apelido in MODELOS:
+        if apelido in MODELOS_DISPONIVEIS:
+            modelos.append(MODELOS_DISPONIVEIS[apelido])
 
     # uma curva por modelo (particao representativa)
     for nome, log_path in modelos:

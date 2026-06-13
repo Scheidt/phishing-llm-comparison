@@ -90,11 +90,20 @@ class BenchmarkLogger:
         como erro na faixa estrita das métricas, mas a predição resgatada ainda
         é aproveitada na faixa pós-reparo (ver metrics.py).
         """
-        true_text = "PHISHING" if true_label == 1 else "LEGÍTIMO"
+        if true_label == 1:
+            true_text = "PHISHING"
+        else:
+            true_text = "LEGÍTIMO"
 
         # Validade da resposta (não depende do corte): erro de chamada, JSON
         # reparado, ou ausência de nota numérica utilizável.
         is_error = bool(error) or repaired or (phishing_likelihood is None)
+
+        # No CSV, a ausência de nota é gravada como célula vazia.
+        if phishing_likelihood is None:
+            likelihood_csv = ""
+        else:
+            likelihood_csv = phishing_likelihood
 
         record = {
             "email_id":             email_id,
@@ -109,7 +118,7 @@ class BenchmarkLogger:
             # classification textual do próprio modelo (não decide o rótulo;
             # registrado para análise).
             "predicted_classification_text": classification_text or "",
-            "phishing_likelihood":  phishing_likelihood if phishing_likelihood is not None else "",
+            "phishing_likelihood":  likelihood_csv,
             "indicators":           " | ".join(indicators),
             "parse_note":           parse_note,
             "is_correct":           "",
@@ -132,7 +141,9 @@ class BenchmarkLogger:
 def find_latest_log(model_name: str) -> str | None:
     """Retorna o CSV de log mais recente deste modelo em LLM_LOGS_DIR, ou None."""
     matches = sorted(glob.glob(os.path.join(LLM_LOGS_DIR, f"{model_name}_*.csv")))
-    return matches[-1] if matches else None
+    if not matches:
+        return None
+    return matches[-1]
 
 
 def _coerce_record(row: dict) -> dict:

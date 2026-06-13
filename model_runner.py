@@ -37,9 +37,12 @@ def run_model_tests(
     print(f"Total de amostras: {len(dataset)}")
     print(f"\n{'=-'*30 + '='}")
 
-    resume_path, results, skip_ids = (
-        load_partial_results(model_name) if resume else (None, [], set())
-    )
+    if resume:
+        resume_path, results, skip_ids = load_partial_results(model_name)
+    else:
+        resume_path = None
+        results = []
+        skip_ids = set()
 
     logger = BenchmarkLogger(model_name, resume_path=resume_path)
 
@@ -58,13 +61,17 @@ def run_model_tests(
 
         response = client.classify(system_prompt, user_prompt)
 
-        parsed = (
-            parse_response(response["raw_response"])
-            if not response["error"]
-            else {"classification_text": None,
-                  "phishing_likelihood": None, "indicators": [],
-                  "parse_note": "", "repaired": False}
-        )
+        if response["error"]:
+            # Chamada falhou: não há resposta para parsear; registra campos vazios.
+            parsed = {
+                "classification_text": None,
+                "phishing_likelihood": None,
+                "indicators":          [],
+                "parse_note":          "",
+                "repaired":            False,
+            }
+        else:
+            parsed = parse_response(response["raw_response"])
 
         record = logger.log(
             email_id            = int(row["id"]),

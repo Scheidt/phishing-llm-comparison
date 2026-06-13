@@ -68,7 +68,10 @@ def _parse_likelihood(value) -> float | None:
         n = float(value)
     except (TypeError, ValueError):
         return None
-    return n if 0 <= n <= 100 else None
+
+    if 0 <= n <= 100:
+        return n
+    return None
 
 
 def score_record(rec: dict, threshold: float) -> dict:
@@ -92,15 +95,25 @@ def score_record(rec: dict, threshold: float) -> dict:
     has_error  = bool((rec.get("error_message") or "").strip())
 
     if has_error or likelihood is None:
+        if has_error:
+            texto = "ERRO"
+        else:
+            texto = "INVÁLIDO"
         rec["predicted_label"]      = -1
-        rec["predicted_label_text"] = "ERRO" if has_error else "INVÁLIDO"
+        rec["predicted_label_text"] = texto
         rec["is_correct"]           = False
-    else:
-        label = 1 if likelihood >= threshold else 0
-        rec["predicted_label"]      = label
-        rec["predicted_label_text"] = "PHISHING" if label == 1 else "LEGÍTIMO"
-        rec["is_correct"]           = (label == true_label)
+        return rec
 
+    if likelihood >= threshold:
+        label = 1
+        texto = "PHISHING"
+    else:
+        label = 0
+        texto = "LEGÍTIMO"
+
+    rec["predicted_label"]      = label
+    rec["predicted_label_text"] = texto
+    rec["is_correct"]           = (label == true_label)
     return rec
 
 
@@ -170,12 +183,17 @@ def _score_and_report(path: str, dry_run: bool) -> None:
 
     model = rows[0].get("model") or "?"
     threshold = threshold_for(model)
-    origem = "" if model in PHISHING_LIKELIHOOD_THRESHOLDS else "  (Default)"
+    if model in PHISHING_LIKELIHOOD_THRESHOLDS:
+        origem = ""
+    else:
+        origem = "  (Default)"
 
-    com_nota = mudaram = 0
+    com_nota = 0
+    mudaram = 0
     for row in rows:
         antes = str(row.get("predicted_label"))
-        com_nota += _parse_likelihood(row.get("phishing_likelihood", "")) is not None
+        if _parse_likelihood(row.get("phishing_likelihood", "")) is not None:
+            com_nota += 1
         score_record(row, threshold)
         if antes != str(row.get("predicted_label")):
             mudaram += 1
@@ -200,7 +218,10 @@ def main() -> None:
         print(f"Nenhum log .csv encontrado em {LLM_LOGS_DIR}.")
         return
 
-    modo = "DRY-RUN (nada será gravado)" if dry_run else "gravando no lugar"
+    if dry_run:
+        modo = "DRY-RUN (nada será gravado)"
+    else:
+        modo = "gravando no lugar"
     print(f"Pontuando {len(paths)} log(s) em {LLM_LOGS_DIR} [{modo}]")
     print(f"Cortes: {PHISHING_LIKELIHOOD_THRESHOLDS}\n")
 

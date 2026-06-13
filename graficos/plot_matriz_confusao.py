@@ -27,7 +27,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from limiar import melhor_limiar_f1, carregar
+from limiar import melhor_limiar_f1, carregar, razao_segura
 
 # diretorios resolvidos a partir da localizacao deste script (graficos/),
 # para que possa ser chamado de qualquer diretorio
@@ -38,7 +38,8 @@ OUT_DIR = os.path.join(SCRIPT_DIR, "images")  # diretorio das figuras
 
 def confusion(y_true, y_pred):
     """Retorna (tp, fp, tn, fn) com phishing (1) como classe positiva."""
-    y_true, y_pred = np.asarray(y_true), np.asarray(y_pred)
+    y_true = np.asarray(y_true)
+    y_pred = np.asarray(y_pred)
     tp = int(np.sum((y_true == 1) & (y_pred == 1)))
     tn = int(np.sum((y_true == 0) & (y_pred == 0)))
     fp = int(np.sum((y_true == 0) & (y_pred == 1)))
@@ -49,10 +50,10 @@ def confusion(y_true, y_pred):
 def imprimir_tabela(nome, limiar, tp, fp, tn, fn):
     """Imprime a matriz de confusao e metricas no console."""
     total = tp + fp + tn + fn
-    acc = (tp + tn) / total if total else 0.0
-    prec = tp / (tp + fp) if (tp + fp) else 0.0
-    rec = tp / (tp + fn) if (tp + fn) else 0.0
-    f1 = 2 * prec * rec / (prec + rec) if (prec + rec) else 0.0
+    acc = razao_segura(tp + tn, total)
+    prec = razao_segura(tp, tp + fp)
+    rec = razao_segura(tp, tp + fn)
+    f1 = razao_segura(2 * prec * rec, prec + rec)
 
     print(f"\n=== {nome}  (limiar = {limiar:g}) ===")
     print(f"{'':>22}| {'Pred PHISHING':>14} | {'Pred LEGITIMO':>14}")
@@ -74,10 +75,16 @@ def plotar(nome, limiar, tp, fp, tn, fn, out_path):
     fig, ax = plt.subplots(figsize=(5.5, 5))
     im = ax.imshow(matriz, cmap="Blues")
 
-    vmax = matriz.max() if matriz.max() else 1
+    vmax = matriz.max()
+    if vmax == 0:
+        vmax = 1
     for i in range(2):
         for j in range(2):
-            cor = "white" if matriz[i, j] > 0.6 * vmax else "#1A1A1A"
+            # Texto branco sobre celulas escuras; escuro sobre celulas claras.
+            if matriz[i, j] > 0.6 * vmax:
+                cor = "white"
+            else:
+                cor = "#1A1A1A"
             ax.text(j, i, f"{rotulos[i, j]}\n{matriz[i, j]}",
                     ha="center", va="center", color=cor, fontsize=14)
 
