@@ -15,7 +15,7 @@ class DmrClient:
         """
             Inicializa o cliente do DMR para um modelo específico.
         Args:
-            model_tag: tag do modelo no DMR. Verificar modelos existentes em config.py → LOCAL_MODELS.
+            model_tag: tag do modelo no DMR. Verificar modelos existentes em config.py -> LOCAL_MODELS.
         """
         self.model_tag = model_tag
         self.client = OpenAI(
