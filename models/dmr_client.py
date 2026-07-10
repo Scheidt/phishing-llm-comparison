@@ -3,31 +3,11 @@ Cliente para o Docker Model Runner (DMR).
 
 Usa a lib `openai` apontando para o endpoint local do DMR,
 que expõe uma API compatível com o formato OpenAI.
-
-Gerenciamento de memória:
-  O DMR carrega um modelo por vez. Quando uma requisição chega para um
-  modelo diferente do que está em memória, o próprio DMR realiza o swap,
-  sem necessidade de lógica manual; é suficiente executar os modelos
-  sequencialmente no código Python.
 """
 import time
 from openai import OpenAI, APIConnectionError, APITimeoutError
 from config import (DMR_BASE_URL, DMR_TIMEOUT, MAX_TOKENS,
-                    TEMPERATURE, MAX_RETRIES, RETRY_DELAY,
-                    USE_CONSTRAINED_DECODING, RESPONSE_SCHEMA, RESPONSE_SCHEMA_NAME)
-
-
-# Constrained decoding: o DMR (llama.cpp, API compatível com OpenAI) aceita
-# response_format com json_schema e aplica o schema como grammar na geração,
-# garantindo que a saída seja um JSON válido no formato esperado.
-_RESPONSE_FORMAT = {
-    "type": "json_schema",
-    "json_schema": {
-        "name": RESPONSE_SCHEMA_NAME,
-        "strict": True,
-        "schema": RESPONSE_SCHEMA,
-    },
-}
+                    TEMPERATURE, MAX_RETRIES, RETRY_DELAY)
 
 
 class DmrClient:
@@ -81,12 +61,6 @@ class DmrClient:
         else:
             token_limit = max_tokens
 
-        # Aplica constrained decoding apenas se habilitado no config.
-        if USE_CONSTRAINED_DECODING:
-            extra = {"response_format": _RESPONSE_FORMAT}
-        else:
-            extra = {}
-
         for attempt in range(1, MAX_RETRIES + 1):
             try:
                 start = time.perf_counter()
@@ -99,7 +73,6 @@ class DmrClient:
                     ],
                     max_tokens=token_limit,
                     temperature=TEMPERATURE,
-                    **extra,
                 )
 
                 elapsed = time.perf_counter() - start

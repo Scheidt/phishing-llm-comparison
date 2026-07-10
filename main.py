@@ -1,9 +1,5 @@
 """
 Executa o benchmark.
-
-O Docker Model Runner mantém um modelo por vez em memória e realiza o swap
-ao receber uma requisição para um modelo diferente do carregado; por isso os
-modelos são executados sequencialmente.
 """
 import sys
 import apply_thresholds

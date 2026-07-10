@@ -1,14 +1,5 @@
 """
 Prompt utilizado para classificação de phishing.
-
-O mesmo prompt é usado para todos os modelos (Claude e os modelos locais) para garantir uma comparação justa.
-
-Formato de saída esperado (JSON):
-    {
-      "indicators": ["<indicador curto>", "<indicador curto>", ...],
-      "phishing_likelihood": <inteiro de 0 a 100>,
-      "classification": "phishing" | "legitimate"
-    }
 """
 import config
 
