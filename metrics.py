@@ -75,7 +75,7 @@ def compute_metrics(model_name: str, results: list[dict]) -> dict:
         "total_samples": total,
         "avg_time_sec":  round(avg_time, 4),
 
-        # ── Saída bruta (estrito): reparo conta como erro ──
+        # ------ Saída bruta (estrito): reparo conta como erro ------
         "valid_samples":   len(clean),
         "repaired_count":  len(repaired_recs),
         "error_count":     len(strict_errors),
@@ -89,7 +89,7 @@ def compute_metrics(model_name: str, results: list[dict]) -> dict:
         "false_negatives": strict["false_negatives"],
         "true_positives":  strict["true_positives"],
 
-        # ── Pós-reparo heurístico (resgatado) ──
+        # ------ Pós-reparo heurístico (resgatado) ------
         "rescued_valid_samples":   len(usable),
         "rescued_error_count":     len(hard_errors),
         "rescued_error_rate":      round(rescued_error_rate, 4),
@@ -143,11 +143,11 @@ def _classification_metrics(records: list[dict]) -> dict:
 
 
 def _print_metrics(m: dict):
-    print(f"\n{'─'*50}")
+    print(f"\n{'---'*50}")
     print(f"  Modelo:        {m['model']}")
     print(f"  Amostras:      {m['total_samples']}")
     print(f"  Tempo médio:   {m['avg_time_sec']:.2f}s / resposta")
-    print(f"  ── Saída bruta (reparo conta como erro) ──")
+    print(f"  ------ Saída bruta (reparo conta como erro) ------")
     print(f"    Válidas:     {m['valid_samples']}/{m['total_samples']} "
           f"(reparadas: {m['repaired_count']})")
     print(f"    Taxa de erro:{m['error_rate']:.2%}")
@@ -155,14 +155,14 @@ def _print_metrics(m: dict):
     print(f"    Precisão:    {m['precision']:.2%}   Recall: {m['recall']:.2%}")
     print(f"    CM:  TN={m['true_negatives']} FP={m['false_positives']} "
           f"FN={m['false_negatives']} TP={m['true_positives']}")
-    print(f"  ── Pós-reparo heurístico (resgatado) ──")
+    print(f"  ------ Pós-reparo heurístico (resgatado) ------")
     print(f"    Utilizáveis: {m['rescued_valid_samples']}/{m['total_samples']}")
     print(f"    Erro irrecuperável: {m['rescued_error_rate']:.2%}")
     print(f"    Acurácia:    {m['rescued_accuracy']:.2%}   F1: {m['rescued_f1_score']:.4f}")
     print(f"    Precisão:    {m['rescued_precision']:.2%}   Recall: {m['rescued_recall']:.2%}")
     print(f"    CM:  TN={m['rescued_true_negatives']} FP={m['rescued_false_positives']} "
           f"FN={m['rescued_false_negatives']} TP={m['rescued_true_positives']}")
-    print(f"{'─'*50}")
+    print(f"{'---'*50}")
 
 
 def load_existing_metrics(model_name: str) -> dict | None:
