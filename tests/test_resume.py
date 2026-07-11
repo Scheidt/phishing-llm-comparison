@@ -130,11 +130,11 @@ def check(cond: bool, msg: str):
 # CENÁRIOS
 # ─────────────────────────────────────────────────────────────────────────
 def scenario_resume_after_crash(logs_dir: str):
-    """Queda após 3 e-mails → retomada reaproveita 2 e re-testa do 3 ao 5."""
+    """Queda após 3 e-mails -> retomada reaproveita 2 e re-testa do 3 ao 5."""
     print("\n[Cenário 1] Queda no meio + retomada")
     dataset = make_dataset()
 
-    # 1) Roda e "cai" na 4ª chamada → log parcial com ids [1, 2, 3].
+    # 1) Roda e "cai" na 4ª chamada -> log parcial com ids [1, 2, 3].
     crash_client = FakeClient(crash_at=4)
     try:
         run_model_tests(MODEL_NAME, crash_client, dataset, resume=True)
@@ -176,7 +176,7 @@ def scenario_resume_after_crash(logs_dir: str):
 
 def scenario_resume_without_partial(logs_dir: str):
     """Sem log parcial, resume=True roda tudo do zero (sem pular nada)."""
-    print("\n[Cenário 2] resume=True sem log anterior → roda tudo")
+    print("\n[Cenário 2] resume=True sem log anterior -> roda tudo")
     dataset = make_dataset()
     client  = FakeClient()
     results = run_model_tests("fake_model_fresh", client, dataset, resume=True)

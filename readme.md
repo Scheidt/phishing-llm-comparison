@@ -257,8 +257,8 @@ Tudo é gravado em `results/` (gitignored):
 
 ## Fluxo / arquitetura
 
-`main.py` orquestra → `load_dataset()` → para cada modelo: `run_model_tests()`
-→ `apply_thresholds.score_run()` → `compute_metrics()` →
+`main.py` orquestra -> `load_dataset()` -> para cada modelo: `run_model_tests()`
+-> `apply_thresholds.score_run()` -> `compute_metrics()` ->
 `save_comparison_report()`.
 
 | Arquivo | Responsabilidade |

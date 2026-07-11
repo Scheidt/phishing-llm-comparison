@@ -150,7 +150,7 @@ def validate_format(raw_response: str) -> dict:
     if isinstance(classification, str) and classification.lower() in VALID_CLASSIFICATIONS:
         result["has_classification"] = True
 
-    # phishing_likelihood: inteiro 0..100 (bool é subclasse de int → rejeitado)
+    # phishing_likelihood: inteiro 0..100 (bool é subclasse de int -> rejeitado)
     likelihood = data.get("phishing_likelihood")
     if isinstance(likelihood, int) and not isinstance(likelihood, bool) and 0 <= likelihood <= 100:
         result["has_likelihood"] = True
